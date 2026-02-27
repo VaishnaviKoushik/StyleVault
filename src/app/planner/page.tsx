@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Clock, MapPin, Plus, Edit3, Trash2 } from "lucide-react";
 import { MOCK_OUTFITS, MOCK_WARDROBE } from "@/lib/mock-data";
 import Image from "next/image";
+import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
