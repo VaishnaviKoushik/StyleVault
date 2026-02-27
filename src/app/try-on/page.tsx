@@ -490,10 +490,9 @@ export default function TryOnScreen() {
                       <Card key={idx} className="glass-card border-none overflow-hidden group hover:shadow-xl transition-all duration-300 bg-white/60 p-4">
                         <div className="relative h-32 bg-slate-100 rounded-xl overflow-hidden mb-4">
                           <Image 
-                            src={`https://picsum.photos/seed/${suggestion.itemName}/400/300`} 
+                            src={suggestion.imageUrl} 
                             alt={suggestion.itemName} 
                             fill 
-                            data-ai-hint="fashion item"
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                           <div className="absolute top-2 left-2">

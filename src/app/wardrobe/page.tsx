@@ -289,7 +289,7 @@ export default function WardrobePage() {
               categorySuggestions.map((suggestion, idx) => (
                 <Card key={idx} className="glass-card border-none overflow-hidden bg-white/60">
                   <div className="relative h-40 bg-slate-100">
-                    <Image src={`https://picsum.photos/seed/${suggestion.itemName}/600/400`} alt={suggestion.itemName} fill className="object-cover" />
+                    <Image src={suggestion.imageUrl} alt={suggestion.itemName} fill className="object-cover" />
                     <div className="absolute top-3 left-3">
                       <Badge className="bg-white/90 text-primary font-headline shadow-sm">
                         {suggestion.matchCount} Matches
@@ -311,7 +311,7 @@ export default function WardrobePage() {
                           Shop Now <ArrowRight className="ml-1 h-3 w-3" />
                         </a>
                       </Button>
-                      <Button size="icon" variant="outline" className="h-10 w-10 rounded-full border-primary/20 text-primary">
+                      <Button size="icon" variant="outline" className="h-10 w-10 rounded-full border-primary/20 text-primary" onClick={() => toast({ title: "Added to Wishlist", description: `${suggestion.itemName} saved.` })}>
                         <Heart className="h-4 w-4" />
                       </Button>
                     </div>

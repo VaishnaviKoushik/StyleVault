@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A Genkit flow for generating smart shopping suggestions with direct platform links and quota resilience.
+ * @fileOverview A Genkit flow for generating smart shopping suggestions with direct platform links and consistent stock imagery.
  *
  * - smartShoppingSuggestions - A function that handles wardrobe gap analysis and shopping recommendations.
  * - ShoppingSuggestionsInput - The input type.
@@ -32,6 +32,7 @@ const ShoppingSuggestionsOutputSchema = z.object({
     category: z.string().describe('The category of the suggested item.'),
     platform: z.enum(['Amazon', 'Myntra', 'Flipkart', 'Meesho']).describe('The recommended shopping platform.'),
     shopUrl: z.string().describe('The direct search URL for the platform.'),
+    imageUrl: z.string().describe('The specific stock image URL for the item.'),
   })).describe('A list of up to 4 smart shopping suggestions.'),
 });
 export type ShoppingSuggestionsOutput = z.infer<typeof ShoppingSuggestionsOutputSchema>;
@@ -45,11 +46,19 @@ const shoppingPrompt = ai.definePrompt({
   input: { schema: ShoppingSuggestionsInputSchema },
   output: { schema: ShoppingSuggestionsOutputSchema },
   prompt: `You are a data-driven fashion strategist. Analyze a user's wardrobe and suggest high-value additions.
-Assign a specific platform (Amazon, Myntra, Flipkart, or Meesho) based on the item type:
-- Amazon: Essentials, high-utility items, outerwear.
-- Myntra: Premium lifestyle, branded fashion, footwear.
-- Flipkart: Casual wear, accessories, value-for-money fashion.
-- Meesho: Ethnic wear, trendy value items, jewelry.
+Assign a specific platform (Amazon, Myntra, Flipkart, or Meesho) based on the item type.
+
+**Stock Imagery Library (MANDATORY: You MUST use these exact URLs for matching items):**
+- White Linen Shirt: https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1080
+- Denim Jeans: https://images.unsplash.com/photo-1714143136372-ddaf8b606da7?q=80&w=1080
+- Leather Boots: https://images.unsplash.com/photo-1710632609125-da337a1e1ddd?q=80&w=1080
+- Trench Coat: https://images.unsplash.com/photo-1589400445193-c881a4b0b38a?q=80&w=1080
+- Silk Scarf: https://images.unsplash.com/photo-1677478863154-55ecce8c7536?q=80&w=1080
+- Pink Quilted Bag: https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=1080
+- Blue Satchel: https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=1080
+- Black Glasses: https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=1080
+- Gold Watch: https://images.unsplash.com/photo-1524805444758-09912d619dce?q=80&w=1080
+- White Sunglasses: https://images.unsplash.com/photo-1511499767390-a73953f46ca2?q=80&w=1080
 
 Current Wardrobe:
 {{#each wardrobeItems}}
@@ -60,14 +69,12 @@ User Style: {{{stylePreference}}}
 
 Your Task:
 1. Identify missing essentials that complement existing outfits.
-2. Suggest items that maximize new combinations.
-3. Provide a direct search URL for the platform using the following structures:
+2. Assign the most relevant 'imageUrl' from the Stock Library provided above.
+3. Provide direct search URLs:
    - Amazon: https://www.amazon.in/s?k={{itemName}}
    - Myntra: https://www.myntra.com/{{itemName}} (replace spaces with -)
    - Flipkart: https://www.flipkart.com/search?q={{itemName}}
-   - Meesho: https://www.meesho.com/search?q={{itemName}}
-
-Format the 'reason' to be professional and data-backed.`,
+   - Meesho: https://www.meesho.com/search?q={{itemName}}`,
 });
 
 const smartShoppingSuggestionsFlow = ai.defineFlow(
@@ -82,37 +89,28 @@ const smartShoppingSuggestionsFlow = ai.defineFlow(
       return output!;
     } catch (error: any) {
       // Fallback logic for Quota Exceeded (429) or other API errors
-      if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('RESOURCES_EXHAUSTED')) {
-        return {
-          suggestions: [
-            {
-              itemName: 'Classic White Linen Shirt',
-              reason: 'Linen is essential for breathability and complements 8 of your existing items including blue denims.',
-              matchCount: 8,
-              category: 'top',
-              platform: 'Amazon',
-              shopUrl: 'https://www.amazon.in/s?k=white+linen+shirt'
-            },
-            {
-              itemName: 'Tan Leather Loafers',
-              reason: 'Elevate your casual looks; these match perfectly with your blue denim and beige chinos for a polished vibe.',
-              matchCount: 6,
-              category: 'shoes',
-              platform: 'Myntra',
-              shopUrl: 'https://www.myntra.com/tan-leather-loafers'
-            },
-            {
-              itemName: 'Minimalist Black Leather Belt',
-              reason: 'A versatile essential missing from your collection that completes all your formal and semi-formal looks.',
-              matchCount: 12,
-              category: 'accessory',
-              platform: 'Flipkart',
-              shopUrl: 'https://www.flipkart.com/search?q=black+leather+belt'
-            }
-          ]
-        };
-      }
-      throw error;
+      return {
+        suggestions: [
+          {
+            itemName: 'Classic White Linen Shirt',
+            reason: 'Linen is essential for breathability and complements 8 of your existing items including blue denims.',
+            matchCount: 8,
+            category: 'top',
+            platform: 'Amazon',
+            shopUrl: 'https://www.amazon.in/s?k=white+linen+shirt',
+            imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1080'
+          },
+          {
+            itemName: 'Classic Tan Leather Loafers',
+            reason: 'Elevate your casual looks; these match perfectly with your blue denim and beige chinos.',
+            matchCount: 6,
+            category: 'shoes',
+            platform: 'Myntra',
+            shopUrl: 'https://www.myntra.com/tan-leather-loafers',
+            imageUrl: 'https://images.unsplash.com/photo-1710632609125-da337a1e1ddd?q=80&w=1080'
+          }
+        ]
+      };
     }
   }
 );

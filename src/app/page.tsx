@@ -259,7 +259,7 @@ export default function HomeScreen() {
                 <Card key={idx} className="glass-card border-none overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-white/60">
                   <div className="relative h-48 bg-slate-100 overflow-hidden">
                     <Image 
-                      src={`https://picsum.photos/seed/${suggestion.itemName}/600/400`} 
+                      src={suggestion.imageUrl} 
                       alt={suggestion.itemName} 
                       fill 
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
@@ -279,8 +279,10 @@ export default function HomeScreen() {
                       "{suggestion.reason}"
                     </p>
                     <div className="flex gap-2 pt-2">
-                      <Button className="flex-1 h-10 rounded-full gradient-primary text-white font-headline text-xs" variant="default">
-                        Shop Now <ArrowRight className="ml-1 h-3 w-3" />
+                      <Button asChild className="flex-1 h-10 rounded-full gradient-primary text-white font-headline text-xs" variant="default">
+                        <a href={suggestion.shopUrl} target="_blank" rel="noopener noreferrer">
+                          Shop Now <ArrowRight className="ml-1 h-3 w-3" />
+                        </a>
                       </Button>
                       <Button 
                         size="icon" 
