@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Layers, Plus, Share2, Trash2, Check, X } from "lucide-react";
+import { Layers, Plus, Share2, Trash2, Check, X, ArrowLeftRight } from "lucide-react";
 import { MOCK_OUTFITS, MOCK_WARDROBE, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function OutfitsPage() {
   const [view, setView] = useState<"list" | "create">("list");
@@ -124,6 +125,11 @@ export default function OutfitsPage() {
                 <div className="p-4 bg-slate-50 flex justify-between gap-2 border-t">
                   <Button variant="ghost" size="sm" className="font-headline text-muted-foreground hover:text-primary flex-1" onClick={() => handleShare(outfit.name)}>
                     <Share2 className="mr-2 h-4 w-4" /> Share
+                  </Button>
+                  <Button variant="ghost" size="sm" className="font-headline text-muted-foreground hover:text-accent flex-1" asChild>
+                    <Link href="/compare">
+                      <ArrowLeftRight className="mr-2 h-4 w-4" /> Compare
+                    </Link>
                   </Button>
                   <Button variant="ghost" size="sm" className="font-headline text-muted-foreground hover:text-destructive flex-1" onClick={() => handleDelete(outfit.id)}>
                     <Trash2 className="mr-2 h-4 w-4" /> Delete
