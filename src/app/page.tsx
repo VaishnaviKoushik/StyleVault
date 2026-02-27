@@ -154,63 +154,32 @@ export default function HomeScreen() {
           </div>
         </section>
 
-        {/* INTEL SUMMARY CARD */}
-        <section className="animate-in slide-in-from-bottom-8 duration-1000">
-           <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10">
-              <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl border-8 border-slate-50">
-                 <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" alt="Shopping" fill className="object-cover" />
-                 <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                    <ShoppingBag className="h-20 w-20 text-white opacity-40" />
-                 </div>
-              </div>
-              <div className="md:w-2/3 space-y-6">
-                 <Badge className="bg-primary/10 text-primary font-headline uppercase">Smart Acquisition Engine</Badge>
-                 <h3 className="text-4xl font-headline font-bold text-primary italic">Refine your collections.</h3>
-                 <p className="text-lg font-body text-slate-600 leading-relaxed italic">
-                    "Our AI has analyzed your 18 items and identified 4 key pieces that would expand your styling combinations by 40%. View your personalized shopping strategy now."
-                 </p>
-                 <Button asChild className="h-14 px-8 rounded-full gradient-primary text-white font-headline text-lg shadow-xl hover:scale-105 transition-all">
-                    <Link href="/shopping">View Smart Suggestions <ArrowRight className="ml-2 h-5 w-5" /></Link>
-                 </Button>
-              </div>
-           </Card>
-        </section>
-
-        {/* SIGNATURE LOOKBOOK */}
+        {/* SIGNATURE LOOKBOOK & SMART ACQUISITION */}
         <section className="py-20 px-10 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
             <div className="lg:w-1/2 space-y-8">
               <Badge className="bg-primary/10 text-primary font-headline uppercase px-6 py-1 tracking-widest border-none">
-                Elite Signature
+                Smart Acquisition Engine
               </Badge>
               <h3 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] text-primary italic">
                 Refine your <span className="text-accent italic">collections.</span>
               </h3>
               <p className="text-xl text-muted-foreground font-body leading-relaxed max-w-2xl italic border-r-4 border-accent pr-6 text-right lg:text-left lg:border-r-0 lg:border-l-4 lg:pl-6">
-                "We've redefined the professional wardrobe. StyleVault is a cognitive style engine merging vision with creative intelligence."
+                "Our AI has analyzed your 18 items and identified 4 key pieces that would expand your styling combinations by 40%. View your personalized shopping strategy now."
               </p>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6">
-                <div className="space-y-3 group cursor-default">
-                  <div className="h-12 w-12 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg transition-transform group-hover:rotate-6">
-                    <Star className="h-6 w-6" />
-                  </div>
-                  <h4 className="font-headline font-bold text-2xl text-primary">Mastery</h4>
-                  <p className="text-sm text-muted-foreground font-body">Gemini-powered analysis of color theory and historical styling preference.</p>
-                </div>
-                <div className="space-y-3 group cursor-default">
-                  <div className="h-12 w-12 rounded-xl bg-accent text-white flex items-center justify-center shadow-lg transition-transform group-hover:-rotate-6">
-                    <Star className="h-6 w-6" />
-                  </div>
-                  <h4 className="font-headline font-bold text-2xl text-primary">Security</h4>
-                  <p className="text-sm text-muted-foreground font-body">Your digital inventory is protected with professional-grade cloud security.</p>
-                </div>
+              <div className="pt-6">
+                <Button asChild className="h-16 px-10 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 transition-all">
+                  <Link href="/shopping">View Smart Suggestions <ArrowRight className="ml-2 h-6 w-6" /></Link>
+                </Button>
               </div>
 
-              <Button asChild variant="outline" className="rounded-full border-primary/20 text-primary hover:bg-primary hover:text-white font-headline h-14 px-8 mt-8 transition-all">
-                 <Link href="/proposal">View Architecture <ChevronRight className="ml-2 h-4 w-4" /></Link>
-              </Button>
+              <div className="pt-8 border-t border-slate-200/50">
+                 <Button asChild variant="outline" className="rounded-full border-primary/20 text-primary hover:bg-primary hover:text-white font-headline h-14 px-8 transition-all">
+                   <Link href="/proposal">View Architecture <ChevronRight className="ml-2 h-4 w-4" /></Link>
+                </Button>
+              </div>
             </div>
             
             <div className="lg:w-1/2 grid grid-cols-2 gap-4">
