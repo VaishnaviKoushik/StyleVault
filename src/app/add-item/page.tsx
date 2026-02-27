@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,14 +11,57 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const steps = ["Capture", "Details", "Confirm"];
 
 export default function AddItemPage() {
   const [step, setStep] = useState(0);
   const [photoTaken, setPhotoTaken] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    if (step === 0 && !photoTaken) {
+      const getCameraPermission = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          setHasCameraPermission(true);
+          streamRef.current = stream;
+
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Camera Access Denied',
+            description: 'Please enable camera permissions in your browser settings to use this app.',
+          });
+        }
+      };
+
+      getCameraPermission();
+    }
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [step, photoTaken, toast]);
+
+  const handleCapture = () => {
+    setPhotoTaken(true);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+  };
 
   const handleComplete = () => {
     toast({ title: "Item added to closet!", description: "AI has tagged it automatically." });
@@ -33,7 +76,7 @@ export default function AddItemPage() {
             <ChevronLeft className="h-6 w-6" />
           </Button>
           <div className="space-y-0.5">
-            <h2 className="text-3xl font-headline font-bold">Catalog New Item</h2>
+            <h2 className="text-3xl font-headline font-bold text-primary">Catalog New Item</h2>
             <p className="text-muted-foreground font-body">Digitize your wardrobe with AI assisted tagging.</p>
           </div>
         </header>
@@ -60,50 +103,85 @@ export default function AddItemPage() {
           <CardContent className="p-8">
             {step === 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div 
-                  className="relative aspect-[3/4] rounded-3xl border-4 border-dashed border-primary/20 bg-primary/5 flex flex-col items-center justify-center cursor-pointer group hover:bg-primary/10 transition-all overflow-hidden"
-                  onClick={() => setPhotoTaken(true)}
-                >
-                  {photoTaken ? (
-                    <>
-                      <Image 
-                        src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
-                        alt="Captured" 
-                        fill 
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
-                        <div className="h-20 w-20 rounded-full bg-accent text-white flex items-center justify-center shadow-2xl border-4 border-white">
-                          <Check className="h-10 w-10" />
+                <div className="space-y-4">
+                  <div 
+                    className="relative aspect-[3/4] rounded-3xl border-4 border-dashed border-primary/20 bg-primary/5 flex flex-col items-center justify-center cursor-pointer group hover:bg-primary/10 transition-all overflow-hidden"
+                  >
+                    <video 
+                      ref={videoRef} 
+                      className={cn("w-full h-full object-cover", photoTaken && "hidden")} 
+                      autoPlay 
+                      muted 
+                      playsInline
+                    />
+                    
+                    {photoTaken && (
+                      <div className="relative w-full h-full">
+                        <Image 
+                          src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
+                          alt="Captured" 
+                          fill 
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                          <div className="h-20 w-20 rounded-full bg-accent text-white flex items-center justify-center shadow-2xl border-4 border-white">
+                            <Check className="h-10 w-10" />
+                          </div>
                         </div>
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="h-24 w-24 rounded-full bg-white shadow-xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                        <Camera className="h-10 w-10" />
+                    )}
+
+                    {!photoTaken && hasCameraPermission === null && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-primary">
+                        <Camera className="h-10 w-10 animate-pulse" />
+                        <p className="mt-2 font-headline font-bold">Initializing Camera...</p>
                       </div>
-                      <div className="mt-6 text-center space-y-2">
-                        <p className="text-xl font-headline font-bold">Upload Garment Photo</p>
-                        <p className="text-xs text-muted-foreground font-body uppercase tracking-[0.2em]">Drag and drop or click to browse</p>
-                      </div>
-                    </>
+                    )}
+                  </div>
+
+                  {!photoTaken && hasCameraPermission === false && (
+                    <Alert variant="destructive" className="rounded-2xl">
+                      <AlertTitle>Camera Access Required</AlertTitle>
+                      <AlertDescription>
+                        Please allow camera access in your browser settings to take photos of your garments.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {!photoTaken && hasCameraPermission && (
+                    <Button 
+                      className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
+                      onClick={handleCapture}
+                    >
+                      Capture Photo <Camera className="ml-2 h-5 w-5" />
+                    </Button>
+                  )}
+                  
+                  {photoTaken && (
+                    <Button 
+                      variant="outline"
+                      className="w-full h-14 rounded-full font-headline"
+                      onClick={() => setPhotoTaken(false)}
+                    >
+                      Retake Photo
+                    </Button>
                   )}
                 </div>
+
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-headline font-bold">Image Guidelines</h3>
+                  <h3 className="text-2xl font-headline font-bold text-foreground">Image Guidelines</h3>
                   <ul className="space-y-4 text-muted-foreground font-body">
                     <li className="flex items-start gap-3">
-                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">✨</div>
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">1</div>
                       <span>Use a neutral background for best AI recognition.</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">✨</div>
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">2</div>
                       <span>Ensure the item is well-lit and fully visible.</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">✨</div>
-                      <span>Multiple angles help AI understand fabric texture.</span>
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">3</div>
+                      <span>Avoid shadows and busy patterns in the background.</span>
                     </li>
                   </ul>
                   <Button 
@@ -186,8 +264,8 @@ export default function AddItemPage() {
                 </div>
                 <div className="space-y-8">
                   <div className="space-y-4">
-                    <h4 className="text-2xl font-headline font-bold">Final Review</h4>
-                    <div className="grid grid-cols-2 gap-6">
+                    <h4 className="text-2xl font-headline font-bold text-foreground">Final Review</h4>
+                    <div className="grid grid-cols-2 gap-6 text-foreground">
                       <div className="space-y-1">
                         <p className="text-xs font-bold text-muted-foreground uppercase">Brand</p>
                         <p className="font-headline font-bold">Everlane</p>
