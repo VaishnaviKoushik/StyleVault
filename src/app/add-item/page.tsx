@@ -1,66 +1,38 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Camera, Check, ChevronLeft, Sparkles, X, Upload } from "lucide-react";
+import { Check, ChevronLeft, Sparkles, Upload, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
-const steps = ["Capture", "Details", "Confirm"];
+const steps = ["Upload", "Details", "Confirm"];
 
 export default function AddItemPage() {
   const [step, setStep] = useState(0);
-  const [photoTaken, setPhotoTaken] = useState(false);
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const router = useRouter();
 
-  useEffect(() => {
-    if (step === 0 && !photoTaken) {
-      const getCameraPermission = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          setHasCameraPermission(true);
-          streamRef.current = stream;
-
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Camera Access Denied',
-            description: 'Please enable camera permissions in your browser settings to use this app.',
-          });
-        }
-      };
-
-      getCameraPermission();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
+  };
 
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [step, photoTaken, toast]);
-
-  const handleCapture = () => {
-    setPhotoTaken(true);
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-    }
+  const triggerUpload = () => {
+    fileInputRef.current?.click();
   };
 
   const handleComplete = () => {
@@ -104,89 +76,73 @@ export default function AddItemPage() {
             {step === 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*" 
+                    onChange={handleFileChange} 
+                  />
+                  
                   <div 
-                    className="relative aspect-[3/4] rounded-3xl border-4 border-dashed border-primary/20 bg-primary/5 flex flex-col items-center justify-center cursor-pointer group hover:bg-primary/10 transition-all overflow-hidden"
+                    className={cn(
+                      "relative aspect-[3/4] rounded-3xl border-4 border-dashed flex flex-col items-center justify-center cursor-pointer group transition-all overflow-hidden",
+                      previewUrl 
+                        ? "border-primary/40 bg-white" 
+                        : "border-primary/20 bg-primary/5 hover:bg-primary/10"
+                    )}
+                    onClick={triggerUpload}
                   >
-                    <video 
-                      ref={videoRef} 
-                      className={cn("w-full h-full object-cover", photoTaken && "hidden")} 
-                      autoPlay 
-                      muted 
-                      playsInline
-                    />
-                    
-                    {photoTaken && (
+                    {previewUrl ? (
                       <div className="relative w-full h-full">
                         <Image 
-                          src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
-                          alt="Captured" 
+                          src={previewUrl} 
+                          alt="Uploaded" 
                           fill 
                           className="object-cover"
                         />
-                        <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
-                          <div className="h-20 w-20 rounded-full bg-accent text-white flex items-center justify-center shadow-2xl border-4 border-white">
-                            <Check className="h-10 w-10" />
-                          </div>
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <Upload className="h-12 w-12 text-white" />
                         </div>
                       </div>
-                    )}
-
-                    {!photoTaken && hasCameraPermission === null && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-primary">
-                        <Camera className="h-10 w-10 animate-pulse" />
-                        <p className="mt-2 font-headline font-bold">Initializing Camera...</p>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-primary space-y-4 p-8 text-center">
+                        <ImageIcon className="h-16 w-16 opacity-40" />
+                        <div className="space-y-1">
+                          <p className="font-headline font-bold text-lg">Click to Upload</p>
+                          <p className="text-xs font-body text-muted-foreground">Select a garment photo from your device</p>
+                        </div>
                       </div>
                     )}
                   </div>
 
-                  {!photoTaken && hasCameraPermission === false && (
-                    <Alert variant="destructive" className="rounded-2xl">
-                      <AlertTitle>Camera Access Required</AlertTitle>
-                      <AlertDescription>
-                        Please allow camera access in your browser settings to take photos of your garments.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
-                  {!photoTaken && hasCameraPermission && (
-                    <Button 
-                      className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
-                      onClick={handleCapture}
-                    >
-                      Capture Photo <Camera className="ml-2 h-5 w-5" />
-                    </Button>
-                  )}
-                  
-                  {photoTaken && (
-                    <Button 
-                      variant="outline"
-                      className="w-full h-14 rounded-full font-headline"
-                      onClick={() => setPhotoTaken(false)}
-                    >
-                      Retake Photo
-                    </Button>
-                  )}
+                  <Button 
+                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
+                    onClick={triggerUpload}
+                  >
+                    {previewUrl ? "Change Photo" : "Choose File"} <Upload className="ml-2 h-5 w-5" />
+                  </Button>
                 </div>
 
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-headline font-bold text-foreground">Image Guidelines</h3>
+                  <h3 className="text-2xl font-headline font-bold text-foreground">Upload Guidelines</h3>
                   <ul className="space-y-4 text-muted-foreground font-body">
                     <li className="flex items-start gap-3">
                       <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">1</div>
-                      <span>Use a neutral background for best AI recognition.</span>
+                      <span>Use high-quality photos with good lighting.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">2</div>
-                      <span>Ensure the item is well-lit and fully visible.</span>
+                      <span>Flat-lay or ghost-mannequin style works best for AI tagging.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">3</div>
-                      <span>Avoid shadows and busy patterns in the background.</span>
+                      <span>PNG or JPG formats are supported.</span>
                     </li>
                   </ul>
                   <Button 
                     className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
-                    disabled={!photoTaken}
+                    disabled={!previewUrl}
                     onClick={() => setStep(1)}
                   >
                     Continue to Details <Sparkles className="ml-2 h-5 w-5" />
@@ -247,12 +203,14 @@ export default function AddItemPage() {
             {step === 2 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
-                  <Image 
-                    src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
-                    alt="Review" 
-                    fill 
-                    className="object-cover"
-                  />
+                  {previewUrl && (
+                    <Image 
+                      src={previewUrl} 
+                      alt="Review" 
+                      fill 
+                      className="object-cover"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
                     <h3 className="text-3xl font-headline font-bold">White Linen Shirt</h3>
