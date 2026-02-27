@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Sparkles, CloudRain, Zap, Sun, Thermometer, Briefcase, PartyPopper, Users } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
-import { weatherBasedOutfitRecommender } from "@/ai/flows/weather-based-outfit-recommender";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const occasions = [
   { label: "Work", icon: Briefcase, value: "work" },
@@ -35,7 +34,6 @@ export default function AiStylistPage() {
 
     setLoading(true);
     try {
-      // Simulate calling both or picking one based on complexity
       const result = await aiOutfitSuggester({
         occasion: selectedOccasion,
         wardrobeItems: MOCK_WARDROBE.map(i => ({
@@ -47,7 +45,6 @@ export default function AiStylistPage() {
         }))
       });
 
-      // Map back to our items
       const suggestedItems = result.suggestedOutfit.map(id => MOCK_WARDROBE.find(i => i.id === id)).filter(Boolean);
       
       setSuggestion({
@@ -70,7 +67,6 @@ export default function AiStylistPage() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Filters */}
           <div className="space-y-6">
             <Card className="border-none shadow-lg bg-white">
               <CardHeader>
@@ -138,7 +134,6 @@ export default function AiStylistPage() {
             </Button>
           </div>
 
-          {/* Right Column: Suggestion Result */}
           <div className="lg:col-span-2">
             {!suggestion && !loading ? (
               <div className="h-full flex flex-col items-center justify-center bg-white/40 border-2 border-dashed rounded-xl p-10 text-center">
@@ -184,8 +179,13 @@ export default function AiStylistPage() {
                     <Button className="flex-1 font-headline bg-primary hover:bg-primary/90 h-12">
                       Save to Planner
                     </Button>
-                    <Button variant="outline" className="flex-1 font-headline border-accent text-accent hover:bg-accent/5 h-12">
-                      Try Another Combination
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 font-headline border-accent text-accent hover:bg-accent/5 h-12"
+                      onClick={handleGenerate}
+                      disabled={loading}
+                    >
+                      {loading ? "Re-generating..." : "Try Another Combination"}
                     </Button>
                   </div>
                 </CardContent>
@@ -203,5 +203,3 @@ export default function AiStylistPage() {
     </AppLayout>
   );
 }
-
-import { cn } from "@/lib/utils";
