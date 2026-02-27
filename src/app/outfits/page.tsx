@@ -149,7 +149,7 @@ export default function OutfitsPage() {
                         const item = MOCK_WARDROBE.find(i => i.id === id);
                         return (
                           <div key={id} className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl group">
-                            <Image src={item!.imageUrl} alt={item!.name} fill className="object-cover" />
+                            <Image item={item!.imageUrl} alt={item!.name} fill className="object-cover" />
                             <Button 
                               variant="destructive" 
                               size="icon" 

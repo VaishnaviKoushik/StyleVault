@@ -44,7 +44,7 @@ export default function HomeScreen() {
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Style Score</span>
               <span className="font-headline font-bold text-primary">92/100</span>
             </div>
-            <div className="h-12 w-12 rounded-full p-0.5 bg-gradient-to-br from-[#6E4AE0] to-[#E879F9]">
+            <div className="h-12 w-12 rounded-full p-0.5 bg-gradient-to-br from-[#006061] to-[#f0b429]">
               <Image 
                 src="https://picsum.photos/seed/alex/200" 
                 alt="Profile" 
@@ -100,9 +100,9 @@ export default function HomeScreen() {
         {/* 3. QUICK ACTIONS GRID */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { label: "Add New Item", icon: Camera, desc: "Digitize your wardrobe", href: "/add-item", color: "from-[#6E4AE0]/10 to-[#A78BFA]/10" },
-            { label: "Generate Outfit", icon: Brain, desc: "AI-powered styling", href: "/ai-stylist", color: "from-[#00C9B7]/10 to-[#00C9B7]/5" },
-            { label: "Plan My Week", icon: Calendar, desc: "Schedule your looks", href: "/planner", color: "from-[#E879F9]/10 to-[#E879F9]/5" },
+            { label: "Add New Item", icon: Camera, desc: "Digitize your wardrobe", href: "/add-item", color: "from-[#006061]/10 to-[#006061]/5" },
+            { label: "Generate Outfit", icon: Brain, desc: "AI-powered styling", href: "/ai-stylist", color: "from-[#f0b429]/10 to-[#f0b429]/5" },
+            { label: "Plan My Week", icon: Calendar, desc: "Schedule your looks", href: "/planner", color: "from-[#006061]/10 to-[#f0b429]/5" },
             { label: "Virtual Try-On", icon: Shirt, desc: "AR mirror simulation", href: "/try-on", color: "from-primary/10 to-primary/5" }
           ].map((action) => (
             <Link key={action.label} href={action.href}>
@@ -122,10 +122,10 @@ export default function HomeScreen() {
         {/* 4. QUICK STATS SECTION */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { label: "Total Items", value: "42", icon: Shirt, color: "text-[#6E4AE0]" },
-            { label: "Looks Created", value: "18", icon: Palette, color: "text-[#E879F9]" },
-            { label: "Most Worn", value: "White Tee", icon: TrendingUp, color: "text-[#00C9B7]" },
-            { label: "Style Type", value: "Minimal", icon: Brain, color: "text-primary" }
+            { label: "Total Items", value: "42", icon: Shirt, color: "text-primary" },
+            { label: "Looks Created", value: "18", icon: Palette, color: "text-accent" },
+            { label: "Most Worn", value: "White Tee", icon: TrendingUp, color: "text-primary" },
+            { label: "Style Type", value: "Minimal", icon: Brain, color: "text-accent" }
           ].map((stat) => (
             <Card key={stat.label} className="glass-card border-none p-6">
               <div className="flex items-center gap-4">
@@ -182,10 +182,10 @@ export default function HomeScreen() {
             <CardContent className="p-8">
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {[
-                  { day: "Today", date: "Mar 22", outfit: "Casual Coffee", weather: "Sun", color: "bg-accent/10" },
-                  { day: "Tomorrow", date: "Mar 23", outfit: "Office Chic", weather: "Cloud", color: "bg-primary/10" },
-                  { day: "Friday", date: "Mar 24", outfit: "Date Night", weather: "Sun", color: "bg-pink-100/50" },
-                  { day: "Saturday", date: "Mar 25", outfit: "Yoga Look", weather: "Rain", color: "bg-teal-100/50" }
+                  { day: "Today", date: "Mar 22", outfit: "Casual Coffee", weather: "Sun", color: "bg-primary/5" },
+                  { day: "Tomorrow", date: "Mar 23", outfit: "Office Chic", weather: "Cloud", color: "bg-accent/5" },
+                  { day: "Friday", date: "Mar 24", outfit: "Date Night", weather: "Sun", color: "bg-primary/5" },
+                  { day: "Saturday", date: "Mar 25", outfit: "Yoga Look", weather: "Rain", color: "bg-accent/5" }
                 ].map((item) => (
                   <div key={item.date} className="min-w-[160px] flex flex-col gap-3 group">
                     <div className={cn("aspect-square rounded-[2rem] p-4 flex flex-col items-center justify-center text-center space-y-1 group-hover:scale-105 transition-all shadow-sm", item.color)}>
