@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ChevronLeft, Sparkles, Upload, Image as ImageIcon, FolderOpen } from "lucide-react";
+import { Check, ChevronLeft, Sparkles, Upload, FolderOpen, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -14,10 +14,31 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const steps = ["Upload", "Details", "Confirm"];
 
+const categories = [
+  { label: "Tops", value: "top" },
+  { label: "Bottoms", value: "bottom" },
+  { label: "Shoes", value: "shoes" },
+  { label: "Bags", value: "accessory" },
+  { label: "Dresses", value: "dress" },
+  { label: "Outerwear", value: "outerwear" }
+];
+
+const colors = [
+  { name: 'Black', hex: '#000000' },
+  { name: 'White', hex: '#FFFFFF' },
+  { name: 'Beige', hex: '#F5F5DC' },
+  { name: 'Navy', hex: '#1E3A8A' },
+  { name: 'Sage', hex: '#94A3B8' },
+  { name: 'Burgundy', hex: '#7F1D1D' }
+];
+
 export default function AddItemPage() {
   const [step, setStep] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [itemName, setItemName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
   const [mounted, setMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -41,7 +62,10 @@ export default function AddItemPage() {
   };
 
   const handleComplete = () => {
-    toast({ title: "Item added to closet!", description: "AI has tagged it automatically." });
+    toast({ 
+      title: "Item added to closet!", 
+      description: `${itemName || 'New item'} has been tagged and saved.` 
+    });
     router.push('/wardrobe');
   };
 
@@ -124,7 +148,7 @@ export default function AddItemPage() {
                   </div>
 
                   <Button 
-                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
+                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white"
                     onClick={triggerUpload}
                   >
                     {previewUrl ? "Change File" : "Choose File"} <Upload className="ml-2 h-5 w-5" />
@@ -148,7 +172,7 @@ export default function AddItemPage() {
                     </li>
                   </ul>
                   <Button 
-                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
+                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white"
                     disabled={!previewUrl}
                     onClick={() => setStep(1)}
                   >
@@ -162,15 +186,28 @@ export default function AddItemPage() {
               <div className="space-y-8 max-w-2xl mx-auto">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">Item Name</label>
-                  <Input placeholder="e.g. White Linen Shirt" className="h-14 rounded-2xl bg-slate-50 border-none shadow-sm font-headline text-xl px-6 focus-visible:ring-primary" />
+                  <Input 
+                    placeholder="e.g. White Linen Shirt" 
+                    value={itemName}
+                    onChange={(e) => setItemName(e.target.value)}
+                    className="h-14 rounded-2xl bg-slate-50 border-none shadow-sm font-headline text-xl px-6 focus-visible:ring-primary" 
+                  />
                 </div>
                 
                 <div className="space-y-4">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">Category</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {["Tops", "Bottoms", "Shoes", "Bags", "Dresses", "Outerwear"].map(c => (
-                      <Button key={c} variant="outline" className="rounded-2xl border-slate-100 bg-slate-50 h-14 font-headline hover:bg-primary hover:text-white transition-all shadow-sm">
-                        {c}
+                    {categories.map(c => (
+                      <Button 
+                        key={c.value} 
+                        variant={selectedCategory === c.value ? "default" : "outline"}
+                        onClick={() => setSelectedCategory(c.value)}
+                        className={cn(
+                          "rounded-2xl h-14 font-headline transition-all shadow-sm",
+                          selectedCategory === c.value ? "bg-primary text-white" : "border-slate-100 bg-slate-50 hover:bg-primary/10"
+                        )}
+                      >
+                        {c.label}
                       </Button>
                     ))}
                   </div>
@@ -179,27 +216,35 @@ export default function AddItemPage() {
                 <div className="space-y-4">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">Main Color</label>
                   <div className="flex flex-wrap gap-4 px-2">
-                    {[
-                      { name: 'Black', hex: '#000000' },
-                      { name: 'White', hex: '#FFFFFF' },
-                      { name: 'Beige', hex: '#F5F5DC' },
-                      { name: 'Navy', hex: '#1E3A8A' },
-                      { name: 'Sage', hex: '#94A3B8' },
-                      { name: 'Burgundy', hex: '#7F1D1D' }
-                    ].map(color => (
-                      <div key={color.name} className="flex flex-col items-center gap-2">
+                    {colors.map(color => (
+                      <div 
+                        key={color.name} 
+                        className="flex flex-col items-center gap-2 cursor-pointer group"
+                        onClick={() => setSelectedColor(color.name)}
+                      >
                         <div 
-                          className="h-12 w-12 rounded-full border-4 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform ring-1 ring-slate-100" 
+                          className={cn(
+                            "h-12 w-12 rounded-full border-4 shadow-lg transition-all ring-1 ring-slate-100 flex items-center justify-center",
+                            selectedColor === color.name ? "border-primary scale-110" : "border-white"
+                          )} 
                           style={{ backgroundColor: color.hex }}
-                        />
-                        <span className="text-[10px] font-bold text-muted-foreground">{color.name}</span>
+                        >
+                          {selectedColor === color.name && (
+                            <Check className={cn("h-6 w-6", color.name === 'White' || color.name === 'Beige' ? 'text-black' : 'text-white')} />
+                          )}
+                        </div>
+                        <span className={cn(
+                          "text-[10px] font-bold transition-colors",
+                          selectedColor === color.name ? "text-primary" : "text-muted-foreground"
+                        )}>{color.name}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <Button 
-                  className="w-full h-16 rounded-full gradient-pill font-headline text-xl shadow-xl shadow-primary/20"
+                  className="w-full h-16 rounded-full gradient-pill font-headline text-xl text-white shadow-xl shadow-primary/20"
+                  disabled={!itemName || !selectedCategory || !selectedColor}
                   onClick={() => setStep(2)}
                 >
                   Review AI Tagging
@@ -220,17 +265,31 @@ export default function AddItemPage() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                    <h3 className="text-3xl font-headline font-bold">New Wardrobe Item</h3>
+                    <h3 className="text-3xl font-headline font-bold">{itemName || "New Wardrobe Item"}</h3>
                     <div className="flex gap-2">
-                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">Uncategorized</Badge>
-                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">New</Badge>
+                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">
+                        {categories.find(c => c.value === selectedCategory)?.label || "Uncategorized"}
+                      </Badge>
+                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">
+                        {selectedColor || "No Color"}
+                      </Badge>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-8">
                   <div className="space-y-4">
                     <h4 className="text-2xl font-headline font-bold text-foreground">Final Review</h4>
-                    <p className="text-muted-foreground">The AI is currently processing your image to extract fabric, style, and season details automatically.</p>
+                    <p className="text-muted-foreground">The AI has analyzed your image and confirmed the attributes below. You can save this to your closet now.</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 rounded-2xl bg-slate-50">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Category</p>
+                        <p className="font-headline font-bold">{categories.find(c => c.value === selectedCategory)?.label}</p>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-slate-50">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Color</p>
+                        <p className="font-headline font-bold">{selectedColor}</p>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex gap-4">
                     <Button variant="outline" className="flex-1 h-16 rounded-full font-headline border-primary text-primary" onClick={() => setStep(1)}>
