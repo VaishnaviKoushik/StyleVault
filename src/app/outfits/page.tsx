@@ -1,12 +1,11 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Layers, Plus, Share2, Trash2, Check, X, Sparkles } from "lucide-react";
-import { MOCK_OUTFITS, MOCK_WARDROBE, Outfit, WardrobeItem } from "@/lib/mock-data";
+import { Layers, Plus, Share2, Trash2, Check, X } from "lucide-react";
+import { MOCK_OUTFITS, MOCK_WARDROBE, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -217,8 +216,8 @@ export default function OutfitsPage() {
               </div>
             </div>
 
-            {/* Config & Action Bar - Repositioned to Bottom */}
-            <Card className="p-8 rounded-[3rem] shadow-2xl bg-white border-none flex flex-col md:flex-row items-end gap-6 border-t">
+            {/* Config & Action Bar - Positioned at Bottom */}
+            <Card className="p-8 rounded-[3rem] shadow-2xl bg-white border-none flex flex-col md:flex-row items-end gap-6 border-t mt-8">
               <div className="flex-1 space-y-2 w-full">
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] px-2">Name your signature look</label>
                 <Input 

@@ -1,18 +1,22 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Tag, Sparkles, Trash2, Edit3, Save } from "lucide-react";
-import { MOCK_WARDROBE, WardrobeItem } from "@/lib/mock-data";
+import { Search, Plus, Tag, Sparkles, Trash2, Edit3, Save, ShoppingBag, ArrowRight, Heart, Cpu, Thermometer, Wind } from "lucide-react";
+import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { smartShoppingSuggestions, type ShoppingSuggestionsOutput } from "@/ai/flows/smart-shopping-suggestions";
+import { analyzeFabric, type FabricIntelligenceOutput } from "@/ai/flows/fabric-intelligence";
+import { Progress } from "@/components/ui/progress";
 
 const categories = ["all", "top", "bottom", "dress", "shoes", "accessory", "outerwear"];
 
@@ -22,11 +26,52 @@ export default function WardrobePage() {
   const [items, setItems] = useState<WardrobeItem[]>(MOCK_WARDROBE);
   const [editingItem, setEditingItem] = useState<WardrobeItem | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [shoppingSuggestions, setShoppingSuggestions] = useState<ShoppingSuggestionsOutput['suggestions'] | null>(null);
+  const [shoppingLoading, setShoppingLoading] = useState(false);
+  const [fabricAnalysis, setFabricAnalysis] = useState<FabricIntelligenceOutput | null>(null);
+  const [analyzingFabric, setAnalyzingFabric] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     setMounted(true);
+    fetchShoppingSuggestions();
   }, []);
+
+  const fetchShoppingSuggestions = async () => {
+    setShoppingLoading(true);
+    try {
+      const result = await smartShoppingSuggestions({
+        wardrobeItems: MOCK_WARDROBE.map(i => ({ name: i.name, category: i.category, color: i.color })),
+        outfits: MOCK_OUTFITS.map(o => ({ 
+          name: o.name, 
+          itemNames: o.items.map(id => MOCK_WARDROBE.find(item => item.id === id)?.name || '') 
+        })),
+        stylePreference: "minimalist, professional"
+      });
+      setShoppingSuggestions(result.suggestions);
+    } catch (error) {
+      console.error("Shopping suggestions failed:", error);
+    } finally {
+      setShoppingLoading(false);
+    }
+  };
+
+  const handleFabricIntelligence = async (item: WardrobeItem) => {
+    setAnalyzingFabric(true);
+    setFabricAnalysis(null);
+    try {
+      const result = await analyzeFabric({
+        itemName: item.name,
+        fabricType: item.brand || "Natural Fibers",
+        description: item.description
+      });
+      setFabricAnalysis(result);
+    } catch (error) {
+      toast({ title: "Analysis failed", variant: "destructive" });
+    } finally {
+      setAnalyzingFabric(false);
+    }
+  };
 
   const filteredItems = items.filter(item => {
     const matchesCategory = activeCategory === "all" || item.category === activeCategory;
@@ -34,11 +79,17 @@ export default function WardrobePage() {
     return matchesCategory && matchesSearch;
   });
 
+  const categorySuggestions = useMemo(() => {
+    if (!shoppingSuggestions) return [];
+    if (activeCategory === "all") return shoppingSuggestions;
+    return shoppingSuggestions.filter(s => s.category === activeCategory);
+  }, [shoppingSuggestions, activeCategory]);
+
   const handleDelete = (id: string) => {
     setItems(prev => prev.filter(i => i.id !== id));
     toast({
       title: "Item Deleted",
-      description: "The item has been removed from your digital closet.",
+      description: "Removed from your digital closet.",
       variant: "destructive"
     });
   };
@@ -47,10 +98,7 @@ export default function WardrobePage() {
     if (editingItem) {
       setItems(prev => prev.map(i => i.id === editingItem.id ? editingItem : i));
       setEditingItem(null);
-      toast({
-        title: "Item Updated",
-        description: "Your changes have been saved successfully.",
-      });
+      toast({ title: "Item Updated" });
     }
   };
 
@@ -103,7 +151,7 @@ export default function WardrobePage() {
         {/* Catalog Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {filteredItems.map((item) => (
-            <Dialog key={item.id}>
+            <Dialog key={item.id} onOpenChange={(open) => !open && setFabricAnalysis(null)}>
               <DialogTrigger asChild>
                 <div className="glass-card rounded-[2rem] overflow-hidden group cursor-pointer hover:-translate-y-1 transition-all">
                   <div className="relative aspect-[3/4]">
@@ -113,11 +161,6 @@ export default function WardrobePage() {
                         {item.category}
                       </Badge>
                     </div>
-                    {item.id === '1' && (
-                      <div className="absolute top-4 right-4 h-8 w-8 rounded-full bg-accent flex items-center justify-center text-white border-2 border-white shadow-lg">
-                        <Sparkles className="h-4 w-4" />
-                      </div>
-                    )}
                   </div>
                   <div className="p-5 space-y-1">
                     <h4 className="text-sm font-headline font-bold truncate group-hover:text-primary transition-colors">{item.name}</h4>
@@ -131,108 +174,89 @@ export default function WardrobePage() {
                     <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                   </div>
                   <div className="md:w-1/2 p-8 space-y-6 overflow-y-auto max-h-[90vh]">
-                    {editingItem?.id === item.id ? (
-                      <div className="space-y-6">
-                        <DialogHeader>
-                          <DialogTitle className="font-headline text-2xl font-bold">Edit Item Details</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Item Name</label>
-                            <Input 
-                              value={editingItem.name} 
-                              onChange={e => setEditingItem({...editingItem, name: e.target.value})}
-                              className="font-headline"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Brand</label>
-                            <Input 
-                              value={editingItem.brand} 
-                              onChange={e => setEditingItem({...editingItem, brand: e.target.value})}
-                              className="font-headline"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Color</label>
-                            <Input 
-                              value={editingItem.color} 
-                              onChange={e => setEditingItem({...editingItem, color: e.target.value})}
-                              className="font-headline"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-muted-foreground uppercase">Description</label>
-                            <Textarea 
-                              value={editingItem.description} 
-                              onChange={e => setEditingItem({...editingItem, description: e.target.value})}
-                              className="font-body italic text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex gap-3">
-                          <Button variant="outline" className="flex-1 rounded-full font-headline h-12" onClick={() => setEditingItem(null)}>Cancel</Button>
-                          <Button className="flex-1 rounded-full gradient-pill font-headline h-12 text-white" onClick={handleSaveEdit}>
-                            <Save className="mr-2 h-4 w-4" /> Save Changes
+                    <DialogHeader>
+                      <div className="flex justify-between items-start">
+                        <Badge className="bg-primary/10 text-primary font-headline uppercase">{item.category}</Badge>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => setEditingItem(item)}>
+                            <Edit3 className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(item.id)}>
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-8">
-                        <DialogHeader>
-                          <div className="flex justify-between items-start">
-                            <Badge className="bg-primary/10 text-primary font-headline uppercase">{item.category}</Badge>
-                            <div className="flex gap-2">
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => setEditingItem(item)}>
-                                <Edit3 className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(item.id)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                      <DialogTitle className="font-headline text-3xl font-bold">{item.name}</DialogTitle>
+                    </DialogHeader>
+
+                    {/* Fabric Intelligence Section */}
+                    <div className="space-y-4 pt-4 border-t">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Cpu className="h-5 w-5 text-primary" />
+                          <h5 className="font-headline font-bold text-lg">Fabric Intelligence</h5>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="rounded-full font-headline text-xs border-primary/20"
+                          onClick={() => handleFabricIntelligence(item)}
+                          disabled={analyzingFabric}
+                        >
+                          {analyzingFabric ? "Analyzing..." : "Analyze Fabric"}
+                        </Button>
+                      </div>
+
+                      {fabricAnalysis ? (
+                        <div className="bg-primary/5 p-6 rounded-3xl space-y-4 animate-in slide-in-from-top-4 duration-500">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Wind className="h-4 w-4 text-primary" />
+                              <span className="text-xs font-bold font-headline uppercase tracking-widest">Breathability</span>
                             </div>
+                            <span className="font-headline font-bold text-primary">{fabricAnalysis.breathabilityScore}/10</span>
                           </div>
-                          <DialogTitle className="font-headline text-3xl font-bold">{item.name}</DialogTitle>
-                        </DialogHeader>
-                        
-                        <div className="grid grid-cols-2 gap-6">
-                          <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Brand</p>
-                            <p className="text-lg font-headline font-bold">{item.brand}</p>
+                          <Progress value={fabricAnalysis.breathabilityScore * 10} className="h-2" />
+                          
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Seasonal Wisdom</p>
+                            <p className="text-sm font-body leading-relaxed">{fabricAnalysis.explanation}</p>
                           </div>
-                          <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Color</p>
-                            <p className="text-lg font-headline font-bold">{item.color}</p>
+                          <div className="p-3 bg-white/50 rounded-2xl border border-primary/10 italic text-xs font-body">
+                            Pro Tip: {fabricAnalysis.careTip}
                           </div>
                         </div>
+                      ) : analyzingFabric && (
+                        <div className="space-y-4 py-8 text-center animate-pulse">
+                          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                          <p className="text-sm font-headline italic">Scanning textile properties...</p>
+                        </div>
+                      )}
+                    </div>
 
-                        <div className="space-y-2">
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Occasions</p>
-                          <div className="flex flex-wrap gap-2">
-                            {item.occasion.map(occ => (
-                              <Badge key={occ} variant="secondary" className="bg-primary/10 text-primary font-headline text-xs px-3 py-1 capitalize border-none">
-                                {occ}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="space-y-3">
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">AI Stylist Notes</p>
-                          <p className="text-sm text-muted-foreground font-body leading-relaxed italic">
-                            "{item.description}"
-                          </p>
-                        </div>
-
-                        <div className="flex gap-3 pt-4">
-                          <Button className="flex-1 rounded-full gradient-pill font-headline h-14 text-white" onClick={() => setEditingItem(item)}>
-                            Edit Details
-                          </Button>
-                          <Button variant="outline" className="h-14 w-14 rounded-full border-red-100 text-red-400 p-0 hover:bg-red-50 hover:text-red-500" onClick={() => handleDelete(item.id)}>
-                            <Trash2 className="h-5 w-5" />
-                          </Button>
-                        </div>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Brand</p>
+                        <p className="text-lg font-headline font-bold">{item.brand}</p>
                       </div>
-                    )}
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Color</p>
+                        <p className="text-lg font-headline font-bold">{item.color}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Stylist Notes</p>
+                      <p className="text-sm text-muted-foreground font-body leading-relaxed italic">
+                        "{item.description}"
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                      <Button className="flex-1 rounded-full gradient-pill font-headline h-14 text-white">
+                        Add to Planner
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </DialogContent>
@@ -243,9 +267,64 @@ export default function WardrobePage() {
             <div className="h-16 w-16 rounded-full bg-white shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
               <Plus className="h-8 w-8" />
             </div>
-            <span className="text-sm font-bold font-headline uppercase tracking-widest">Catalog New Item</span>
+            <span className="text-sm font-bold font-headline uppercase tracking-widest">Catalog Item</span>
           </Link>
         </div>
+
+        {/* Smart Shopping Section - Bottom of closet */}
+        <section className="pt-20 border-t space-y-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <ShoppingBag className="h-8 w-8 text-primary" />
+              <h3 className="text-3xl font-headline font-bold">Smart Suggestions <Badge className="bg-primary/10 text-primary ml-2">AI POWERED</Badge></h3>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {shoppingLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-64 bg-slate-100 rounded-3xl animate-pulse" />
+              ))
+            ) : categorySuggestions.length > 0 ? (
+              categorySuggestions.map((suggestion, idx) => (
+                <Card key={idx} className="glass-card border-none overflow-hidden bg-white/60">
+                  <div className="relative h-40 bg-slate-100">
+                    <Image src={`https://picsum.photos/seed/${suggestion.itemName}/600/400`} alt={suggestion.itemName} fill className="object-cover" />
+                    <div className="absolute top-3 left-3">
+                      <Badge className="bg-white/90 text-primary font-headline shadow-sm">
+                        {suggestion.matchCount} Matches
+                      </Badge>
+                    </div>
+                  </div>
+                  <CardContent className="p-5 space-y-4">
+                    <div className="space-y-1">
+                      <h4 className="text-lg font-headline font-bold text-primary truncate">{suggestion.itemName}</h4>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] border-primary/20 text-primary">{suggestion.platform}</Badge>
+                        <span className="text-[10px] text-muted-foreground font-body uppercase tracking-widest">{suggestion.category}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs font-body text-slate-600 line-clamp-2 italic">"{suggestion.reason}"</p>
+                    <div className="flex gap-2">
+                      <Button asChild className="flex-1 h-10 rounded-full gradient-primary text-white font-headline text-xs">
+                        <a href={suggestion.shopUrl} target="_blank" rel="noopener noreferrer">
+                          Shop Now <ArrowRight className="ml-1 h-3 w-3" />
+                        </a>
+                      </Button>
+                      <Button size="icon" variant="outline" className="h-10 w-10 rounded-full border-primary/20 text-primary">
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-100">
+                <p className="font-headline font-bold text-slate-300 italic">No suggestions for this category yet.</p>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </AppLayout>
   );

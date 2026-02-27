@@ -6,4 +6,4 @@ import '@/ai/flows/ai-outfit-suggester.ts';
 import '@/ai/flows/style-vault-chat.ts';
 import '@/ai/flows/color-palette-analysis.ts';
 import '@/ai/flows/smart-shopping-suggestions.ts';
-
+import '@/ai/flows/fabric-intelligence.ts';
