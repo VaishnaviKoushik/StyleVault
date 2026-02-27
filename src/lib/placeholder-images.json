@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "item1",
+      "description": "White linen shirt",
+      "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aGl0ZSUyMHNoaXJ0fGVufDB8fHx8MTc3MjEwNjU5OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "white shirt"
+    },
+    {
+      "id": "item2",
+      "description": "Blue denim jeans",
+      "imageUrl": "https://images.unsplash.com/photo-1714143136372-ddaf8b606da7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkZW5pbSUyMGplYW5zfGVufDB8fHx8MTc3MjE4MzM1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "denim jeans"
+    },
+    {
+      "id": "item3",
+      "description": "Black leather boots",
+      "imageUrl": "https://images.unsplash.com/photo-1710632609125-da337a1e1ddd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsZWF0aGVyJTIwYm9vdHN8ZW58MHx8fHwxNzcyMjA3MDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather boots"
+    },
+    {
+      "id": "item4",
+      "description": "Beige trench coat",
+      "imageUrl": "https://images.unsplash.com/photo-1589400445193-c881a4b0b38a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx0cmVuY2glMjBjb2F0fGVufDB8fHx8MTc3MjE4MzM1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "trench coat"
+    },
+    {
+      "id": "item5",
+      "description": "Silk floral scarf",
+      "imageUrl": "https://images.unsplash.com/photo-1677478863154-55ecce8c7536?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzaWxrJTIwc2NhcmZ8ZW58MHx8fHwxNzcyMTI5NDM3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "silk scarf"
+    },
+    {
+      "id": "hero-closet",
+      "description": "Elegant organized closet",
+      "imageUrl": "https://images.unsplash.com/photo-1687953413905-731f620177ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxvcmdhbml6ZWQlMjBjbG9zZXR8ZW58MHx8fHwxNzcyMjA3MDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "organized closet"
+    }
+  ]
 }
