@@ -4,192 +4,300 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Lightbulb, 
   AlertCircle, 
   CheckCircle2, 
   Cpu, 
-  Clock, 
-  CloudSun, 
-  Smartphone, 
-  Database, 
+  Shirt,
   Sparkles,
   Layers,
-  Shirt
+  Calendar,
+  CloudSun,
+  Scissors,
+  TrendingUp,
+  UserCheck,
+  Zap,
+  Presentation,
+  ShieldCheck,
+  Database,
+  Code2
 } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function ProposalPage() {
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-12 pb-12">
-        {/* Section 1: Introduction */}
-        <section className="text-center space-y-4">
-          <Badge variant="outline" className="border-primary text-primary px-4 py-1 font-headline uppercase tracking-widest">
-            Project Overview
-          </Badge>
-          <h1 className="text-5xl font-headline font-bold text-foreground">ClosetMind</h1>
-          <p className="text-2xl font-body italic text-muted-foreground">"Your AI-Powered Personal Stylist & Digital Wardrobe"</p>
-          <div className="pt-6 max-w-2xl mx-auto">
-            <p className="text-lg font-body leading-relaxed text-foreground/80">
-              In today's fast-paced world, deciding what to wear is a daily mental hurdle. 
-              ClosetMind leverages cutting-edge Generative AI to transform your messy physical closet 
-              into a streamlined digital catalog, making high-fashion styling accessible, 
-              weather-responsive, and effortlessly organized.
-            </p>
+      <div className="max-w-6xl mx-auto space-y-8 pb-12">
+        <header className="text-center space-y-2">
+          <div className="flex justify-center mb-4">
+            <Presentation className="h-12 w-12 text-primary animate-bounce" />
           </div>
-        </section>
+          <h1 className="text-4xl font-headline font-bold text-foreground">Project Presentation</h1>
+          <p className="text-muted-foreground font-body text-lg italic uppercase tracking-widest">AI-Powered Smart Wardrobe & Outfit Planner</p>
+        </header>
 
-        {/* Section 2: Problem Statement */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 border-b pb-2">
-            <AlertCircle className="h-8 w-8 text-destructive" />
-            <h2 className="text-3xl font-headline font-bold">Problem Statement</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { title: "Digital Amnesia", desc: "Difficulty remembering all clothing items owned, leading to unworn pieces." },
-              { title: "Decision Fatigue", desc: "Significant time wasted every morning choosing the 'perfect' outfit." },
-              { title: "Styling Gaps", desc: "Lack of styling knowledge resulting in poor or repetitive combinations." },
-              { title: "Weather Mismatch", desc: "Outfit choices that don't align with current or forecast conditions." },
-              { title: "Poor Planning", desc: "Inability to visualize and schedule outfits for upcoming events." },
-              { title: "The 'Nothing to Wear' Paradox", desc: "Feeling limited despite having a full wardrobe." },
-            ].map((item, idx) => (
-              <Card key={idx} className="bg-destructive/5 border-none shadow-sm">
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg font-headline flex items-center gap-2">
-                    <span className="text-destructive font-bold">0{idx + 1}.</span> {item.title}
-                  </CardTitle>
-                  <CardDescription className="font-body text-sm">{item.desc}</CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-        </section>
+        <Tabs defaultValue="intro" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto bg-white shadow-sm border border-border p-1 rounded-xl">
+            <TabsTrigger value="intro" className="py-3 font-headline data-[state=active]:bg-primary data-[state=active]:text-white">1. Introduction</TabsTrigger>
+            <TabsTrigger value="problems" className="py-3 font-headline data-[state=active]:bg-primary data-[state=active]:text-white">2. Problem Statement</TabsTrigger>
+            <TabsTrigger value="solution" className="py-3 font-headline data-[state=active]:bg-primary data-[state=active]:text-white">3. Proposed Solution</TabsTrigger>
+            <TabsTrigger value="tech" className="py-3 font-headline data-[state=active]:bg-primary data-[state=active]:text-white">4. Technologies</TabsTrigger>
+            <TabsTrigger value="tailors" className="py-3 font-headline data-[state=active]:bg-primary data-[state=active]:text-white">5. Tailor Utility</TabsTrigger>
+          </TabsList>
 
-        {/* Section 3: Proposed Solution */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 border-b pb-2">
-            <CheckCircle2 className="h-8 w-8 text-primary" />
-            <h2 className="text-3xl font-headline font-bold">Proposed Solution</h2>
-          </div>
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="catalog">
-              <AccordionTrigger className="text-xl font-headline">
-                <div className="flex items-center gap-3">
-                  <Shirt className="h-5 w-5 text-accent" /> Wardrobe Catalog
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="font-body text-lg leading-relaxed text-muted-foreground">
-                A personalized digital vault where users upload photos. AI automatically tags items with 
-                color, brand, fabric, and occasion, forming a rich, searchable inventory.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="assembler">
-              <AccordionTrigger className="text-xl font-headline">
-                <div className="flex items-center gap-3">
-                  <Layers className="h-5 w-5 text-accent" /> Outfit Assembler
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="font-body text-lg leading-relaxed text-muted-foreground">
-                A visual workspace for creative experimentation. Drag and drop items from your catalog 
-                to see how they pair before you even touch your clothes.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="ai">
-              <AccordionTrigger className="text-xl font-headline">
-                <div className="flex items-center gap-3">
-                  <Sparkles className="h-5 w-5 text-accent" /> AI Outfit Recommender
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="font-body text-lg leading-relaxed text-muted-foreground">
-                Our Generative AI engine analyzes your entire wardrobe to suggest complete looks based on 
-                your specific vibe, the occasion, and your styling history.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="planner">
-              <AccordionTrigger className="text-xl font-headline">
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-accent" /> Outfit Planner
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="font-body text-lg leading-relaxed text-muted-foreground">
-                A calendar-integrated scheduling tool. Map out your week's looks in advance, ensuring 
-                you never repeat an outfit twice in a row (unless you want to!).
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="weather">
-              <AccordionTrigger className="text-xl font-headline">
-                <div className="flex items-center gap-3">
-                  <CloudSun className="h-5 w-5 text-accent" /> Weather-Aware Suggestions
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="font-body text-lg leading-relaxed text-muted-foreground">
-                Real-time integration with weather APIs ensures the AI suggests layering for cold mornings 
-                or breathable fabrics for hot afternoons.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </section>
-
-        {/* Section 4: Techniques and Technologies */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 border-b pb-2">
-            <Cpu className="h-8 w-8 text-accent" />
-            <h2 className="text-3xl font-headline font-bold">Techniques & Technologies</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="border-none shadow-lg bg-white">
-              <CardHeader>
-                <Smartphone className="h-10 w-10 text-primary mb-2" />
-                <CardTitle className="font-headline">Frontend</CardTitle>
+          {/* PAGE 1 - INTRODUCTION */}
+          <TabsContent value="intro">
+            <Card className="border-none shadow-xl bg-gradient-to-br from-white to-secondary/20 overflow-hidden">
+              <div className="h-2 bg-primary w-full" />
+              <CardHeader className="text-center py-12">
+                <Badge className="w-fit mx-auto bg-accent mb-4">The Future of Fashion</Badge>
+                <CardTitle className="text-5xl font-headline font-bold text-foreground mb-4">ClosetMind: Style Meets Intelligence</CardTitle>
+                <CardDescription className="text-xl font-body max-w-3xl mx-auto leading-relaxed">
+                  In an era where technology touches every facet of our lives, the way we manage our personal style remains largely manual. 
+                  ClosetMind bridges this gap by acting as a <strong>Personal Digital Stylist</strong>.
+                </CardDescription>
               </CardHeader>
-              <CardContent className="font-body text-sm space-y-2">
-                <p>• Next.js 15 (App Router)</p>
-                <p>• React 19 & TypeScript</p>
-                <p>• Tailwind CSS & ShadCN UI</p>
+              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-12 px-12">
+                <div className="text-center space-y-3">
+                  <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                    <TrendingUp className="h-8 w-8 text-primary" />
+                  </div>
+                  <h4 className="font-headline font-bold text-lg">Digital Transformation</h4>
+                  <p className="text-sm font-body text-muted-foreground">Converting physical inventory into a searchable, actionable digital database.</p>
+                </div>
+                <div className="text-center space-y-3">
+                  <div className="mx-auto w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
+                    <Zap className="h-8 w-8 text-accent" />
+                  </div>
+                  <h4 className="font-headline font-bold text-lg">AI Integration</h4>
+                  <p className="text-sm font-body text-muted-foreground">Leveraging Generative AI to eliminate the daily "what to wear" mental burden.</p>
+                </div>
+                <div className="text-center space-y-3">
+                  <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                    <UserCheck className="h-8 w-8 text-primary" />
+                  </div>
+                  <h4 className="font-headline font-bold text-lg">Smart Decision Making</h4>
+                  <p className="text-sm font-body text-muted-foreground">Sophisticated algorithms that factor in weather, occasion, and user preference.</p>
+                </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <Card className="border-none shadow-lg bg-white">
+          {/* PAGE 2 - PROBLEMS */}
+          <TabsContent value="problems">
+            <Card className="border-none shadow-xl bg-white overflow-hidden">
+              <div className="h-2 bg-destructive w-full" />
               <CardHeader>
-                <Database className="h-10 w-10 text-primary mb-2" />
-                <CardTitle className="font-headline">Backend & Data</CardTitle>
+                <CardTitle className="text-3xl font-headline font-bold flex items-center gap-3">
+                  <AlertCircle className="h-8 w-8 text-destructive" />
+                  The Wardrobe Crisis: Current Challenges
+                </CardTitle>
               </CardHeader>
-              <CardContent className="font-body text-sm space-y-2">
-                <p>• Firebase Firestore (Storage)</p>
-                <p>• Firebase Auth (Security)</p>
-                <p>• Google Cloud Platform</p>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
+                {[
+                  { title: "Digital Amnesia", desc: "Forgetting owned items leading to redundant purchases and unworn clothes.", icon: Lightbulb },
+                  { title: "Decision Fatigue", desc: "Wasting 15-20 minutes daily choosing outfits due to lack of visual overview.", icon: Zap },
+                  { title: "Repetitive Usage", desc: "Wearing the same 20% of the wardrobe 80% of the time, ignoring hidden gems.", icon: TrendingUp },
+                  { title: "Styling Knowledge Gap", desc: "Difficulty in matching colors, fabrics, and styles effectively for specific events.", icon: Shirt },
+                  { title: "Lack of Planning", desc: "Poor preparation for upcoming trips or formal occasions resulting in stress.", icon: Calendar },
+                  { title: "Weather Mismatch", desc: "Inappropriate choices for temperature shifts or unexpected rain.", icon: CloudSun },
+                ].map((p, idx) => (
+                  <div key={idx} className="flex gap-4 p-4 rounded-xl border border-destructive/10 bg-destructive/5 hover:bg-destructive/10 transition-colors">
+                    <p.icon className="h-6 w-6 text-destructive shrink-0" />
+                    <div>
+                      <h5 className="font-headline font-bold text-lg">{p.title}</h5>
+                      <p className="text-sm font-body text-muted-foreground">{p.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <Card className="border-none shadow-lg bg-white">
+          {/* PAGE 3 - PROPOSED SOLUTION */}
+          <TabsContent value="solution">
+            <Card className="border-none shadow-xl bg-white overflow-hidden">
+              <div className="h-2 bg-primary w-full" />
               <CardHeader>
-                <Sparkles className="h-10 w-10 text-primary mb-2" />
-                <CardTitle className="font-headline">AI Core</CardTitle>
+                <CardTitle className="text-3xl font-headline font-bold flex items-center gap-3">
+                  <CheckCircle2 className="h-8 w-8 text-primary" />
+                  ClosetMind Ecosystem: The Smart Solution
+                </CardTitle>
               </CardHeader>
-              <CardContent className="font-body text-sm space-y-2">
-                <p>• Genkit (GenAI Orchestration)</p>
-                <p>• Google Gemini 2.5 Flash</p>
-                <p>• Vision-based Tagging</p>
+              <CardContent className="space-y-6 p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <Shirt className="h-6 w-6 text-accent mb-2" />
+                      <CardTitle className="text-lg font-headline">Wardrobe Catalog</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm font-body text-muted-foreground">
+                      Upload photos to create a <strong>Digital Vault</strong>. AI-assisted tagging of brand, fabric, season, and occasion for effortless browsing.
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <Layers className="h-6 w-6 text-accent mb-2" />
+                      <CardTitle className="text-lg font-headline">Outfit Assembler</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm font-body text-muted-foreground">
+                      A visual workspace to <strong>mix and match</strong> items without the physical mess. Experiment with layers and accessories instantly.
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <Sparkles className="h-6 w-6 text-accent mb-2" />
+                      <CardTitle className="text-lg font-headline">AI Recommender</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm font-body text-muted-foreground">
+                      Generative AI suggestions tailored to <strong>user preference</strong> and history. Professional-grade styling at your fingertips.
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50 shadow-sm">
+                    <CardHeader className="pb-2">
+                      <Calendar className="h-6 w-6 text-accent mb-2" />
+                      <CardTitle className="text-lg font-headline">Outfit Planner</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm font-body text-muted-foreground">
+                      Calendar-based <strong>scheduling tool</strong>. Plan your entire week's looks in advance for ultimate morning productivity.
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50 shadow-sm md:col-span-2 lg:col-span-2">
+                    <CardHeader className="pb-2">
+                      <CloudSun className="h-6 w-6 text-accent mb-2" />
+                      <CardTitle className="text-lg font-headline">Weather-Aware Intelligence</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm font-body text-muted-foreground">
+                      Integration with <strong>Real-time Weather APIs</strong>. Recommends breathable linen for heatwaves and thermal layering for cold fronts, ensuring total comfort.
+                    </CardContent>
+                  </Card>
+                </div>
               </CardContent>
             </Card>
-          </div>
-        </section>
+          </TabsContent>
 
-        {/* Closing */}
-        <Card className="bg-primary text-white border-none shadow-2xl p-8 text-center">
-          <h3 className="text-3xl font-headline font-bold mb-4">Ready to Revolutionize Your Closet?</h3>
-          <p className="font-body text-lg mb-6 opacity-90">
-            ClosetMind isn't just an app; it's a productivity tool for the fashion-forward. 
-            By bridging the gap between your physical inventory and AI intelligence, we unlock 
-            the true potential of your personal style.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Badge className="bg-white text-primary hover:bg-white font-headline px-6 py-2">v1.0.0 Stable</Badge>
-            <Badge className="bg-accent text-white font-headline px-6 py-2">Open for Beta</Badge>
-          </div>
-        </Card>
+          {/* PAGE 4 - TECH STACK */}
+          <TabsContent value="tech">
+            <Card className="border-none shadow-xl bg-white overflow-hidden">
+              <div className="h-2 bg-accent w-full" />
+              <CardHeader>
+                <CardTitle className="text-3xl font-headline font-bold flex items-center gap-3">
+                  <Cpu className="h-8 w-8 text-accent" />
+                  Technical Architecture
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <h4 className="font-headline font-bold text-xl flex items-center gap-2 border-b pb-2">
+                      <Code2 className="h-5 w-5 text-primary" /> Frontend & Backend
+                    </h4>
+                    <ul className="space-y-3 font-body">
+                      <li className="flex items-start gap-2">
+                        <Badge variant="outline" className="mt-1">UI</Badge>
+                        <span><strong>Next.js 15 (App Router)</strong> with React 19 for seamless, high-performance interactions.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Badge variant="outline" className="mt-1">Style</Badge>
+                        <span><strong>Tailwind CSS & ShadCN UI</strong> for a modern, responsive design system.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Badge variant="outline" className="mt-1">Cloud</Badge>
+                        <span><strong>Firebase</strong> (Auth, Firestore, Storage) for real-time data and secure image hosting.</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="space-y-4">
+                    <h4 className="font-headline font-bold text-xl flex items-center gap-2 border-b pb-2">
+                      <Sparkles className="h-5 w-5 text-primary" /> AI & External APIs
+                    </h4>
+                    <ul className="space-y-3 font-body">
+                      <li className="flex items-start gap-2">
+                        <Badge variant="outline" className="mt-1">Core AI</Badge>
+                        <span><strong>Google Gemini 2.5 Flash</strong> via <strong>Genkit</strong> for complex outfit generation.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Badge variant="outline" className="mt-1">Vision</Badge>
+                        <span><strong>Computer Vision</strong> models for automatic garment recognition and attribute tagging.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Badge variant="outline" className="mt-1">Data</Badge>
+                        <span><strong>OpenWeather API</strong> for real-time meteorological data integration.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* PAGE 5 - TAILORS */}
+          <TabsContent value="tailors">
+            <Card className="border-none shadow-xl bg-gradient-to-br from-white to-primary/5 overflow-hidden">
+              <div className="h-2 bg-primary w-full" />
+              <CardHeader>
+                <CardTitle className="text-3xl font-headline font-bold flex items-center gap-3">
+                  <Scissors className="h-8 w-8 text-primary" />
+                  Empowering Professionals: Why Tailors Should Use It
+                </CardTitle>
+                <CardDescription className="text-lg font-body italic">
+                  Upgrading traditional craftsmanship with smart fashion consulting.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Database className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h5 className="font-headline font-bold text-lg">Digital Client Archives</h5>
+                      <p className="text-sm font-body text-muted-foreground">Maintain a comprehensive digital record of every customer's wardrobe, making it easier to suggest matching alterations or new custom pieces.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Lightbulb className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h5 className="font-headline font-bold text-lg">Smart Fabric Recommendations</h5>
+                      <p className="text-sm font-body text-muted-foreground">Suggest fabrics and weights based on the customer's location and seasonal needs using integrated weather data.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                      <TrendingUp className="h-6 w-6 text-accent" />
+                    </div>
+                    <div>
+                      <h5 className="font-headline font-bold text-lg">Trend Awareness</h5>
+                      <p className="text-sm font-body text-muted-foreground">Analyze wardrobe gaps across multiple users to identify emerging trends, helping tailors prep appropriate stock and designs.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="h-6 w-6 text-accent" />
+                    </div>
+                    <div>
+                      <h5 className="font-headline font-bold text-lg">Modern Consulting Experience</h5>
+                      <p className="text-sm font-body text-muted-foreground">Elevate customer service from "stitching" to "styling," increasing customer loyalty and premium service positioning.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="md:col-span-2 bg-primary text-white p-6 rounded-2xl flex items-center justify-between gap-6 shadow-lg">
+                  <div className="space-y-2">
+                    <h4 className="text-2xl font-headline font-bold italic">"Innovation is the ultimate tool for traditional craft."</h4>
+                    <p className="font-body opacity-90">ClosetMind helps tailors evolve into high-tech fashion advisors.</p>
+                  </div>
+                  <Scissors className="h-20 w-20 opacity-20 hidden lg:block" />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </AppLayout>
   );
