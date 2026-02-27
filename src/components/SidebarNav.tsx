@@ -19,10 +19,10 @@ export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <div className="w-80 h-full flex flex-col p-8">
+    <div className="w-80 h-full flex flex-col p-8 bg-white/50 backdrop-blur-md">
       <div className="mb-12 flex items-center gap-3">
-        <div className="h-10 w-10 rounded-xl gradient-pill flex items-center justify-center text-white shadow-lg">
-          <Sparkles className="h-6 w-6" />
+        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20">
+          <Sparkles className="h-7 w-7" />
         </div>
         <h1 className="text-3xl font-bold font-headline text-primary tracking-tight">ClosetMind</h1>
       </div>

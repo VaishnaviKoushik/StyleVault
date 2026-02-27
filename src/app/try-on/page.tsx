@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, ChevronLeft, Sparkles, Zap, ArrowLeftRight, RotateCcw, Share2, Save } from "lucide-react";
+import { Camera, ChevronLeft, Sparkles, ArrowLeftRight, RotateCcw, Share2, Save, Check } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -50,26 +50,26 @@ export default function TryOnScreen() {
   };
 
   return (
-    <div className="h-full flex flex-col animate-in fade-in duration-500">
-      <header className="px-6 py-4 flex items-center justify-between bg-white/50 backdrop-blur-md z-10">
+    <div className="h-full flex flex-col animate-in fade-in duration-500 bg-background">
+      <header className="px-6 py-4 flex items-center justify-between bg-white/50 backdrop-blur-md z-10 border-b">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ChevronLeft className="h-6 w-6" />
         </Button>
         <h2 className="text-lg font-headline font-bold">AI Try-On</h2>
-        <Badge variant="secondary" className="bg-[#00C9B7]/10 text-[#00C9B7] font-headline uppercase text-[10px]">PREVIEW</Badge>
+        <Badge variant="secondary" className="bg-accent/10 text-accent font-headline uppercase text-[10px]">PREVIEW</Badge>
       </header>
 
       <div className="flex-1 overflow-y-auto scrollbar-hide">
         {!showResult ? (
-          <div className="px-6 space-y-6 pt-2 pb-8">
+          <div className="px-6 space-y-6 pt-6 pb-8 max-w-2xl mx-auto">
             {/* Split View Setup */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-[#8E8E93] uppercase px-1">Your Photo</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase px-1">Your Photo</label>
                 <div 
                   className={cn(
-                    "aspect-[3/4] rounded-2xl overflow-hidden relative border-2",
-                    photoTaken ? "border-[#00C9B7]" : "border-dashed border-[#6E4AE0]/20 bg-[#6E4AE0]/5"
+                    "aspect-[3/4] rounded-3xl overflow-hidden relative border-2 transition-all cursor-pointer",
+                    photoTaken ? "border-accent" : "border-dashed border-primary/20 bg-primary/5 hover:bg-primary/10"
                   )}
                   onClick={() => setPhotoTaken(true)}
                 >
@@ -82,12 +82,12 @@ export default function TryOnScreen() {
                         className="object-cover"
                         data-ai-hint="person selfie"
                       />
-                      <div className="absolute top-2 right-2 bg-[#00C9B7] text-white p-1 rounded-full shadow-lg">
+                      <div className="absolute top-2 right-2 bg-accent text-white p-1 rounded-full shadow-lg">
                         <Check className="h-3 w-3" />
                       </div>
                     </>
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-[#6E4AE0] gap-2">
+                    <div className="h-full flex flex-col items-center justify-center text-primary gap-2">
                       <Camera className="h-6 w-6" />
                       <span className="text-[10px] font-bold font-headline">TAKE PHOTO</span>
                     </div>
@@ -95,11 +95,11 @@ export default function TryOnScreen() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-[#8E8E93] uppercase px-1">Selected Item</label>
-                <div className="aspect-[3/4] rounded-2xl overflow-hidden relative border-2 border-[#6E4AE0]">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase px-1">Selected Item</label>
+                <div className="aspect-[3/4] rounded-3xl overflow-hidden relative border-2 border-primary">
                   <Image src={selectedItem.imageUrl} alt="Item" fill className="object-cover" />
                   <div className="absolute bottom-2 left-2 right-2">
-                    <Badge className="w-full bg-white/80 backdrop-blur-md text-[#6E4AE0] border-none font-headline text-[10px] uppercase justify-center">
+                    <Badge className="w-full bg-white/80 backdrop-blur-md text-primary border-none font-headline text-[10px] uppercase justify-center">
                       {selectedItem.category}
                     </Badge>
                   </div>
@@ -109,14 +109,14 @@ export default function TryOnScreen() {
 
             {/* Item Carousel */}
             <section className="space-y-3">
-              <h4 className="text-[10px] font-bold text-[#8E8E93] uppercase px-1">Choose from closet</h4>
-              <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-6 px-6">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase px-1">Choose from closet</h4>
+              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
                 {MOCK_WARDROBE.map((item) => (
                   <div 
                     key={item.id} 
                     className={cn(
-                      "min-w-[80px] aspect-square rounded-xl overflow-hidden border-2 cursor-pointer transition-all",
-                      selectedItem.id === item.id ? "border-[#6E4AE0] shadow-lg scale-105" : "border-transparent opacity-60"
+                      "min-w-[100px] aspect-square rounded-2xl overflow-hidden border-2 cursor-pointer transition-all shrink-0",
+                      selectedItem.id === item.id ? "border-primary shadow-lg scale-105" : "border-transparent opacity-60"
                     )}
                     onClick={() => setSelectedItem(item)}
                   >
@@ -131,15 +131,10 @@ export default function TryOnScreen() {
               {isGenerating ? (
                 <div className="space-y-4 text-center">
                   <div className="flex justify-between items-end">
-                    <p className="text-xs font-headline font-bold text-[#6E4AE0]">{genStep}</p>
-                    <p className="text-[10px] font-bold text-[#8E8E93]">{Math.round(progress)}%</p>
+                    <p className="text-xs font-headline font-bold text-primary">{genStep}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground">{Math.round(progress)}%</p>
                   </div>
-                  <Progress value={progress} className="h-2 bg-[#6E4AE0]/10" />
-                  <div className="grid grid-cols-4 gap-1">
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i} className={cn("h-1 rounded-full", progress >= (i * 25) ? "bg-[#6E4AE0]" : "bg-[#6E4AE0]/10")} />
-                    ))}
-                  </div>
+                  <Progress value={progress} className="h-2 bg-primary/10" />
                 </div>
               ) : (
                 <Button 
@@ -151,14 +146,11 @@ export default function TryOnScreen() {
                 </Button>
               )}
             </div>
-            <p className="text-center text-[10px] text-[#8E8E93] font-body uppercase tracking-[0.2em]">
-              Powered by Gemini 2.5 Flash
-            </p>
           </div>
         ) : (
-          <div className="h-full flex flex-col p-6 space-y-8 animate-in zoom-in-95 duration-500">
+          <div className="h-full flex flex-col p-6 space-y-8 animate-in zoom-in-95 duration-500 max-w-2xl mx-auto">
             {/* Result Slider */}
-            <div className="relative aspect-[3/4] rounded-[40px] overflow-hidden shadow-2xl border-4 border-white">
+            <div className="relative aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
               {/* After Image */}
               <div className="absolute inset-0">
                 <Image 
@@ -187,7 +179,7 @@ export default function TryOnScreen() {
               </div>
               
               <div className="absolute top-4 right-4">
-                <Badge className="bg-[#00C9B7] text-white border-none font-headline">AFTER</Badge>
+                <Badge className="bg-accent text-white border-none font-headline">AFTER</Badge>
               </div>
 
               {/* Slider Control */}
@@ -204,7 +196,7 @@ export default function TryOnScreen() {
                 style={{ left: `${sliderValue}%` }}
               >
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white shadow-xl flex items-center justify-center">
-                  <ArrowLeftRight className="h-4 w-4 text-[#6E4AE0]" />
+                  <ArrowLeftRight className="h-4 w-4 text-primary" />
                 </div>
               </div>
             </div>
@@ -212,44 +204,25 @@ export default function TryOnScreen() {
             {/* Actions */}
             <div className="grid grid-cols-3 gap-3">
               <Button variant="outline" className="h-16 rounded-3xl flex flex-col gap-1 border-none bg-white shadow-sm" onClick={() => setShowResult(false)}>
-                <RotateCcw className="h-5 w-5 text-[#8E8E93]" />
-                <span className="text-[10px] font-bold font-headline text-[#8E8E93]">RETRY</span>
+                <RotateCcw className="h-5 w-5 text-muted-foreground" />
+                <span className="text-[10px] font-bold font-headline text-muted-foreground uppercase">Retry</span>
               </Button>
               <Button variant="outline" className="h-16 rounded-3xl flex flex-col gap-1 border-none bg-white shadow-sm">
-                <Save className="h-5 w-5 text-[#8E8E93]" />
-                <span className="text-[10px] font-bold font-headline text-[#8E8E93]">SAVE</span>
+                <Save className="h-5 w-5 text-muted-foreground" />
+                <span className="text-[10px] font-bold font-headline text-muted-foreground uppercase">Save</span>
               </Button>
               <Button variant="outline" className="h-16 rounded-3xl flex flex-col gap-1 border-none bg-white shadow-sm">
-                <Share2 className="h-5 w-5 text-[#8E8E93]" />
-                <span className="text-[10px] font-bold font-headline text-[#8E8E93]">SHARE</span>
+                <Share2 className="h-5 w-5 text-muted-foreground" />
+                <span className="text-[10px] font-bold font-headline text-muted-foreground uppercase">Share</span>
               </Button>
             </div>
             
-            <Button className="w-full h-16 rounded-full gradient-pill font-headline text-lg border-glow">
+            <Button className="w-full h-16 rounded-full gradient-pill font-headline text-lg border-glow shadow-primary/20">
               Add to Collection
             </Button>
           </div>
         )}
       </div>
     </div>
-  );
-}
-
-function Check(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
   );
 }

@@ -2,7 +2,7 @@
 
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Camera, MapPin, Zap, ArrowRight, Sun } from "lucide-react";
+import { Sparkles, Camera, MapPin, Zap, ArrowRight, Sun, ChevronRight } from "lucide-react";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,8 +59,8 @@ export default function HomeScreen() {
                 </div>
                 <CardContent className="md:w-1/2 p-8 flex flex-col justify-center space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-2xl bg-amber-100 flex items-center justify-center">
-                      <Sun className="h-7 w-7 text-amber-500" />
+                    <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center">
+                      <Sun className="h-7 w-7 text-accent" />
                     </div>
                     <div>
                       <p className="text-xl font-bold font-headline">72°F & Sunny</p>
@@ -76,10 +76,10 @@ export default function HomeScreen() {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button asChild className="flex-1 h-12 rounded-full bg-primary hover:bg-primary/90 font-headline">
+                    <Button asChild className="flex-1 h-12 rounded-full bg-primary hover:bg-primary/90 font-headline text-white shadow-lg shadow-primary/20">
                       <Link href="/ai-stylist">View Styling Tips</Link>
                     </Button>
-                    <Button asChild variant="outline" className="h-12 w-12 rounded-full border-primary text-primary p-0">
+                    <Button asChild variant="outline" className="h-12 w-12 rounded-full border-primary text-primary p-0 hover:bg-primary/5 transition-colors">
                       <Link href="/try-on"><Sparkles className="h-5 w-5" /></Link>
                     </Button>
                   </div>
@@ -98,9 +98,9 @@ export default function HomeScreen() {
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
                 {MOCK_WARDROBE.slice(0, 4).map((item) => (
                   <div key={item.id} className="group relative space-y-2 cursor-pointer">
-                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all">
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all border border-transparent group-hover:border-accent">
                       <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <p className="text-xs font-bold font-headline truncate">{item.name}</p>
                   </div>
@@ -118,16 +118,16 @@ export default function HomeScreen() {
             <Card className="border-none shadow-lg bg-white p-6 space-y-6">
               <h4 className="font-headline font-bold text-lg border-b pb-2">Quick Stats</h4>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-secondary/30 rounded-2xl p-4 text-center space-y-1">
+                <div className="bg-primary/5 rounded-2xl p-4 text-center space-y-1">
                   <p className="text-3xl font-bold font-headline text-primary">{MOCK_WARDROBE.length}</p>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Items</p>
                 </div>
-                <div className="bg-secondary/30 rounded-2xl p-4 text-center space-y-1">
+                <div className="bg-accent/10 rounded-2xl p-4 text-center space-y-1">
                   <p className="text-3xl font-bold font-headline text-accent">12</p>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Looks</p>
                 </div>
               </div>
-              <Button asChild className="w-full gradient-pill font-headline h-12 shadow-lg shadow-primary/20">
+              <Button asChild className="w-full gradient-pill font-headline h-12 shadow-lg shadow-primary/20 text-white">
                 <Link href="/add-item">
                   <Zap className="mr-2 h-4 w-4" /> New AI Analysis
                 </Link>
@@ -151,7 +151,7 @@ export default function HomeScreen() {
                   </div>
                 ))}
               </div>
-              <Button asChild variant="ghost" className="w-full text-primary font-headline text-sm">
+              <Button asChild variant="ghost" className="w-full text-primary font-headline text-sm hover:bg-primary/5">
                 <Link href="/planner">Manage Schedule</Link>
               </Button>
             </Card>
@@ -161,5 +161,3 @@ export default function HomeScreen() {
     </AppLayout>
   );
 }
-
-import { ChevronRight } from "lucide-react";
