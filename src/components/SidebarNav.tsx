@@ -19,16 +19,16 @@ export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <div className="w-80 h-full flex flex-col p-8 bg-white/50 backdrop-blur-md">
-      <div className="mb-12 flex items-center gap-3">
-        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20">
-          <Sparkles className="h-7 w-7" />
+    <div className="w-72 h-full flex flex-col p-6 bg-white border-r border-slate-100">
+      <div className="mb-10 flex items-center gap-2 px-2">
+        <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white">
+          <Sparkles className="h-6 w-6" />
         </div>
-        <h1 className="text-3xl font-bold font-headline text-primary tracking-tight">ClosetMind</h1>
+        <h1 className="text-2xl font-bold font-headline text-primary">ClosetMind</h1>
       </div>
       
-      <nav className="flex-1 space-y-3">
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-4 mb-4">Main Menu</p>
+      <nav className="flex-1 space-y-1">
+        <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest px-4 mb-4">Main Menu</p>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -37,33 +37,33 @@ export function SidebarNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group",
+                "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-headline font-bold",
                 isActive 
-                  ? "bg-primary text-white shadow-xl shadow-primary/20 scale-105" 
-                  : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
+                  ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                  : "text-slate-400 hover:text-primary hover:bg-slate-50"
               )}
             >
-              <Icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive && "text-white")} />
-              <span className="font-headline font-bold text-lg">{item.label}</span>
+              <Icon className={cn("h-5 w-5", isActive ? "text-white" : "text-slate-300 group-hover:text-primary")} />
+              <span className="text-base">{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="mt-auto space-y-2 border-t pt-8">
+      <div className="mt-auto pt-6 border-t border-slate-100">
         <Link
           href="/settings"
           className={cn(
-            "flex items-center gap-4 px-5 py-4 rounded-2xl transition-all text-muted-foreground hover:text-primary",
-            pathname === "/settings" && "bg-primary/5 text-primary"
+            "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all font-headline font-bold text-slate-400 hover:text-primary hover:bg-slate-50",
+            pathname === "/settings" && "text-primary bg-slate-50"
           )}
         >
-          <Settings className="h-5 w-5" />
-          <span className="font-headline font-bold text-lg">Settings</span>
+          <Settings className="h-5 w-5 text-slate-300" />
+          <span className="text-base">Settings</span>
         </Link>
-        <button className="flex items-center gap-4 px-5 py-4 rounded-2xl text-muted-foreground hover:text-destructive transition-colors w-full group">
-          <LogOut className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          <span className="font-headline font-bold text-lg">Sign Out</span>
+        <button className="flex items-center gap-3 px-4 py-3.5 rounded-2xl font-headline font-bold text-slate-400 hover:text-destructive w-full group">
+          <LogOut className="h-5 w-5 text-slate-300 group-hover:text-destructive" />
+          <span className="text-base">Sign Out</span>
         </button>
       </div>
     </div>

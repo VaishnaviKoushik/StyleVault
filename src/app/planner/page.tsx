@@ -29,10 +29,6 @@ export default function PlannerPage() {
   const [currentViewingOutfit, setCurrentViewingOutfit] = useState<any>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Component mounted
-  }, []);
-
   const weekDays = useMemo(() => {
     const start = startOfWeek(date, { weekStartsOn: 1 });
     return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
@@ -92,60 +88,58 @@ export default function PlannerPage() {
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
-            <h2 className="text-5xl font-headline font-bold text-foreground tracking-tight">Style Journal</h2>
-            <p className="text-muted-foreground font-body text-lg italic uppercase tracking-widest">
+        <header className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div className="space-y-1">
+            <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight">Style Journal</h2>
+            <p className="text-muted-foreground font-body text-sm font-bold uppercase tracking-widest opacity-60">
               {format(date, 'MMMM yyyy')}
             </p>
           </div>
-          <div className="flex gap-3">
-             <Dialog open={isSelectOutfitOpen} onOpenChange={setIsSelectOutfitOpen}>
-              <DialogTrigger asChild>
-                <Button className="h-14 px-8 rounded-full gradient-pill font-headline text-lg text-white shadow-xl border-glow">
-                  <Plus className="mr-2 h-5 w-5" /> Plan New Look
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md bg-white rounded-[2.5rem] border-none shadow-2xl">
-                <DialogHeader>
-                  <DialogTitle className="font-headline text-3xl font-bold text-center">Curate for {format(date, 'MMM do')}</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-6 py-6">
-                  <div className="grid gap-4 max-h-[450px] overflow-y-auto pr-2 scrollbar-hide">
-                    {MOCK_OUTFITS.map(outfit => (
-                      <button 
-                        key={outfit.id} 
-                        className="group flex items-center gap-6 p-4 rounded-3xl border border-slate-100 bg-slate-50 hover:bg-white hover:border-primary hover:shadow-lg transition-all text-left"
-                        onClick={() => handleSchedule(outfit.id)}
-                      >
-                        <div className="flex -space-x-4">
-                          {outfit.items.slice(0, 3).map((itemId, idx) => {
-                            const item = MOCK_WARDROBE.find(i => i.id === itemId);
-                            return (
-                              <div key={idx} className="h-14 w-14 rounded-full border-4 border-white overflow-hidden shadow-sm relative">
-                                {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
-                              </div>
-                            )
-                          })}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-headline font-bold text-lg group-hover:text-primary transition-colors">{outfit.name}</p>
-                          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">{outfit.occasion}</p>
-                        </div>
-                        <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-                      </button>
-                    ))}
-                  </div>
+          
+          <Dialog open={isSelectOutfitOpen} onOpenChange={setIsSelectOutfitOpen}>
+            <DialogTrigger asChild>
+              <Button className="h-12 px-8 rounded-full bg-primary hover:bg-primary/90 font-headline text-white shadow-lg">
+                <Plus className="mr-2 h-5 w-5" /> Plan New Look
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-white rounded-[2rem] border-none shadow-2xl">
+              <DialogHeader>
+                <DialogTitle className="font-headline text-2xl font-bold text-center">Curate for {format(date, 'MMM do')}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6 py-4">
+                <div className="grid gap-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
+                  {MOCK_OUTFITS.map(outfit => (
+                    <button 
+                      key={outfit.id} 
+                      className="group flex items-center gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50 hover:bg-white hover:border-primary transition-all text-left"
+                      onClick={() => handleSchedule(outfit.id)}
+                    >
+                      <div className="flex -space-x-3">
+                        {outfit.items.slice(0, 3).map((itemId, idx) => {
+                          const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                          return (
+                            <div key={idx} className="h-10 w-10 rounded-full border-2 border-white overflow-hidden shadow-sm relative">
+                              {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
+                            </div>
+                          )
+                        })}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-headline font-bold text-base group-hover:text-primary">{outfit.name}</p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-primary" />
+                    </button>
+                  ))}
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </header>
 
-        {/* Horizontal Week Selector */}
-        <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-4 shadow-xl border border-white/40 flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="rounded-full h-12 w-12" onClick={() => setDate(addDays(date, -7))}>
-            <ChevronLeft className="h-6 w-6" />
+        {/* Pill-Shaped Week Selector */}
+        <div className="bg-white rounded-[3rem] p-3 shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-slate-50 flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-slate-400" onClick={() => setDate(addDays(date, -7))}>
+            <ChevronLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1 flex justify-between px-2 overflow-x-auto scrollbar-hide">
             {weekDays.map((day, i) => {
@@ -155,32 +149,31 @@ export default function PlannerPage() {
                   key={i}
                   onClick={() => setDate(day)}
                   className={cn(
-                    "flex flex-col items-center gap-3 p-4 min-w-[80px] rounded-[2rem] transition-all duration-300",
+                    "flex flex-col items-center justify-center p-3 min-w-[70px] rounded-[1.5rem] transition-all duration-300",
                     active 
-                      ? "bg-primary text-white shadow-xl shadow-primary/30 scale-110" 
-                      : "hover:bg-slate-50 text-muted-foreground"
+                      ? "bg-primary text-white shadow-xl scale-110 -translate-y-1" 
+                      : "text-slate-400 hover:bg-slate-50"
                   )}
                 >
-                  <span className={cn("text-[10px] font-bold uppercase tracking-tighter", active ? "opacity-80" : "opacity-60")}>
+                  <span className={cn("text-[9px] font-bold uppercase tracking-tight mb-1", active ? "text-white/70" : "text-slate-300")}>
                     {format(day, 'EEE')}
                   </span>
-                  <span className="text-2xl font-headline font-bold">
+                  <span className="text-xl font-headline font-bold">
                     {format(day, 'dd')}
                   </span>
-                  {active && <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />}
                 </button>
               );
             })}
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full h-12 w-12" onClick={() => setDate(addDays(date, 7))}>
-            <ChevronRight className="h-6 w-6" />
+          <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-slate-400" onClick={() => setDate(addDays(date, 7))}>
+            <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-          {/* Calendar Widget Sidebar */}
-          <div className="lg:col-span-1 space-y-8">
-            <Card className="border-none shadow-2xl bg-white/70 backdrop-blur-md rounded-[3rem] overflow-hidden p-4 border border-white/40">
+          {/* Calendar Sidebar */}
+          <div className="lg:col-span-1 hidden lg:block space-y-8">
+            <Card className="border-none shadow-xl bg-white rounded-[2rem] overflow-hidden p-4">
               <Calendar
                 mode="single"
                 selected={date}
@@ -188,43 +181,38 @@ export default function PlannerPage() {
                 className="w-full flex justify-center font-body"
               />
             </Card>
-
-            <Card className="border-none shadow-xl bg-gradient-to-br from-primary to-primary/80 text-white rounded-[3rem] p-8 space-y-4">
-              <Sparkles className="h-8 w-8 text-accent" />
-              <h4 className="font-headline text-xl font-bold">Stylist Recommendation</h4>
-              <p className="font-body text-sm italic opacity-90 leading-relaxed">
-                "Based on your schedule, Thursday is a high-visibility day. Consider a bold accessory to break the neutral palette."
-              </p>
-            </Card>
           </div>
 
-          {/* Schedule Detailed List */}
+          {/* Agenda List */}
           <div className="lg:col-span-3 space-y-8">
-            <div className="flex items-center justify-between border-b pb-4">
-              <h3 className="text-3xl font-headline font-bold flex items-center gap-3">
-                <Clock className="h-8 w-8 text-accent" /> Agenda for {format(date, 'MMMM do')}
-              </h3>
-              <Badge variant="outline" className="rounded-full border-primary/20 text-primary px-4 py-1 font-headline">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <Clock className="h-6 w-6 text-primary/40" />
+                <h3 className="text-2xl font-headline font-bold text-foreground">
+                  Agenda for {format(date, 'MMMM do')}
+                </h3>
+              </div>
+              <Badge variant="outline" className="rounded-full border-primary/20 text-primary px-3 py-0.5 font-headline">
                 {activeSchedules.length} {activeSchedules.length === 1 ? 'Event' : 'Events'}
               </Badge>
             </div>
 
             {activeSchedules.length > 0 ? (
-              <div className="grid gap-8">
+              <div className="grid gap-6">
                 {activeSchedules.map(schedule => {
                   const outfit = MOCK_OUTFITS.find(o => o.id === schedule.outfitId);
                   if (!outfit) return null;
                   return (
-                    <Card key={schedule.id} className="border-none shadow-2xl bg-white/70 backdrop-blur-md rounded-[3rem] overflow-hidden group hover:shadow-primary/5 transition-all duration-500 border border-white/40">
+                    <Card key={schedule.id} className="border-none shadow-sm bg-white rounded-[2.5rem] overflow-hidden group border border-slate-50">
                       <div className="md:flex">
-                        <div className="md:w-2/5 relative min-h-[300px] bg-slate-50/50 p-6 flex items-center justify-center">
-                           <div className="grid grid-cols-2 gap-3 w-full">
-                            {outfit.items.slice(0, 4).map((itemId, idx) => {
+                        <div className="md:w-1/3 bg-slate-50/50 p-6 flex items-center justify-center">
+                           <div className="flex -space-x-6">
+                            {outfit.items.slice(0, 2).map((itemId, idx) => {
                               const item = MOCK_WARDROBE.find(i => i.id === itemId);
                               return (
                                 <div key={itemId} className={cn(
-                                  "relative aspect-square rounded-3xl overflow-hidden shadow-lg transition-transform hover:scale-105",
-                                  idx === 0 ? "rotate-[-4deg]" : "rotate-[4deg]"
+                                  "relative h-32 w-24 rounded-2xl overflow-hidden shadow-lg border-4 border-white",
+                                  idx === 0 ? "rotate-[-5deg]" : "rotate-[5deg]"
                                 )}>
                                   {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
                                 </div>
@@ -232,40 +220,29 @@ export default function PlannerPage() {
                             })}
                           </div>
                         </div>
-                        <div className="md:w-3/5 p-10 flex flex-col justify-between space-y-6">
+                        <div className="md:w-2/3 p-8 flex flex-col justify-between">
                           <div className="space-y-4">
                             <div className="flex justify-between items-start">
                               <div className="space-y-1">
-                                <Badge className="bg-accent/10 text-accent border-none rounded-full px-4 py-1 uppercase tracking-tighter text-[10px] font-bold">
-                                  {schedule.time} • {outfit.occasion}
-                                </Badge>
-                                <h4 className="text-4xl font-headline font-bold text-primary">{outfit.name}</h4>
+                                <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{schedule.time} • {schedule.location}</p>
+                                <h4 className="text-3xl font-headline font-bold text-primary">{outfit.name}</h4>
                               </div>
-                              <div className="flex gap-1">
-                                <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/5 text-primary" onClick={() => handleEditClick(schedule)}>
-                                  <Edit3 className="h-5 w-5" />
+                              <div className="flex gap-2">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-primary" onClick={() => handleEditClick(schedule)}>
+                                  <Edit3 className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="rounded-full hover:bg-destructive/5 text-destructive" onClick={() => handleUnschedule(schedule.id)}>
-                                  <Trash2 className="h-5 w-5" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
-                              </div>
-                            </div>
-                            
-                            <div className="flex flex-col gap-2 text-muted-foreground font-body">
-                              <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-primary/40" /> {schedule.location}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <CalendarIcon className="h-4 w-4 text-primary/40" /> Signature Collection
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex gap-4 pt-4 border-t">
-                            <Button variant="outline" className="flex-1 rounded-full font-headline h-14 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all shadow-sm" onClick={() => handleViewItems(outfit.id)}>
-                              View Garments
+                          <div className="flex gap-3 pt-6">
+                            <Button variant="outline" className="flex-1 rounded-full font-headline border-slate-200 text-slate-600 hover:text-primary h-12" onClick={() => handleViewItems(outfit.id)}>
+                              View Items
                             </Button>
-                            <Button className="flex-1 rounded-full bg-slate-100 text-slate-600 hover:bg-destructive hover:text-white font-headline h-14 transition-all" onClick={() => handleUnschedule(schedule.id)}>
+                            <Button className="flex-1 rounded-full bg-slate-100 text-slate-400 hover:bg-destructive hover:text-white font-headline h-12 transition-all" onClick={() => handleUnschedule(schedule.id)}>
                               Unschedule
                             </Button>
                           </div>
@@ -276,24 +253,24 @@ export default function PlannerPage() {
                 })}
 
                 <button 
-                  className="w-full py-12 border-4 border-dashed border-white/40 rounded-[3rem] flex flex-col items-center justify-center text-primary/40 hover:border-accent/40 hover:text-accent hover:bg-white/20 transition-all group"
+                  className="w-full py-12 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center text-slate-300 hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all group"
                   onClick={() => setIsSelectOutfitOpen(true)}
                 >
-                  <Plus className="h-12 w-12 mb-2 group-hover:scale-110 transition-transform" />
-                  <p className="font-headline font-bold text-xl">Plan Another Event</p>
+                  <Plus className="h-10 w-10 mb-2 group-hover:scale-110" />
+                  <p className="font-headline font-bold text-lg">Plan Another Event</p>
                 </button>
               </div>
             ) : (
-              <div className="text-center py-24 bg-white/40 backdrop-blur-md rounded-[4rem] border-4 border-dashed border-white/40 flex flex-col items-center justify-center space-y-6">
-                <div className="h-24 w-24 rounded-full bg-white/60 flex items-center justify-center">
-                  <CalendarIcon className="h-10 w-10 text-primary/20" />
+              <div className="text-center py-20 bg-white rounded-[2.5rem] border border-slate-50 flex flex-col items-center justify-center space-y-6">
+                <div className="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-200">
+                  <CalendarIcon className="h-8 w-8" />
                 </div>
-                <div className="space-y-2">
-                  <p className="text-2xl font-headline font-bold text-primary/40">Empty Itinerary</p>
-                  <p className="text-muted-foreground font-body italic">Your schedule is open. Perfect time to get an AI suggestion!</p>
+                <div className="space-y-1">
+                  <p className="text-xl font-headline font-bold text-slate-300">Nothing planned yet</p>
+                  <p className="text-slate-400 font-body text-sm italic">Get a suggestion from your stylist!</p>
                 </div>
-                <Button className="rounded-full h-14 px-10 gradient-pill font-headline text-white border-glow shadow-xl" asChild>
-                  <Link href="/ai-stylist">Generate Daily Look <Sparkles className="ml-2 h-5 w-5" /></Link>
+                <Button className="rounded-full h-12 px-8 bg-primary text-white font-headline" asChild>
+                  <Link href="/ai-stylist">Check AI Stylist <Sparkles className="ml-2 h-4 w-4" /></Link>
                 </Button>
               </div>
             )}
@@ -301,73 +278,31 @@ export default function PlannerPage() {
         </div>
       </div>
 
-      {/* Edit Event Dialog */}
-      <Dialog open={isEditEventOpen} onOpenChange={setIsEditEventOpen}>
-        <DialogContent className="sm:max-w-md bg-white rounded-[2.5rem] border-none shadow-2xl p-10">
-          <DialogHeader>
-            <DialogTitle className="font-headline text-3xl font-bold text-center">Refine Event</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="time" className="font-headline text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Meeting Time</Label>
-              <Input 
-                id="time" 
-                value={currentEditingEvent?.time || ''} 
-                onChange={(e) => setCurrentEditingEvent({ ...currentEditingEvent, time: e.target.value })}
-                placeholder="e.g. 09:00 AM"
-                className="h-14 rounded-2xl bg-slate-50 border-none font-headline text-lg px-6"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="location" className="font-headline text-xs font-bold uppercase tracking-widest text-muted-foreground px-1">Location / Context</Label>
-              <Input 
-                id="location" 
-                value={currentEditingEvent?.location || ''} 
-                onChange={(e) => setCurrentEditingEvent({ ...currentEditingEvent, location: e.target.value })}
-                placeholder="e.g. Central Office"
-                className="h-14 rounded-2xl bg-slate-50 border-none font-headline text-lg px-6"
-              />
-            </div>
-          </div>
-          <DialogFooter className="flex gap-3 sm:justify-center">
-            <Button variant="outline" className="h-14 rounded-full font-headline px-8" onClick={() => setIsEditEventOpen(false)}>Cancel</Button>
-            <Button className="h-14 rounded-full gradient-pill font-headline px-8 text-white shadow-lg" onClick={handleSaveEdit}>Save Edits</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* View Items Dialog */}
       <Dialog open={isViewItemsOpen} onOpenChange={setIsViewItemsOpen}>
-        <DialogContent className="max-w-3xl bg-white rounded-[3rem] p-0 overflow-hidden border-none shadow-2xl">
-          <div className="p-10 space-y-8">
-            <DialogHeader>
-              <DialogTitle className="font-headline text-4xl font-bold text-primary">
-                {currentViewingOutfit?.name}
-              </DialogTitle>
-              <p className="text-muted-foreground font-body italic">Assembled items for your upcoming event.</p>
-            </DialogHeader>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-4 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
-              {currentViewingOutfit?.items.map((itemId: string) => {
-                const item = MOCK_WARDROBE.find(i => i.id === itemId);
-                if (!item) return null;
-                return (
-                  <div key={itemId} className="space-y-3 group">
-                    <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500">
-                      <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="px-2">
-                      <p className="font-headline font-bold text-lg truncate group-hover:text-primary transition-colors">{item.name}</p>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.category}</p>
-                    </div>
+        <DialogContent className="max-w-2xl bg-white rounded-[2rem] p-8 border-none shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-3xl font-bold text-primary">
+              {currentViewingOutfit?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-6">
+            {currentViewingOutfit?.items.map((itemId: string) => {
+              const item = MOCK_WARDROBE.find(i => i.id === itemId);
+              if (!item) return null;
+              return (
+                <div key={itemId} className="space-y-2 text-center">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-sm">
+                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                   </div>
-                );
-              })}
-            </div>
-            <Button className="w-full h-14 rounded-full gradient-pill font-headline text-white shadow-xl" onClick={() => setIsViewItemsOpen(false)}>
-              Back to Agenda
-            </Button>
+                  <p className="font-headline font-bold text-sm truncate">{item.name}</p>
+                </div>
+              );
+            })}
           </div>
+          <Button className="w-full h-12 rounded-full bg-primary text-white font-headline" onClick={() => setIsViewItemsOpen(false)}>
+            Close
+          </Button>
         </DialogContent>
       </Dialog>
     </AppLayout>
