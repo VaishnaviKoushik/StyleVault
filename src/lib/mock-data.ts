@@ -18,6 +18,7 @@ export interface Outfit {
 }
 
 export const MOCK_WARDROBE: WardrobeItem[] = [
+  // --- TOPS ---
   {
     id: '1',
     name: 'White Linen Shirt',
@@ -29,6 +30,68 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     description: 'A breathable white linen shirt, perfect for summer days.'
   },
   {
+    id: 't1',
+    name: 'Red Track Jacket',
+    category: 'top',
+    color: 'Red',
+    brand: 'Adidas',
+    occasion: ['sporty', 'casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=1080',
+    description: 'A vibrant red zip-up jacket for active days.'
+  },
+  {
+    id: 't2',
+    name: 'Purple Oversized Hoodie',
+    category: 'top',
+    color: 'Purple',
+    brand: 'Champion',
+    occasion: ['casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=1080',
+    description: 'Cozy purple hoodie with a relaxed fit.'
+  },
+  {
+    id: 't3',
+    name: 'Yellow V-Neck Sweater',
+    category: 'top',
+    color: 'Yellow',
+    brand: 'Zara',
+    occasion: ['work', 'casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1080',
+    description: 'A bright yellow knit sweater with a flattering v-neck.'
+  },
+  {
+    id: 't4',
+    name: 'Orange Puffer Vest',
+    category: 'top',
+    color: 'Orange',
+    brand: 'North Face',
+    occasion: ['casual', 'sporty'],
+    imageUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=1080',
+    description: 'Quilted orange vest for layering in transition weather.'
+  },
+  {
+    id: 't5',
+    name: 'Green Cardigan',
+    category: 'top',
+    color: 'Green',
+    brand: 'Uniqlo',
+    occasion: ['work', 'casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=1080',
+    description: 'Classic button-up cardigan in a deep sage green.'
+  },
+  {
+    id: '6',
+    name: 'Black Turtleneck',
+    category: 'top',
+    color: 'Black',
+    brand: 'Uniqlo',
+    occasion: ['work', 'formal', 'casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1611312449412-6cefac5dc3e4?q=80&w=1080',
+    description: 'Soft merino wool turtleneck in classic black.'
+  },
+
+  // --- BOTTOMS ---
+  {
     id: '2',
     name: 'Blue Denim Jeans',
     category: 'bottom',
@@ -38,6 +101,80 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1714143136372-ddaf8b606da7?q=80&w=1080',
     description: 'Classic straight-leg denim jeans in a medium wash.'
   },
+  {
+    id: 'b1',
+    name: 'Orange Slim Trousers',
+    category: 'bottom',
+    color: 'Orange',
+    brand: 'COS',
+    occasion: ['work', 'formal'],
+    imageUrl: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=1080',
+    description: 'Tailored trousers in a bold sunset orange hue.'
+  },
+  {
+    id: 'b2',
+    name: 'Grey Cotton Joggers',
+    category: 'bottom',
+    color: 'Grey',
+    brand: 'Nike',
+    occasion: ['casual', 'sporty'],
+    imageUrl: 'https://images.unsplash.com/photo-1552664199-fd31f7431a55?q=80&w=1080',
+    description: 'Comfortable grey joggers with elasticated cuffs.'
+  },
+  {
+    id: 'b3',
+    name: 'Pink Athletic Leggings',
+    category: 'bottom',
+    color: 'Pink',
+    brand: 'Lululemon',
+    occasion: ['sporty'],
+    imageUrl: 'https://images.unsplash.com/photo-1506629082925-ef3194572242?q=80&w=1080',
+    description: 'High-waisted compression leggings in bright pink.'
+  },
+  {
+    id: 'b4',
+    name: 'Light Blue Midi Skirt',
+    category: 'bottom',
+    color: 'Blue',
+    brand: '& Other Stories',
+    occasion: ['casual', 'date night'],
+    imageUrl: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=1080',
+    description: 'Breezy light blue skirt with a subtle floral texture.'
+  },
+  {
+    id: 'b5',
+    name: 'Beige Chino Pants',
+    category: 'bottom',
+    color: 'Beige',
+    brand: 'J.Crew',
+    occasion: ['work', 'casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1473966968600-fa804b8696bd?q=80&w=1080',
+    description: 'Versatile beige chinos for a clean, classic look.'
+  },
+
+  // --- DRESSES ---
+  {
+    id: '7',
+    name: 'Little Black Dress',
+    category: 'dress',
+    color: 'Black',
+    brand: 'Chanel',
+    occasion: ['formal', 'night out'],
+    imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1080',
+    description: 'A sophisticated and timeless A-line black dress for elegant evenings.'
+  },
+  {
+    id: '8',
+    name: 'Floral Summer Maxi',
+    category: 'dress',
+    color: 'Multi',
+    brand: 'Reformation',
+    occasion: ['casual', 'party'],
+    imageUrl: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1080',
+    description: 'A breezy floral maxi dress with a side slit, perfect for garden parties.'
+  },
+
+  // --- OTHERS ---
   {
     id: '3',
     name: 'Black Leather Boots',
@@ -67,66 +204,6 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     occasion: ['formal', 'casual'],
     imageUrl: 'https://images.unsplash.com/photo-1677478863154-55ecce8c7536?q=80&w=1080',
     description: 'Elegant silk scarf with a vibrant floral pattern.'
-  },
-  {
-    id: '6',
-    name: 'Black Turtleneck',
-    category: 'top',
-    color: 'Black',
-    brand: 'Uniqlo',
-    occasion: ['work', 'formal', 'casual'],
-    imageUrl: 'https://images.unsplash.com/photo-1611312449412-6cefac5dc3e4?q=80&w=1080',
-    description: 'Soft merino wool turtleneck in classic black.'
-  },
-  {
-    id: '7',
-    name: 'Little Black Dress',
-    category: 'dress',
-    color: 'Black',
-    brand: 'Chanel',
-    occasion: ['formal', 'night out'],
-    imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1080',
-    description: 'A sophisticated and timeless A-line black dress for elegant evenings.'
-  },
-  {
-    id: '8',
-    name: 'Floral Summer Maxi',
-    category: 'dress',
-    color: 'Multi',
-    brand: 'Reformation',
-    occasion: ['casual', 'party'],
-    imageUrl: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1080',
-    description: 'A breezy floral maxi dress with a side slit, perfect for garden parties.'
-  },
-  {
-    id: '9',
-    name: 'Red Cocktail Dress',
-    category: 'dress',
-    color: 'Red',
-    brand: 'Self-Portrait',
-    occasion: ['formal', 'party', 'night out'],
-    imageUrl: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=1080',
-    description: 'A stunning red cocktail dress with lace detailing and a flared hem.'
-  },
-  {
-    id: '10',
-    name: 'Denim Pinafore Dress',
-    category: 'dress',
-    color: 'Blue',
-    brand: 'Madewell',
-    occasion: ['casual'],
-    imageUrl: 'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?q=80&w=1080',
-    description: 'A versatile denim pinafore dress, easy to layer over tees or turtlenecks.'
-  },
-  {
-    id: '11',
-    name: 'Silk Slip Dress',
-    category: 'dress',
-    color: 'Emerald',
-    brand: 'Cuyana',
-    occasion: ['night out', 'formal'],
-    imageUrl: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=1080',
-    description: 'A luxurious emerald green silk slip dress with a minimalist silhouette.'
   }
 ];
 
@@ -140,16 +217,16 @@ export const MOCK_OUTFITS: Outfit[] = [
   },
   {
     id: 'o2',
-    name: 'Evening Out',
-    items: ['6', '3', '5'],
-    occasion: 'night out',
+    name: 'Sporty Weekend',
+    items: ['t1', 'b2', '3'],
+    occasion: 'sporty',
     createdAt: '2024-03-21T18:00:00Z'
   },
   {
     id: 'o3',
-    name: 'Summer Gala',
-    items: ['9', '3', '5'],
-    occasion: 'formal',
+    name: 'Cozy Evening',
+    items: ['t2', 'b3'],
+    occasion: 'casual',
     createdAt: '2024-03-22T14:00:00Z'
   }
 ];
