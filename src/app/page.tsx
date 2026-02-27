@@ -9,7 +9,6 @@ import {
   Brain, 
   Palette,
   TrendingUp,
-  ChevronRight,
   Star,
   Shield,
   ShoppingBag,
@@ -26,24 +25,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-
-const chartData = [
-  { month: "Jan", index: 65 },
-  { month: "Feb", index: 72 },
-  { month: "Mar", index: 68 },
-  { month: "Apr", index: 85 },
-  { month: "May", index: 88 },
-  { month: "Jun", index: 94 },
-];
-
-const chartConfig = {
-  index: {
-    label: "Style Index",
-    color: "hsl(var(--primary))",
-  },
-};
 
 const testimonials = [
   {
@@ -91,36 +72,49 @@ export default function HomeScreen() {
             </div>
           </div>
 
-          <Card className="glass-card border-none shadow-2xl p-8 overflow-hidden bg-white/40 backdrop-blur-md">
-            <CardHeader className="p-0 mb-6 flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-2xl font-headline font-bold text-primary">Style Impact Index</CardTitle>
-                <p className="text-xs text-muted-foreground font-body">Real-time wardrobe utilization metrics</p>
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-headline font-bold text-accent">+24%</p>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase">MoM Growth</p>
-              </div>
-            </CardHeader>
-            <ChartContainer config={chartConfig} className="h-[250px] w-full">
-              <BarChart data={chartData}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
-                <XAxis 
-                  dataKey="month" 
-                  tickLine={false} 
-                  axisLine={false} 
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+          {/* EDITORIAL IMAGE COMPOSITION */}
+          <div className="relative h-[500px] w-full group">
+            <div className="absolute inset-0 bg-accent/5 rounded-[3rem] -rotate-2 scale-105 -z-10" />
+            <div className="relative h-full w-full rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
+              <Image 
+                src="https://images.unsplash.com/photo-1589400445193-c881a4b0b38a" 
+                alt="Signature Look" 
+                fill 
+                className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                data-ai-hint="trench coat"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
+              
+              {/* Overlapping Accents */}
+              <div className="absolute -bottom-6 -left-6 w-40 h-48 rounded-2xl overflow-hidden shadow-2xl border-4 border-white rotate-6 hidden md:block">
+                 <Image 
+                  src="https://images.unsplash.com/photo-1524805444758-09912d619dce" 
+                  alt="Watch detail" 
+                  fill 
+                  className="object-cover"
+                  data-ai-hint="gold watch"
                 />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar 
-                  dataKey="index" 
-                  fill="hsl(var(--primary))" 
-                  radius={[4, 4, 0, 0]} 
-                  className="fill-primary"
+              </div>
+
+              <div className="absolute top-12 -right-6 w-32 h-32 rounded-full overflow-hidden shadow-2xl border-4 border-white -rotate-12 hidden md:block">
+                 <Image 
+                  src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371" 
+                  alt="Glasses detail" 
+                  fill 
+                  className="object-cover"
+                  data-ai-hint="black glasses"
                 />
-              </BarChart>
-            </ChartContainer>
-          </Card>
+              </div>
+
+              <div className="absolute bottom-10 left-10 right-10 text-white space-y-2">
+                <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-[10px] tracking-widest px-3">
+                  Featured Combination
+                </Badge>
+                <h3 className="text-3xl font-headline font-bold">The Modern Professional</h3>
+                <p className="text-sm font-body italic opacity-80">"A sophisticated blend of structured outerwear and timeless accessories."</p>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* QUICK ACTIONS */}
@@ -137,7 +131,7 @@ export default function HomeScreen() {
               { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
               { label: "Shopping", icon: ShoppingBag, desc: "AI Suggestions", href: "/shopping", color: "from-accent/10 to-accent/5" },
               { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5" },
-              { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-accent/10 to-primary/5" },
+              { label: "Assembler", icon: Palette, desc: "Create looks", href: "/planner", color: "from-accent/10 to-primary/5" },
               { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-primary/10 to-primary/5" }
             ].map((action) => (
               <Link key={action.label} href={action.href}>
