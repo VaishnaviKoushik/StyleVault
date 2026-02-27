@@ -6,54 +6,125 @@ import {
   Sparkles, 
   Camera, 
   Brain, 
-  Calendar, 
   Palette,
   Clock,
-  Shirt,
   TrendingUp,
   Sun,
   Zap,
-  Info
+  Info,
+  ChevronRight
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
+import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+
+const chartData = [
+  { month: "Jan", index: 65 },
+  { month: "Feb", index: 72 },
+  { month: "Mar", index: 68 },
+  { month: "Apr", index: 85 },
+  { month: "May", index: 88 },
+  { month: "Jun", index: 94 },
+];
+
+const chartConfig = {
+  index: {
+    label: "Style Index",
+    color: "hsl(var(--primary))",
+  },
+};
 
 export default function HomeScreen() {
   return (
     <AppLayout>
-      <div className="space-y-12 animate-in fade-in duration-1000">
-        {/* 1. SMART GREETING HEADER */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <h2 className="text-5xl font-headline font-bold text-foreground tracking-tight">Good Morning, Alex ✨</h2>
-            <p className="text-lg text-muted-foreground font-body italic">Your StyleVault stylist has curated something special today.</p>
+      <div className="space-y-12 animate-in fade-in duration-1000 pt-8">
+        {/* 1. ELITE INTELLIGENCE HERO (TOP SECTION) */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <Badge className="bg-accent/10 text-accent font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
+              Intelligence Dashboard
+            </Badge>
+            <h1 className="text-6xl md:text-8xl font-headline font-bold leading-none tracking-tighter">
+              <span className="text-primary italic block">Style is</span>
+              <span className="text-accent italic block ml-12 md:ml-24">Algorithmic.</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed max-w-lg border-l-4 border-accent/30 pl-6">
+              "We've merged human creativity with generative logic to transform your wardrobe into a dynamic, performance-driven asset."
+            </p>
+            <div className="flex gap-4 pt-4">
+              <Button asChild className="h-14 px-8 rounded-full gradient-primary text-white font-headline text-lg shadow-xl hover:scale-105 transition-all">
+                <Link href="/ai-stylist">Explore AI Insights <Sparkles className="ml-2 h-5 w-5" /></Link>
+              </Button>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 glass-card px-5 py-2 rounded-full shadow-sm">
-              <Sun className="h-5 w-5 text-accent" />
-              <span className="font-headline font-bold">72°F Sunny</span>
-            </div>
-            <div className="flex items-center gap-3 glass-card px-5 py-2 rounded-full shadow-sm">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Style Score</span>
-              <span className="font-headline font-bold text-primary">92/100</span>
-            </div>
-            <div className="h-12 w-12 rounded-full p-0.5 bg-gradient-to-br from-primary to-accent">
+
+          <Card className="glass-card border-none shadow-2xl p-8 overflow-hidden bg-white/40 backdrop-blur-md">
+            <CardHeader className="p-0 mb-6 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl font-headline font-bold text-primary">Style Impact Index</CardTitle>
+                <p className="text-xs text-muted-foreground font-body">Real-time wardrobe utilization metrics</p>
+              </div>
+              <div className="text-right">
+                <p className="text-3xl font-headline font-bold text-accent">+24%</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase">MoM Growth</p>
+              </div>
+            </CardHeader>
+            <ChartContainer config={chartConfig} className="h-[250px] w-full">
+              <BarChart data={chartData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
+                <XAxis 
+                  dataKey="month" 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar 
+                  dataKey="index" 
+                  fill="hsl(var(--primary))" 
+                  radius={[4, 4, 0, 0]} 
+                  className="fill-primary"
+                />
+              </BarChart>
+            </ChartContainer>
+          </Card>
+        </section>
+
+        {/* 2. SMART GREETING & STATUS */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/40 p-8 rounded-[2rem] border border-white/20 shadow-sm">
+          <div className="flex items-center gap-6">
+            <div className="h-20 w-20 rounded-full p-1 bg-gradient-to-br from-primary to-accent shadow-xl">
               <Image 
-                src="https://picsum.photos/seed/alex/200" 
+                src="https://picsum.photos/seed/alex/400" 
                 alt="Profile" 
-                width={48} 
-                height={48} 
-                className="rounded-full object-cover border-2 border-white"
+                width={80} 
+                height={80} 
+                className="rounded-full object-cover border-4 border-white"
               />
             </div>
+            <div className="space-y-1">
+              <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Alex Chen</h2>
+              <p className="text-muted-foreground font-body italic">Premium Fashion Curator — <span className="text-primary font-bold">StyleVault Member</span></p>
+            </div>
           </div>
-        </header>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-3 glass-card px-6 py-3 rounded-full shadow-sm bg-white/60">
+              <Sun className="h-5 w-5 text-accent" />
+              <span className="font-headline font-bold">72°F London</span>
+            </div>
+            <div className="flex items-center gap-3 glass-card px-6 py-3 rounded-full shadow-sm bg-white/60">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <span className="font-headline font-bold text-primary">Score: 92</span>
+            </div>
+          </div>
+        </div>
 
-        {/* 2. HERO SECTION – TODAY’S AI OUTFIT */}
+        {/* 3. HERO SECTION – TODAY’S AI OUTFIT */}
         <Card className="glass-card border-none shadow-2xl overflow-hidden group relative">
           <div className="md:flex">
             <div className="md:w-1/2 relative aspect-[4/3] md:aspect-auto overflow-hidden">
@@ -71,41 +142,40 @@ export default function HomeScreen() {
                 </div>
               </div>
               <div className="absolute top-6 left-6">
-                <Badge className="bg-white/90 text-primary font-headline shadow-lg px-4 py-1">98% AI Match</Badge>
+                <Badge className="bg-white/90 text-primary font-headline shadow-lg px-4 py-1">98% Match</Badge>
               </div>
             </div>
             <CardContent className="md:w-1/2 p-10 flex flex-col justify-center space-y-8 relative z-10 bg-white/40 backdrop-blur-sm">
               <div className="space-y-4">
                 <div className="flex gap-2">
                   <Badge variant="outline" className="text-[10px] font-bold border-primary/20 text-primary uppercase px-3">Casual</Badge>
-                  <Badge variant="outline" className="text-[10px] font-bold border-primary/20 text-primary uppercase px-3">Comfortable</Badge>
+                  <Badge variant="outline" className="text-[10px] font-bold border-primary/20 text-primary uppercase px-3">Mon-Fri</Badge>
                 </div>
                 <h3 className="text-4xl font-headline font-bold tracking-tight text-primary">The "Morning Meetings" Look</h3>
                 <p className="text-muted-foreground font-body text-lg leading-relaxed italic">
-                  "A crisp white linen shirt paired with relaxed denim ensures a polished yet effortless vibe for your busy Monday schedule."
+                  "A crisp white linen shirt paired with relaxed denim ensures a polished yet effortless vibe for your current schedule."
                 </p>
               </div>
 
               <div className="flex gap-4 pt-4">
                 <Button asChild className="flex-1 h-14 rounded-full gradient-primary font-headline text-lg text-white shadow-xl hover:scale-[1.02] transition-all">
-                  <Link href="/planner">Schedule for Today <Calendar className="ml-2 h-5 w-5" /></Link>
+                  <Link href="/planner">Schedule Outfit <Clock className="ml-2 h-5 w-5" /></Link>
                 </Button>
                 <Button variant="outline" className="h-14 w-14 rounded-full border-primary/20 text-primary hover:bg-primary/5 transition-all">
                   <Zap className="h-5 w-5" />
                 </Button>
               </div>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest text-center opacity-60">Styled exclusively for you by StyleVault AI</p>
             </CardContent>
           </div>
         </Card>
 
-        {/* 3. QUICK ACTIONS GRID - CARD SYSTEM */}
+        {/* 4. QUICK ACTIONS GRID */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { label: "Add New Item", icon: Camera, desc: "Digitize your closet", href: "/add-item", color: "from-primary/10 to-primary/5" },
-            { label: "AI Stylist", icon: Brain, desc: "Powered by Gemini", href: "/ai-stylist", color: "from-accent/10 to-accent/5" },
-            { label: "My Outfits", icon: Palette, desc: "Signature looks", href: "/outfits", color: "from-primary/10 to-accent/5" },
-            { label: "Project Brief", icon: Info, desc: "App Presentation", href: "/proposal", color: "from-accent/10 to-primary/5" }
+            { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
+            { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-accent/10 to-accent/5" },
+            { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-primary/10 to-accent/5" },
+            { label: "Brief", icon: Info, desc: "App Mission", href: "/proposal", color: "from-accent/10 to-primary/5" }
           ].map((action) => (
             <Link key={action.label} href={action.href}>
               <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
@@ -121,70 +191,39 @@ export default function HomeScreen() {
           ))}
         </div>
 
-        {/* 4. ANALYTICS & STATS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="glass-card border-none p-8 flex items-center gap-6">
-             <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                <TrendingUp className="h-8 w-8" />
-             </div>
-             <div>
-                <p className="text-4xl font-headline font-bold">128</p>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Closet Value</p>
-             </div>
-          </Card>
-          <Card className="glass-card border-none p-8 flex items-center gap-6">
-             <div className="h-16 w-16 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
-                <Sparkles className="h-8 w-8" />
-             </div>
-             <div>
-                <p className="text-4xl font-headline font-bold">42</p>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Outfits Created</p>
-             </div>
-          </Card>
-          <Card className="glass-card border-none p-8 flex items-center gap-6">
-             <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                <Clock className="h-8 w-8" />
-             </div>
-             <div>
-                <p className="text-4xl font-headline font-bold">12</p>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Planned Events</p>
-             </div>
-          </Card>
-        </div>
-
-        {/* 5. STYLEVAULT TECHNOLOGY PREVIEW & CAPTIONS */}
-        <section className="py-12 px-10 rounded-[3rem] bg-primary text-white relative overflow-hidden">
+        {/* 5. STYLEVAULT TECHNOLOGY PREVIEW */}
+        <section className="py-20 px-10 rounded-[4rem] bg-primary text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/20 to-transparent pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-            <div className="md:w-3/5 space-y-6">
-              <Badge className="bg-accent text-primary font-headline uppercase px-4 py-1">The StyleVault Vision</Badge>
-              <h3 className="text-5xl font-headline font-bold leading-tight">Redefining Personal Style with Generative Intelligence</h3>
-              <p className="text-lg opacity-80 font-body leading-relaxed">
-                StyleVault isn't just a closet app; it's a cognitive style engine. By merging computer vision with generative AI, we transform your static wardrobe into a dynamic palette of possibilities.
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div className="lg:w-3/5 space-y-8">
+              <Badge className="bg-accent text-primary font-headline uppercase px-6 py-1 tracking-widest">StyleVault Vision</Badge>
+              <h3 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] italic">
+                Redefining personal style through intelligence.
+              </h3>
+              <p className="text-xl opacity-80 font-body leading-relaxed max-w-2xl">
+                StyleVault isn't just a closet app; it's a cognitive style engine. We merge computer vision with generative AI to transform your static wardrobe into a dynamic palette of possibilities.
               </p>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
-                <div className="space-y-2 border-l-2 border-accent/40 pl-4">
-                  <h4 className="font-headline font-bold text-accent">Intelligent Coordination</h4>
-                  <p className="text-xs opacity-70 font-body">Gemini-powered logic analyzes fabric weight, color theory, and historical preferences to curate daily looks.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6">
+                <div className="space-y-2 border-l-2 border-accent/40 pl-6">
+                  <h4 className="font-headline font-bold text-2xl text-accent">Coordination</h4>
+                  <p className="text-sm opacity-70 font-body">Gemini-powered logic analyzes fabric, color theory, and historical preference.</p>
                 </div>
-                <div className="space-y-2 border-l-2 border-accent/40 pl-4">
-                  <h4 className="font-headline font-bold text-accent">Predictive Planning</h4>
-                  <p className="text-xs opacity-70 font-body">Automatically cross-references local weather and calendar sync to ensure you're dressed perfectly for every climate and occasion.</p>
+                <div className="space-y-2 border-l-2 border-accent/40 pl-6">
+                  <h4 className="font-headline font-bold text-2xl text-accent">Predictive</h4>
+                  <p className="text-sm opacity-70 font-body">Cross-references weather and calendar sync to ensure perfect climate prep.</p>
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-4">
-                <Button asChild variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10 font-headline">
-                   <Link href="/proposal">Learn More About the App <Info className="ml-2 h-4 w-4" /></Link>
-                </Button>
-              </div>
+              <Button asChild variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10 font-headline h-14 px-8 mt-8">
+                 <Link href="/proposal">The Architecture <ChevronRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
             </div>
-            <div className="md:w-1/3 flex justify-center">
-               <div className="h-64 w-64 rounded-full border-4 border-accent/30 flex items-center justify-center animate-pulse relative">
-                  <Brain className="h-32 w-32 text-accent" />
-                  <div className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
-                    <Sparkles className="h-10 w-10 text-accent" />
+            <div className="lg:w-1/3 flex justify-center">
+               <div className="h-80 w-80 rounded-full border-4 border-accent/30 flex items-center justify-center animate-pulse relative">
+                  <Brain className="h-40 w-40 text-accent" />
+                  <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                    <Sparkles className="h-12 w-12 text-accent" />
                   </div>
                </div>
             </div>
