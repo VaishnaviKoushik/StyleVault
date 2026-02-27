@@ -215,10 +215,10 @@ export default function HomeScreen() {
         </section>
 
         {/* 3. QUICK ACTIONS */}
-        <section className="space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-3xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
-            <p className="text-muted-foreground font-body italic border-l-2 border-accent/20 pl-4 max-w-2xl">
+        <section className="space-y-8">
+          <div className="space-y-4 text-center max-w-3xl mx-auto">
+            <h3 className="text-4xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
+            <p className="text-muted-foreground font-body italic border-t border-accent/20 pt-4 px-10">
               "Access specialized AI engines to decode trends, optimize acquisition, and orchestrate your signature visual identity."
             </p>
           </div>
