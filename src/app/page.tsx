@@ -7,17 +7,11 @@ import {
   Camera, 
   Brain, 
   Palette,
-  Clock,
   TrendingUp,
-  Sun,
-  Zap,
   ChevronRight,
-  Layers,
   Star,
   Shield,
-  Smartphone,
   ShoppingBag,
-  Heart,
   ArrowRight,
   Search,
   AlertTriangle,
@@ -27,23 +21,18 @@ import {
   Globe,
   ZapOff,
   UserCheck,
-  Activity,
-  Cpu,
-  MousePointer2,
   Quote
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
-import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useState, useEffect } from "react";
-import { MOCK_WARDROBE, MOCK_OUTFITS } from "@/lib/mock-data";
 import { seasonalTransitionAlert, type SeasonalTransitionOutput } from "@/ai/flows/seasonal-transition-alert";
-import { useToast } from "@/hooks/use-toast";
 
 const chartData = [
   { month: "Jan", index: 65 },
@@ -85,7 +74,6 @@ const testimonials = [
 export default function HomeScreen() {
   const [transitionAlert, setTransitionAlert] = useState<SeasonalTransitionOutput | null>(null);
   const [alertLoading, setAlertLoading] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchData() {
@@ -226,50 +214,6 @@ export default function HomeScreen() {
           </Card>
         </section>
 
-        {/* 2. COGNITIVE STYLE METRICS */}
-        <section className="bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/20 shadow-xl overflow-hidden relative">
-          <div className="absolute top-0 right-0 p-8 opacity-5">
-            <Cpu className="h-32 w-32" />
-          </div>
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
-            <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-              <div className="h-20 w-20 rounded-3xl bg-primary flex items-center justify-center text-white shadow-2xl transform rotate-3">
-                <Activity className="h-10 w-10" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-3xl font-headline font-bold text-primary">Cognitive Curation</h3>
-                <p className="text-sm font-body italic text-muted-foreground">Advanced algorithmic optimization of your fashion ecosystem.</p>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap justify-center gap-6 md:gap-12">
-              <div className="text-center space-y-1">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Decision Speed</p>
-                <div className="flex items-center justify-center gap-2">
-                  <Zap className="h-4 w-4 text-accent" />
-                  <span className="text-2xl font-headline font-bold text-primary">-15m / day</span>
-                </div>
-              </div>
-              <div className="w-px h-12 bg-slate-100 hidden md:block" />
-              <div className="text-center space-y-1">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Inventory Health</p>
-                <div className="flex items-center justify-center gap-2">
-                  <UserCheck className="h-4 w-4 text-primary" />
-                  <span className="text-2xl font-headline font-bold text-primary">98.4%</span>
-                </div>
-              </div>
-              <div className="w-px h-12 bg-slate-100 hidden md:block" />
-              <div className="text-center space-y-1">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Style Entropy</p>
-                <div className="flex items-center justify-center gap-2">
-                  <MousePointer2 className="h-4 w-4 text-accent" />
-                  <span className="text-2xl font-headline font-bold text-primary">Minimal</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* 3. QUICK ACTIONS */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {[
@@ -340,7 +284,7 @@ export default function HomeScreen() {
                 </div>
                 <div className="space-y-3 group cursor-default">
                   <div className="h-12 w-12 rounded-xl bg-accent text-white flex items-center justify-center shadow-lg transition-transform group-hover:-rotate-6">
-                    <Shield className="h-6 w-6" />
+                    <Star className="h-6 w-6" />
                   </div>
                   <h4 className="font-headline font-bold text-2xl text-primary">Security</h4>
                   <p className="text-sm text-muted-foreground font-body">Your digital inventory is protected with professional-grade cloud security.</p>
