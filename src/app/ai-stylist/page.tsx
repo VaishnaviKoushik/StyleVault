@@ -22,7 +22,8 @@ import {
   Trophy,
   AlertTriangle,
   ShoppingBag,
-  ArrowRight
+  ArrowRight,
+  ArrowLeftRight
 } from "lucide-react";
 import { aiOutfitSuggester, type AiOutfitSuggesterOutput } from "@/ai/flows/ai-outfit-suggester";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
@@ -243,7 +244,7 @@ export default function AiStylistPage() {
                     </p>
                   </div>
 
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <Button 
                       className="flex-1 font-headline bg-primary hover:bg-primary/90 h-12 flex items-center justify-center gap-2"
                       onClick={handleSaveToPlanner}
@@ -253,11 +254,20 @@ export default function AiStylistPage() {
                     </Button>
                     <Button 
                       variant="outline" 
-                      className="flex-1 font-headline border-accent text-accent hover:bg-accent/5 h-12"
+                      className="flex-1 font-headline border-accent text-accent hover:bg-accent/5 h-12 flex items-center justify-center gap-2"
+                      asChild
+                    >
+                      <Link href="/compare">
+                        <ArrowLeftRight className="h-5 w-5" /> Compare with Friends
+                      </Link>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="flex-1 font-headline border-slate-200 text-slate-400 h-12"
                       onClick={handleGenerate}
                       disabled={loading}
                     >
-                      {loading ? "Re-generating..." : "Try Another Combination"}
+                      {loading ? "Re-generating..." : "Try Another"}
                     </Button>
                   </div>
                 </CardContent>
