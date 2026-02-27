@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Camera, ChevronLeft, Sparkles, ArrowLeftRight, RotateCcw, Share2, Save, Check, Upload, X, Palette, Droplets } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
