@@ -2,8 +2,24 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Camera, ChevronLeft, Sparkles, ArrowLeftRight, RotateCcw, Share2, Save, Check, Upload, X, Palette, Droplets } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { 
+  Camera, 
+  ChevronLeft, 
+  Sparkles, 
+  ArrowLeftRight, 
+  RotateCcw, 
+  Share2, 
+  Save, 
+  Check, 
+  Upload, 
+  X, 
+  Palette, 
+  Droplets, 
+  ShoppingBag, 
+  ArrowRight, 
+  Heart 
+} from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +28,8 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { analyzeColorPalette, type ColorPaletteOutput } from "@/ai/flows/color-palette-analysis";
+import { smartShoppingSuggestions, type ShoppingSuggestionsOutput } from "@/ai/flows/smart-shopping-suggestions";
+import { MOCK_WARDROBE, MOCK_OUTFITS } from "@/lib/mock-data";
 
 const COLOR_PALETTES = [
   { name: 'Royal Blue', hex: '#002366', season: 'Winter' },
@@ -42,6 +60,8 @@ export default function TryOnScreen() {
   // AI Results State
   const [isAnalyzingPalette, setIsAnalyzingPalette] = useState(false);
   const [personalizedPalette, setPersonalizedPalette] = useState<ColorPaletteOutput | null>(null);
+  const [shoppingSuggestions, setShoppingSuggestions] = useState<ShoppingSuggestionsOutput['suggestions'] | null>(null);
+  const [isShoppingLoading, setIsShoppingLoading] = useState(false);
   
   // Camera & Upload State
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -151,6 +171,9 @@ export default function TryOnScreen() {
         title: "Analysis Complete", 
         description: `You have been identified as a ${result.season} season.` 
       });
+
+      // After getting palette, fetch shopping suggestions based on the identified season
+      fetchShoppingSuggestions(result.season);
     } catch (error) {
       console.error('Analysis error:', error);
       toast({ 
@@ -163,6 +186,32 @@ export default function TryOnScreen() {
     }
   };
 
+  const fetchShoppingSuggestions = async (season: string) => {
+    setIsShoppingLoading(true);
+    try {
+      const result = await smartShoppingSuggestions({
+        wardrobeItems: MOCK_WARDROBE.map(i => ({ name: i.name, category: i.category, color: i.color })),
+        outfits: MOCK_OUTFITS.map(o => ({ 
+          name: o.name, 
+          itemNames: o.items.map(id => MOCK_WARDROBE.find(item => item.id === id)?.name || '') 
+        })),
+        stylePreference: `colors matching ${season} season, minimalist`
+      });
+      setShoppingSuggestions(result.suggestions);
+    } catch (error) {
+      console.error("Shopping suggestions failed:", error);
+    } finally {
+      setIsShoppingLoading(false);
+    }
+  };
+
+  const handleAddToWishlist = (itemName: string) => {
+    toast({
+      title: "Added to Wishlist",
+      description: `${itemName} has been saved to your shopping list.`,
+    });
+  };
+
   const handleReset = () => {
     setShowResult(false);
     setPhotoTaken(false);
@@ -170,6 +219,7 @@ export default function TryOnScreen() {
     setProgress(0);
     setGenStep("");
     setPersonalizedPalette(null);
+    setShoppingSuggestions(null);
     stopCamera();
   };
 
@@ -374,7 +424,7 @@ export default function TryOnScreen() {
               </Button>
             </div>
 
-            {personalizedPalette && (
+            {personalizedPalette ? (
               <Card className="p-6 bg-white rounded-3xl shadow-xl border-none animate-in slide-in-from-bottom-4 duration-500">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
@@ -398,25 +448,93 @@ export default function TryOnScreen() {
                   </div>
                 </div>
               </Card>
+            ) : (
+              <Button 
+                className="w-full h-16 rounded-full gradient-primary font-headline text-lg text-white shadow-xl"
+                onClick={handleGetPersonalizedPalette}
+                disabled={isAnalyzingPalette}
+              >
+                {isAnalyzingPalette ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Stylist is Analyzing...
+                  </>
+                ) : (
+                  <>
+                    Get Personalized Palette
+                    <Droplets className="ml-2 h-5 w-5" />
+                  </>
+                )}
+              </Button>
             )}
-            
-            <Button 
-              className="w-full h-16 rounded-full gradient-primary font-headline text-lg text-white shadow-xl"
-              onClick={handleGetPersonalizedPalette}
-              disabled={isAnalyzingPalette}
-            >
-              {isAnalyzingPalette ? (
-                <>
-                  <div className="mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Stylist is Analyzing...
-                </>
-              ) : (
-                <>
-                  Get Personalized Palette
-                  <Droplets className="ml-2 h-5 w-5" />
-                </>
-              )}
-            </Button>
+
+            {/* Smart Shopping Suggestions Section */}
+            {personalizedPalette && (
+              <section className="space-y-6 pt-8 border-t">
+                <div className="flex items-center gap-3">
+                  <ShoppingBag className="h-6 w-6 text-primary" />
+                  <h3 className="text-2xl font-headline font-bold text-foreground">Complementary Additions</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {isShoppingLoading ? (
+                    Array.from({ length: 2 }).map((_, i) => (
+                      <Card key={i} className="p-4 bg-white/40 rounded-2xl animate-pulse">
+                        <div className="h-32 bg-slate-200 rounded-xl mb-4" />
+                        <div className="h-4 bg-slate-200 rounded-full w-3/4 mb-2" />
+                        <div className="h-3 bg-slate-200 rounded-full w-1/2" />
+                      </Card>
+                    ))
+                  ) : shoppingSuggestions ? (
+                    shoppingSuggestions.map((suggestion, idx) => (
+                      <Card key={idx} className="glass-card border-none overflow-hidden group hover:shadow-xl transition-all duration-300 bg-white/60 p-4">
+                        <div className="relative h-32 bg-slate-100 rounded-xl overflow-hidden mb-4">
+                          <Image 
+                            src={`https://picsum.photos/seed/${suggestion.itemName}/400/300`} 
+                            alt={suggestion.itemName} 
+                            fill 
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute top-2 left-2">
+                            <Badge className="bg-white/90 text-primary text-[8px] font-headline shadow-sm">
+                              {suggestion.platform}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div>
+                            <h4 className="text-sm font-headline font-bold text-primary truncate">{suggestion.itemName}</h4>
+                            <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">{suggestion.category}</p>
+                          </div>
+                          <p className="text-[10px] font-body text-slate-600 line-clamp-2 italic leading-tight">
+                            "{suggestion.reason}"
+                          </p>
+                          <div className="flex gap-2">
+                            <Button asChild className="flex-1 h-8 rounded-full gradient-primary text-white font-headline text-[10px]">
+                              <a href={suggestion.shopUrl} target="_blank" rel="noopener noreferrer">
+                                Shop <ArrowRight className="ml-1 h-3 w-3" />
+                              </a>
+                            </Button>
+                            <Button 
+                              size="icon" 
+                              variant="outline" 
+                              className="h-8 w-8 rounded-full border-primary/20 text-primary hover:bg-primary/5"
+                              onClick={() => handleAddToWishlist(suggestion.itemName)}
+                            >
+                              <Heart className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="col-span-full py-8 text-center bg-slate-50 rounded-2xl border border-dashed border-primary/10">
+                      <p className="text-xs font-headline font-bold text-slate-300">Suggestions cooling down...</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
           </div>
         )}
       </div>
