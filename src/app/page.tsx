@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -15,7 +16,8 @@ import {
   ChevronRight,
   Layers,
   Star,
-  Shield
+  Shield,
+  Smartphone
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -176,9 +178,9 @@ export default function HomeScreen() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
-            { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-accent/10 to-accent/5" },
-            { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-primary/10 to-accent/5" },
-            { label: "Brief", icon: Info, desc: "App Mission", href: "/proposal", color: "from-accent/10 to-primary/5" }
+            { label: "Try-On", icon: Smartphone, desc: "AR Experience", href: "/try-on", color: "from-accent/10 to-accent/5" },
+            { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5" },
+            { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-accent/10 to-primary/5" }
           ].map((action) => (
             <Link key={action.label} href={action.href}>
               <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
@@ -194,7 +196,7 @@ export default function HomeScreen() {
           ))}
         </div>
 
-        {/* 5. SIGNATURE LOOKBOOK & PORTFOLIO (NEW SECTION) */}
+        {/* 5. SIGNATURE LOOKBOOK & PORTFOLIO */}
         <section className="py-20 px-10 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">

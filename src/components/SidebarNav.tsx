@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Layers, Calendar, Sparkles, Home, LogOut, Settings, Camera, Presentation } from "lucide-react";
+import { Shirt, Layers, Calendar, Sparkles, Home, LogOut, Settings, Camera, Presentation, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -11,6 +12,7 @@ const navItems = [
   { label: "Assembler", icon: Layers, href: "/outfits" },
   { label: "Planner", icon: Calendar, href: "/planner" },
   { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
+  { label: "Virtual Try-On", icon: Smartphone, href: "/try-on" },
   { label: "Presentation", icon: Presentation, href: "/proposal" },
 ];
 
