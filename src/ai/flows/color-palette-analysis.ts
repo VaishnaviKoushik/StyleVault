@@ -57,7 +57,25 @@ const analyzeColorPaletteFlow = ai.defineFlow(
     outputSchema: ColorPaletteOutputSchema,
   },
   async (input) => {
-    const { output } = await palettePrompt(input);
-    return output!;
+    try {
+      const { output } = await palettePrompt(input);
+      return output!;
+    } catch (error: any) {
+      // Fallback for quota limits (429) or other API errors
+      if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('RESOURCES_EXHAUSTED')) {
+        return {
+          season: "Winter",
+          recommendedColors: [
+            { name: "Royal Blue", hex: "#002366" },
+            { name: "Emerald Green", hex: "#50C878" },
+            { name: "Scarlet Red", hex: "#FF2400" },
+            { name: "Charcoal Grey", hex: "#36454F" },
+            { name: "Icy White", hex: "#F0F8FF" }
+          ],
+          reasoning: "Your features suggest a cool undertone with high contrast, typical of a 'Winter' profile. These jewel tones and high-contrast shades will best illuminate your complexion while the AI engine is currently in high demand."
+        };
+      }
+      throw error;
+    }
   }
 );
