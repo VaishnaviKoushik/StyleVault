@@ -16,16 +16,23 @@ import {
   Layers,
   Star,
   Shield,
-  Smartphone
+  Smartphone,
+  ShoppingBag,
+  Heart,
+  ArrowRight
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
 import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useState, useEffect } from "react";
+import { MOCK_WARDROBE, MOCK_OUTFITS } from "@/lib/mock-data";
+import { smartShoppingSuggestions, type ShoppingSuggestionsOutput } from "@/ai/flows/smart-shopping-suggestions";
+import { useToast } from "@/hooks/use-toast";
 
 const chartData = [
   { month: "Jan", index: 65 },
@@ -44,6 +51,39 @@ const chartConfig = {
 };
 
 export default function HomeScreen() {
+  const [shoppingLoading, setShoppingLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<ShoppingSuggestionsOutput['suggestions'] | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchSuggestions() {
+      setShoppingLoading(true);
+      try {
+        const result = await smartShoppingSuggestions({
+          wardrobeItems: MOCK_WARDROBE.map(i => ({ name: i.name, category: i.category, color: i.color })),
+          outfits: MOCK_OUTFITS.map(o => ({ 
+            name: o.name, 
+            itemNames: o.items.map(id => MOCK_WARDROBE.find(i => i.id === id)?.name || '') 
+          })),
+          stylePreference: "minimalist, professional"
+        });
+        setSuggestions(result.suggestions);
+      } catch (error) {
+        console.error("Failed to fetch shopping suggestions:", error);
+      } finally {
+        setShoppingLoading(false);
+      }
+    }
+    fetchSuggestions();
+  }, []);
+
+  const handleAddToWishlist = (itemName: string) => {
+    toast({
+      title: "Added to Wishlist",
+      description: `${itemName} has been saved to your shopping list.`,
+    });
+  };
+
   return (
     <AppLayout>
       <div className="space-y-12 animate-in fade-in duration-1000 pt-8">
@@ -194,6 +234,73 @@ export default function HomeScreen() {
             </Link>
           ))}
         </div>
+
+        {/* NEW FEATURE: SMART SHOPPING SUGGESTIONS (AI POWERED) */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-3">
+              <ShoppingBag className="h-8 w-8 text-primary" />
+              <h3 className="text-3xl font-headline font-bold text-foreground">Smart Shopping Suggestions <Badge variant="secondary" className="bg-primary/10 text-primary ml-2">AI POWERED</Badge></h3>
+            </div>
+            <p className="hidden md:block text-sm text-muted-foreground font-body italic">Maximizing your wardrobe's ROI through data-driven additions.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {shoppingLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i} className="glass-card border-none p-6 space-y-4 animate-pulse">
+                  <div className="h-40 bg-slate-200 rounded-2xl w-full" />
+                  <div className="h-6 bg-slate-200 rounded-full w-3/4" />
+                  <div className="h-4 bg-slate-200 rounded-full w-full" />
+                </Card>
+              ))
+            ) : suggestions ? (
+              suggestions.map((suggestion, idx) => (
+                <Card key={idx} className="glass-card border-none overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-white/60">
+                  <div className="relative h-48 bg-slate-100 overflow-hidden">
+                    <Image 
+                      src={`https://picsum.photos/seed/${suggestion.itemName}/600/400`} 
+                      alt={suggestion.itemName} 
+                      fill 
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute top-3 left-3">
+                      <Badge className="bg-white/90 text-primary font-headline shadow-sm">
+                        +{suggestion.matchCount} Matches
+                      </Badge>
+                    </div>
+                  </div>
+                  <CardContent className="p-6 space-y-4">
+                    <div className="space-y-1">
+                      <h4 className="text-xl font-headline font-bold text-primary truncate">{suggestion.itemName}</h4>
+                      <p className="text-xs text-muted-foreground font-body uppercase tracking-widest">{suggestion.category}</p>
+                    </div>
+                    <p className="text-sm font-body text-slate-600 line-clamp-3 italic leading-relaxed">
+                      "{suggestion.reason}"
+                    </p>
+                    <div className="flex gap-2 pt-2">
+                      <Button className="flex-1 h-10 rounded-full gradient-primary text-white font-headline text-xs" variant="default">
+                        Shop Now <ArrowRight className="ml-1 h-3 w-3" />
+                      </Button>
+                      <Button 
+                        size="icon" 
+                        variant="outline" 
+                        className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/5"
+                        onClick={() => handleAddToWishlist(suggestion.itemName)}
+                      >
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center bg-white/40 rounded-[2rem] border-2 border-dashed border-primary/10">
+                <p className="font-headline font-bold text-slate-400">Unable to generate suggestions at this time.</p>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* 5. SIGNATURE LOOKBOOK & PORTFOLIO */}
         <section className="py-20 px-10 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
