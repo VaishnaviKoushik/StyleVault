@@ -2,32 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Layers, Calendar, Sparkles, Home, LogOut, FileText, Settings, PlusCircle } from "lucide-react";
+import { Shirt, Layers, Calendar, Sparkles, Home, LogOut, Settings, Camera, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard", icon: Home, href: "/" },
-  { label: "Catalog", icon: Shirt, href: "/wardrobe" },
+  { label: "My Wardrobe", icon: Shirt, href: "/wardrobe" },
   { label: "Assembler", icon: Layers, href: "/outfits" },
   { label: "Planner", icon: Calendar, href: "/planner" },
   { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
-  { label: "AR Try-On", icon: PlusCircle, href: "/try-on" },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <div className="w-full h-20 flex items-center justify-between px-8 bg-white border-b border-slate-100 shadow-sm">
-      <div className="flex items-center gap-12">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-            <Sparkles className="h-6 w-6" />
+    <div className="w-full h-24 flex items-center justify-between px-10 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm fixed top-0 left-0 right-0 z-50">
+      <div className="flex items-center gap-16">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="h-12 w-12 rounded-2xl gradient-primary flex items-center justify-center text-white shadow-xl group-hover:scale-110 transition-transform duration-500">
+            <Sparkles className="h-7 w-7" />
           </div>
-          <h1 className="text-2xl font-bold font-headline text-primary tracking-tight">StyleVault</h1>
+          <h1 className="text-3xl font-bold font-headline text-primary tracking-tighter">StyleVault</h1>
         </Link>
         
-        <nav className="flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -36,10 +35,10 @@ export function SidebarNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full transition-all font-headline font-bold text-sm whitespace-nowrap",
+                  "flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-300 font-headline font-bold text-sm whitespace-nowrap",
                   isActive 
-                    ? "bg-primary text-white shadow-md" 
-                    : "text-slate-400 hover:text-primary hover:bg-slate-50"
+                    ? "bg-primary text-white shadow-lg -translate-y-0.5" 
+                    : "text-slate-400 hover:text-primary hover:bg-primary/5"
                 )}
               >
                 <Icon className={cn("h-4 w-4", isActive ? "text-white" : "text-slate-300")} />
@@ -50,23 +49,22 @@ export function SidebarNav() {
         </nav>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Link
-          href="/settings"
-          className={cn(
-            "p-2 rounded-full transition-all text-slate-400 hover:text-primary hover:bg-slate-50",
-            pathname === "/settings" && "text-primary bg-slate-50"
-          )}
-          title="Settings"
-        >
-          <Settings className="h-5 w-5" />
-        </Link>
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3">
+           <Link href="/add-item" className="p-3 rounded-2xl glass-card hover:bg-accent hover:text-white transition-all text-primary">
+              <Camera className="h-5 w-5" />
+           </Link>
+           <Link href="/settings" className="p-3 rounded-2xl glass-card hover:bg-primary hover:text-white transition-all text-primary">
+              <Settings className="h-5 w-5" />
+           </Link>
+        </div>
         <button 
-          className="flex items-center gap-2 px-4 py-2 rounded-full font-headline font-bold text-sm text-slate-400 hover:text-destructive hover:bg-red-50 transition-all group"
+          className="hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full font-headline font-bold text-sm text-white gradient-primary shadow-lg hover:shadow-primary/20 transition-all active:scale-95"
           title="Sign Out"
         >
-          <LogOut className="h-4 w-4 text-slate-300 group-hover:text-destructive" />
-          <span>Sign Out</span>
+          <span>Alex Chen</span>
+          <div className="h-6 w-px bg-white/20 mx-1" />
+          <LogOut className="h-4 w-4" />
         </button>
       </div>
     </div>

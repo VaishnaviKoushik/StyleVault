@@ -5,11 +5,11 @@
 @layer base {
   :root {
     --background: 180 20% 98%;
-    --foreground: 180 50% 10%;
+    --foreground: 181 100% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 180 50% 10%;
+    --card-foreground: 181 100% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 180 50% 10%;
+    --popover-foreground: 181 100% 10%;
     --primary: 181 100% 19%; /* Deep Teal */
     --primary-foreground: 0 0% 100%;
     --secondary: 180 10% 94%;
@@ -69,11 +69,15 @@
   }
   
   .gradient-primary {
-    @apply bg-gradient-to-r from-[#006061] to-[#008080];
+    @apply bg-gradient-to-r from-[#003d3e] to-[#006061];
+  }
+
+  .gradient-accent {
+    @apply bg-gradient-to-r from-[#f0b429] to-[#d9a01b];
   }
 
   .gradient-pill {
-    @apply bg-gradient-to-r from-[#006061] to-[#f0b429];
+    @apply bg-gradient-to-r from-[#003d3e] to-[#f0b429];
   }
 
   .border-glow {
@@ -86,10 +90,6 @@
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
-
-  .main-content-area {
-    @apply flex-1 flex flex-col min-w-0 bg-transparent overflow-y-auto;
   }
 
   .page-container {
