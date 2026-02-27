@@ -24,6 +24,28 @@
     --input: 180 15% 90%;
     --ring: 181 100% 19%;
     --radius: 1.5rem;
+    --bg-gradient: linear-gradient(135deg, #f5fafa 0%, #eef6f6 100%);
+  }
+
+  .dark {
+    --background: 180 40% 4%;
+    --foreground: 180 10% 98%;
+    --card: 180 40% 6%;
+    --card-foreground: 180 10% 98%;
+    --popover: 180 40% 6%;
+    --popover-foreground: 180 10% 98%;
+    --primary: 181 100% 25%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 180 40% 10%;
+    --secondary-foreground: 180 10% 98%;
+    --muted: 180 40% 10%;
+    --muted-foreground: 180 10% 60%;
+    --accent: 43 96% 60%;
+    --accent-foreground: 180 40% 5%;
+    --border: 180 30% 15%;
+    --input: 180 30% 15%;
+    --ring: 181 100% 25%;
+    --bg-gradient: linear-gradient(135deg, #050a0a 0%, #0a1414 100%);
   }
 }
 
@@ -32,8 +54,9 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased;
-    background: linear-gradient(135deg, #f5fafa 0%, #eef6f6 100%);
+    @apply bg-background text-foreground font-body antialiased transition-colors duration-300;
+    background: var(--bg-gradient);
+    min-height: 100vh;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
@@ -42,7 +65,7 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/75 backdrop-blur-[20px] border border-white/40 shadow-[0_10px_40px_rgba(0,96,97,0.06)];
+    @apply bg-white/75 dark:bg-black/40 backdrop-blur-[20px] border border-white/40 dark:border-white/10 shadow-[0_10px_40px_rgba(0,96,97,0.06)];
   }
   
   .gradient-primary {
