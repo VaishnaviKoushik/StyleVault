@@ -24,6 +24,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { StyleVaultChat } from "@/components/StyleVaultChat";
 
 export default function HomeScreen() {
   return (
@@ -171,10 +172,7 @@ export default function HomeScreen() {
       </div>
 
       {/* Floating AI Chat Trigger */}
-      <Button className="fixed bottom-8 right-8 h-16 px-8 rounded-full gradient-pill shadow-2xl border-glow text-white font-headline text-lg group z-50">
-        <Brain className="mr-3 h-6 w-6 group-hover:animate-pulse" />
-        Ask StyleVault...
-      </Button>
+      <StyleVaultChat />
     </AppLayout>
   );
 }
