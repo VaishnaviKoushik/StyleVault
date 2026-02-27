@@ -1,7 +1,7 @@
 export interface WardrobeItem {
   id: string;
   name: string;
-  category: 'top' | 'bottom' | 'shoes' | 'accessory' | 'outerwear';
+  category: 'top' | 'bottom' | 'shoes' | 'accessory' | 'outerwear' | 'dress';
   color: string;
   brand?: string;
   occasion: string[];
@@ -75,8 +75,58 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     color: 'Black',
     brand: 'Uniqlo',
     occasion: ['work', 'formal', 'casual'],
-    imageUrl: 'https://picsum.photos/seed/clothing6/400/500',
+    imageUrl: 'https://images.unsplash.com/photo-1611312449412-6cefac5dc3e4?q=80&w=1080',
     description: 'Soft merino wool turtleneck in classic black.'
+  },
+  {
+    id: '7',
+    name: 'Little Black Dress',
+    category: 'dress',
+    color: 'Black',
+    brand: 'Chanel',
+    occasion: ['formal', 'night out'],
+    imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1080',
+    description: 'A sophisticated and timeless A-line black dress for elegant evenings.'
+  },
+  {
+    id: '8',
+    name: 'Floral Summer Maxi',
+    category: 'dress',
+    color: 'Multi',
+    brand: 'Reformation',
+    occasion: ['casual', 'party'],
+    imageUrl: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1080',
+    description: 'A breezy floral maxi dress with a side slit, perfect for garden parties.'
+  },
+  {
+    id: '9',
+    name: 'Red Cocktail Dress',
+    category: 'dress',
+    color: 'Red',
+    brand: 'Self-Portrait',
+    occasion: ['formal', 'party', 'night out'],
+    imageUrl: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=1080',
+    description: 'A stunning red cocktail dress with lace detailing and a flared hem.'
+  },
+  {
+    id: '10',
+    name: 'Denim Pinafore Dress',
+    category: 'dress',
+    color: 'Blue',
+    brand: 'Madewell',
+    occasion: ['casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?q=80&w=1080',
+    description: 'A versatile denim pinafore dress, easy to layer over tees or turtlenecks.'
+  },
+  {
+    id: '11',
+    name: 'Silk Slip Dress',
+    category: 'dress',
+    color: 'Emerald',
+    brand: 'Cuyana',
+    occasion: ['night out', 'formal'],
+    imageUrl: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=1080',
+    description: 'A luxurious emerald green silk slip dress with a minimalist silhouette.'
   }
 ];
 
@@ -94,5 +144,12 @@ export const MOCK_OUTFITS: Outfit[] = [
     items: ['6', '3', '5'],
     occasion: 'night out',
     createdAt: '2024-03-21T18:00:00Z'
+  },
+  {
+    id: 'o3',
+    name: 'Summer Gala',
+    items: ['9', '3', '5'],
+    occasion: 'formal',
+    createdAt: '2024-03-22T14:00:00Z'
   }
 ];

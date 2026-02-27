@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 
-const categories = ["all", "top", "bottom", "shoes", "accessory", "outerwear"];
+const categories = ["all", "top", "bottom", "dress", "shoes", "accessory", "outerwear"];
 
 export default function WardrobePage() {
   const [activeCategory, setActiveCategory] = useState("all");
