@@ -15,7 +15,7 @@
     {
       "id": "item3",
       "description": "Black leather boots",
-      "imageUrl": "https://images.unsplash.com/photo-1710632609125-da337a1e1ddd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsZWF0aGVyJTIwYm9vdHN8ZW58MHx8fHwxNzcyMjA3MDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1710632609125-da337a1e1ddd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw8fHxsZWF0aGVyJTIwYm9vdHN8ZW58MHx8fHwxNzcyMjA3MDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "leather boots"
     },
     {
@@ -31,40 +31,34 @@
       "imageHint": "silk scarf"
     },
     {
-      "id": "item7",
-      "description": "Little black dress",
-      "imageUrl": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1080",
-      "imageHint": "black dress"
+      "id": "acc-pink-bag",
+      "description": "Pink Quilted Handbag",
+      "imageUrl": "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=1080",
+      "imageHint": "pink handbag"
     },
     {
-      "id": "item8",
-      "description": "Floral summer dress",
-      "imageUrl": "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1080",
-      "imageHint": "floral dress"
+      "id": "acc-blue-bag",
+      "description": "Light Blue Satchel",
+      "imageUrl": "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=1080",
+      "imageHint": "blue handbag"
     },
     {
-      "id": "item9",
-      "description": "Red evening gown",
-      "imageUrl": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=1080",
-      "imageHint": "red gown"
+      "id": "acc-glasses",
+      "description": "Classic Black Frame Glasses",
+      "imageUrl": "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=1080",
+      "imageHint": "black glasses"
     },
     {
-      "id": "item10",
-      "description": "Denim dress",
-      "imageUrl": "https://images.unsplash.com/photo-1591369822096-ffd140ec948f?q=80&w=1080",
-      "imageHint": "denim dress"
+      "id": "acc-watch",
+      "description": "Rose Gold Mesh Watch",
+      "imageUrl": "https://images.unsplash.com/photo-1524805444758-09912d619dce?q=80&w=1080",
+      "imageHint": "gold watch"
     },
     {
-      "id": "item11",
-      "description": "Silk slip dress",
-      "imageUrl": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=1080",
-      "imageHint": "slip dress"
-    },
-    {
-      "id": "hero-closet",
-      "description": "Elegant organized closet",
-      "imageUrl": "https://images.unsplash.com/photo-1687953413905-731f620177ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxvcmdhbml6ZWQlMjBjbG9zZXR8ZW58MHx8fHwxNzcyMjA3MDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "organized closet"
+      "id": "acc-sunglasses",
+      "description": "Retro White Sunglasses",
+      "imageUrl": "https://images.unsplash.com/photo-1511499767390-a73953f46ca2?q=80&w=1080",
+      "imageHint": "white sunglasses"
     }
   ]
 }

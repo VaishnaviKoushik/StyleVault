@@ -1,3 +1,4 @@
+
 export interface WardrobeItem {
   id: string;
   name: string;
@@ -79,16 +80,6 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=1080',
     description: 'Classic button-up cardigan in a deep sage green.'
   },
-  {
-    id: '6',
-    name: 'Black Turtleneck',
-    category: 'top',
-    color: 'Black',
-    brand: 'Uniqlo',
-    occasion: ['work', 'formal', 'casual'],
-    imageUrl: 'https://images.unsplash.com/photo-1611312449412-6cefac5dc3e4?q=80&w=1080',
-    description: 'Soft merino wool turtleneck in classic black.'
-  },
 
   // --- BOTTOMS ---
   {
@@ -152,26 +143,56 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     description: 'Versatile beige chinos for a clean, classic look.'
   },
 
-  // --- DRESSES ---
+  // --- ACCESSORIES ---
   {
-    id: '7',
-    name: 'Little Black Dress',
-    category: 'dress',
-    color: 'Black',
-    brand: 'Chanel',
+    id: 'a1',
+    name: 'Pink Quilted Handbag',
+    category: 'accessory',
+    color: 'Pink',
+    brand: 'Gucci',
     occasion: ['formal', 'night out'],
-    imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1080',
-    description: 'A sophisticated and timeless A-line black dress for elegant evenings.'
+    imageUrl: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=1080',
+    description: 'A luxurious pink quilted leather bag with a gold chain strap.'
   },
   {
-    id: '8',
-    name: 'Floral Summer Maxi',
-    category: 'dress',
-    color: 'Multi',
-    brand: 'Reformation',
+    id: 'a2',
+    name: 'Blue Leather Satchel',
+    category: 'accessory',
+    color: 'Blue',
+    brand: 'Prada',
+    occasion: ['work', 'casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=1080',
+    description: 'Sophisticated light blue satchel for professional outings.'
+  },
+  {
+    id: 'a3',
+    name: 'Classic Black Glasses',
+    category: 'accessory',
+    color: 'Black',
+    brand: 'Ray-Ban',
+    occasion: ['work', 'casual'],
+    imageUrl: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=1080',
+    description: 'Minimalist black-rimmed glasses for a sharp, intellectual look.'
+  },
+  {
+    id: 'a4',
+    name: 'Gold Mesh Watch',
+    category: 'accessory',
+    color: 'Gold',
+    brand: 'Cluse',
+    occasion: ['work', 'formal'],
+    imageUrl: 'https://images.unsplash.com/photo-1524805444758-09912d619dce?q=80&w=1080',
+    description: 'Elegant rose gold mesh watch with a clean white dial.'
+  },
+  {
+    id: 'a5',
+    name: 'Retro White Sunglasses',
+    category: 'accessory',
+    color: 'White',
+    brand: 'Celine',
     occasion: ['casual', 'party'],
-    imageUrl: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1080',
-    description: 'A breezy floral maxi dress with a side slit, perfect for garden parties.'
+    imageUrl: 'https://images.unsplash.com/photo-1511499767390-a73953f46ca2?q=80&w=1080',
+    description: 'Bold white-framed sunglasses for a vintage-chic summer vibe.'
   },
 
   // --- OTHERS ---
@@ -194,16 +215,6 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     occasion: ['formal', 'work'],
     imageUrl: 'https://images.unsplash.com/photo-1589400445193-c881a4b0b38a?q=80&w=1080',
     description: 'A timeless beige trench coat for rainy or windy weather.'
-  },
-  {
-    id: '5',
-    name: 'Silk Floral Scarf',
-    category: 'accessory',
-    color: 'Multi',
-    brand: 'Hermès',
-    occasion: ['formal', 'casual'],
-    imageUrl: 'https://images.unsplash.com/photo-1677478863154-55ecce8c7536?q=80&w=1080',
-    description: 'Elegant silk scarf with a vibrant floral pattern.'
   }
 ];
 
@@ -211,7 +222,7 @@ export const MOCK_OUTFITS: Outfit[] = [
   {
     id: 'o1',
     name: 'Casual Work Day',
-    items: ['1', '2', '3'],
+    items: ['1', '2', '3', 'a3'],
     occasion: 'work',
     createdAt: '2024-03-20T10:00:00Z'
   },
@@ -225,7 +236,7 @@ export const MOCK_OUTFITS: Outfit[] = [
   {
     id: 'o3',
     name: 'Cozy Evening',
-    items: ['t2', 'b3'],
+    items: ['t2', 'b3', 'a5'],
     occasion: 'casual',
     createdAt: '2024-03-22T14:00:00Z'
   }
