@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Smartphone, Calendar, Sparkles, Home, User, PlusCircle, ShoppingBag } from "lucide-react";
+import { Shirt, Calendar, Sparkles, Home, PlusCircle, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Home", icon: Home, href: "/" },
   { label: "Closet", icon: Shirt, href: "/wardrobe" },
   { label: "Add", icon: PlusCircle, href: "/add-item", primary: true },
-  { label: "Stylist", icon: Sparkles, href: "/ai-stylist" },
+  { label: "Planner", icon: Calendar, href: "/planner" },
   { label: "Shopping", icon: ShoppingBag, href: "/shopping" },
 ];
 
