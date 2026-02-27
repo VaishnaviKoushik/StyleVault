@@ -34,8 +34,8 @@ export default function TryOnScreen() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Mock carousel options (First 4 items)
-  const carouselItems = MOCK_WARDROBE.slice(0, 4);
+  // Use all items from the wardrobe
+  const carouselItems = MOCK_WARDROBE;
 
   const steps = [
     "Analyzing body shape...",
@@ -249,7 +249,7 @@ export default function TryOnScreen() {
             <section className="space-y-3">
               <div className="flex justify-between items-end px-1">
                 <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Garment Selection</h4>
-                <span className="text-[10px] font-bold text-primary">4 Options Available</span>
+                <span className="text-[10px] font-bold text-primary">{carouselItems.length} Options Available</span>
               </div>
               <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 px-1">
                 {carouselItems.map((item) => (
