@@ -14,7 +14,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 const COLOR_PALETTES = [
   { name: 'Royal Blue', hex: '#002366', season: 'Winter' },
   { name: 'Emerald', hex: '#50C878', season: 'Winter' },
-  | { name: 'Burnt Orange', hex: '#CC5500', season: 'Autumn' },
+  { name: 'Burnt Orange', hex: '#CC5500', season: 'Autumn' },
   { name: 'Mustard', hex: '#FFDB58', season: 'Autumn' },
   { name: 'Sage Green', hex: '#B2AC88', season: 'Summer' },
   { name: 'Dusty Rose', hex: '#DCAE96', season: 'Summer' },
@@ -354,4 +354,3 @@ export default function TryOnScreen() {
     </div>
   );
 }
-
