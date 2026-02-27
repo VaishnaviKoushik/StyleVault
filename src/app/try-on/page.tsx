@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { analyzeColorPalette, type ColorPaletteOutput } from "@/ai/flows/color-palette-analysis";
 
 const COLOR_PALETTES = [
   { name: 'Royal Blue', hex: '#002366', season: 'Winter' },
@@ -37,6 +38,10 @@ export default function TryOnScreen() {
   const [showResult, setShowResult] = useState(false);
   const [sliderValue, setSliderValue] = useState(50);
   const [selectedColor, setSelectedColor] = useState(COLOR_PALETTES[0]);
+  
+  // AI Results State
+  const [isAnalyzingPalette, setIsAnalyzingPalette] = useState(false);
+  const [personalizedPalette, setPersonalizedPalette] = useState<ColorPaletteOutput | null>(null);
   
   // Camera & Upload State
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -135,12 +140,36 @@ export default function TryOnScreen() {
     }, 600);
   };
 
+  const handleGetPersonalizedPalette = async () => {
+    if (!capturedImage || isAnalyzingPalette) return;
+
+    setIsAnalyzingPalette(true);
+    try {
+      const result = await analyzeColorPalette({ photoDataUri: capturedImage });
+      setPersonalizedPalette(result);
+      toast({ 
+        title: "Analysis Complete", 
+        description: `You have been identified as a ${result.season} season.` 
+      });
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast({ 
+        title: "Analysis Failed", 
+        description: "We couldn't analyze your photo. Please try again with better lighting.",
+        variant: "destructive" 
+      });
+    } finally {
+      setIsAnalyzingPalette(false);
+    }
+  };
+
   const handleReset = () => {
     setShowResult(false);
     setPhotoTaken(false);
     setCapturedImage(null);
     setProgress(0);
     setGenStep("");
+    setPersonalizedPalette(null);
     stopCamera();
   };
 
@@ -344,10 +373,49 @@ export default function TryOnScreen() {
                 <span className="text-[10px] font-bold font-headline uppercase">Share Profile</span>
               </Button>
             </div>
+
+            {personalizedPalette && (
+              <Card className="p-6 bg-white rounded-3xl shadow-xl border-none animate-in slide-in-from-bottom-4 duration-500">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-accent" />
+                    <h4 className="font-headline font-bold text-xl text-primary">AI Palette: {personalizedPalette.season}</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-body italic leading-relaxed">
+                    "{personalizedPalette.reasoning}"
+                  </p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {personalizedPalette.recommendedColors.map((color, idx) => (
+                      <div key={idx} className="space-y-1">
+                        <div 
+                          className="aspect-square rounded-xl shadow-inner border border-black/5" 
+                          style={{ backgroundColor: color.hex }}
+                          title={color.name}
+                        />
+                        <p className="text-[8px] font-bold text-center uppercase truncate">{color.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            )}
             
-            <Button className="w-full h-16 rounded-full gradient-primary font-headline text-lg text-white shadow-xl">
-              Get Personalized Palette
-              <Droplets className="ml-2 h-5 w-5" />
+            <Button 
+              className="w-full h-16 rounded-full gradient-primary font-headline text-lg text-white shadow-xl"
+              onClick={handleGetPersonalizedPalette}
+              disabled={isAnalyzingPalette}
+            >
+              {isAnalyzingPalette ? (
+                <>
+                  <div className="mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Stylist is Analyzing...
+                </>
+              ) : (
+                <>
+                  Get Personalized Palette
+                  <Droplets className="ml-2 h-5 w-5" />
+                </>
+              )}
             </Button>
           </div>
         )}
