@@ -71,6 +71,8 @@ export default function AddItemPage() {
 
   if (!mounted) return null;
 
+  const currentCategoryLabel = categories.find(c => c.value === selectedCategory)?.label || "Not selected";
+
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500">
@@ -200,6 +202,7 @@ export default function AddItemPage() {
                     {categories.map(c => (
                       <Button 
                         key={c.value} 
+                        type="button"
                         variant={selectedCategory === c.value ? "default" : "outline"}
                         onClick={() => setSelectedCategory(c.value)}
                         className={cn(
@@ -217,9 +220,10 @@ export default function AddItemPage() {
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">Main Color</label>
                   <div className="flex flex-wrap gap-4 px-2">
                     {colors.map(color => (
-                      <div 
+                      <button 
                         key={color.name} 
-                        className="flex flex-col items-center gap-2 cursor-pointer group"
+                        type="button"
+                        className="flex flex-col items-center gap-2 cursor-pointer group outline-none"
                         onClick={() => setSelectedColor(color.name)}
                       >
                         <div 
@@ -237,7 +241,7 @@ export default function AddItemPage() {
                           "text-[10px] font-bold transition-colors",
                           selectedColor === color.name ? "text-primary" : "text-muted-foreground"
                         )}>{color.name}</span>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -268,7 +272,7 @@ export default function AddItemPage() {
                     <h3 className="text-3xl font-headline font-bold">{itemName || "New Wardrobe Item"}</h3>
                     <div className="flex gap-2">
                       <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">
-                        {categories.find(c => c.value === selectedCategory)?.label || "Uncategorized"}
+                        {currentCategoryLabel}
                       </Badge>
                       <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">
                         {selectedColor || "No Color"}
@@ -283,7 +287,7 @@ export default function AddItemPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 rounded-2xl bg-slate-50">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Category</p>
-                        <p className="font-headline font-bold">{categories.find(c => c.value === selectedCategory)?.label}</p>
+                        <p className="font-headline font-bold">{currentCategoryLabel}</p>
                       </div>
                       <div className="p-4 rounded-2xl bg-slate-50">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Color</p>
