@@ -29,7 +29,8 @@ import {
   UserCheck,
   Activity,
   Cpu,
-  MousePointer2
+  MousePointer2,
+  Quote
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,6 +60,27 @@ const chartConfig = {
     color: "hsl(var(--primary))",
   },
 };
+
+const testimonials = [
+  {
+    quote: "StyleVault has completely transformed my morning routine. I save at least 20 minutes a day, and I've never felt more confident in my choices.",
+    author: "Sarah J.",
+    role: "Creative Director",
+    avatar: "https://picsum.photos/seed/sarah/100/100"
+  },
+  {
+    quote: "The color analysis tool is a total game changer for my clients. It's like having a professional stylist in your pocket at all times.",
+    author: "Michael R.",
+    role: "Personal Stylist",
+    avatar: "https://picsum.photos/seed/michael/100/100"
+  },
+  {
+    quote: "I finally feel like I'm using 100% of my wardrobe. The AI gap analysis is brilliant—it identified exactly what my collection was missing.",
+    author: "Elena T.",
+    role: "Tech Executive",
+    avatar: "https://picsum.photos/seed/elena/100/100"
+  }
+];
 
 export default function HomeScreen() {
   const [transitionAlert, setTransitionAlert] = useState<SeasonalTransitionOutput | null>(null);
@@ -204,7 +226,7 @@ export default function HomeScreen() {
           </Card>
         </section>
 
-        {/* 2. COGNITIVE STYLE METRICS (Replacement for Smart Greeting) */}
+        {/* 2. COGNITIVE STYLE METRICS */}
         <section className="bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/20 shadow-xl overflow-hidden relative">
           <div className="absolute top-0 right-0 p-8 opacity-5">
             <Cpu className="h-32 w-32" />
@@ -271,7 +293,7 @@ export default function HomeScreen() {
           ))}
         </div>
 
-        {/* 4. INTEL SUMMARY CARD instead of full suggestions */}
+        {/* 4. INTEL SUMMARY CARD */}
         <section className="animate-in slide-in-from-bottom-8 duration-1000">
            <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10">
               <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl border-8 border-slate-50">
@@ -351,37 +373,61 @@ export default function HomeScreen() {
           </div>
         </section>
 
-        {/* 6. REAL-WORLD IMPACT SECTION */}
+        {/* 6. REAL-WORLD IMPACT & TESTIMONIALS SECTION */}
         <section className="py-24 space-y-16">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
             <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
-              Real-World Impact
+              Community Voices
             </Badge>
             <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
-              Style with Purpose. <span className="text-accent italic block">Impact with Every Choice.</span>
+              Style with Purpose. <span className="text-accent italic block">Proven Results.</span>
             </h3>
             <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
-              "We believe that a well-curated wardrobe is the foundation for both personal peak performance and global environmental responsibility."
+              "We believe that a well-curated wardrobe is the foundation for both personal peak performance and professional confidence."
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, idx) => (
+              <Card key={idx} className="border-none shadow-xl bg-white rounded-[2.5rem] p-8 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
+                <div className="space-y-6">
+                  <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary/20">
+                    <Quote className="h-8 w-8" />
+                  </div>
+                  <p className="text-lg font-body text-slate-600 leading-relaxed italic">
+                    "{t.quote}"
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 pt-8 border-t border-slate-50 mt-8">
+                  <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-primary/10">
+                    <Image src={t.avatar} alt={t.author} fill className="object-cover" />
+                  </div>
+                  <div>
+                    <h5 className="font-headline font-bold text-primary">{t.author}</h5>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.role}</p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pt-16 border-t border-slate-100">
             {[
               {
                 title: "Sustainable Curation",
-                desc: "StyleVault reduces the environmental footprint of fashion by maximizing the utility of items you already own, actively discouraging the 'fast fashion' cycle through intelligent rotation and gap analysis.",
+                desc: "StyleVault reduces the environmental footprint of fashion by maximizing the utility of items you already own, actively discouraging the 'fast fashion' cycle.",
                 icon: Globe,
                 accent: "text-primary"
               },
               {
                 title: "Cognitive Clarity",
-                desc: "By offloading the daily 'what to wear' choice to our AI engine, users save an average of 15-20 minutes every morning, eliminating decision fatigue and freeing up mental space for high-impact creative work.",
+                desc: "By offloading the daily 'what to wear' choice to our AI engine, users save an average of 15-20 minutes every morning, eliminating decision fatigue.",
                 icon: ZapOff,
                 accent: "text-accent"
               },
               {
                 title: "Professional Evolution",
-                desc: "Our color theory and fabric intelligence tools ensure your visual identity is consistently aligned with your professional goals, leveraging the psychology of style to build presence and authority.",
+                desc: "Our color theory and fabric intelligence tools ensure your visual identity is consistently aligned with your professional goals, building authority.",
                 icon: UserCheck,
                 accent: "text-primary"
               }
@@ -399,33 +445,6 @@ export default function HomeScreen() {
               </div>
             ))}
           </div>
-
-          <Card className="border-none shadow-2xl bg-white rounded-[3rem] p-12 flex flex-col md:flex-row items-center gap-12 overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-            <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl">
-              <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" alt="Sustainable" fill className="object-cover" />
-              <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] flex items-center justify-center">
-                <Globe className="h-20 w-20 text-white opacity-40" />
-              </div>
-            </div>
-            <div className="md:w-2/3 space-y-6">
-              <h4 className="text-3xl font-headline font-bold text-primary italic">The "StyleVault" Standard</h4>
-              <p className="text-lg font-body text-slate-600 leading-relaxed italic">
-                "Our technology isn't just about clothes; it's about the conscious curation of a life lived with intentionality. From the textiles we wear to the time we save, every algorithm is built to empower the modern professional while respecting the planet."
-              </p>
-              <div className="flex gap-4 pt-4">
-                <div className="text-center">
-                  <p className="text-3xl font-headline font-bold text-primary">82%</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Waste Reduction</p>
-                </div>
-                <div className="w-px h-10 bg-slate-100" />
-                <div className="text-center">
-                  <p className="text-3xl font-headline font-bold text-accent">120h</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Time Saved / Year</p>
-                </div>
-              </div>
-            </div>
-          </Card>
         </section>
       </div>
 
