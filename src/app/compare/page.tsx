@@ -90,7 +90,11 @@ export default function ComparePage() {
             onClick={() => setView(view === "active" ? "create" : "active")}
             className="rounded-full h-14 px-8 gradient-primary text-white font-headline text-lg shadow-xl hover:scale-105 transition-all"
           >
-            {view === "active" ? <><Plus className="mr-2 h-5 w-5" /> New Style Battle</> : "View Active Battles"}
+            {view === "active" ? (
+              <><Plus className="mr-2 h-5 w-5" /> New Style Battle</>
+            ) : (
+              "View Active Battles"
+            )}
           </Button>
         </header>
 

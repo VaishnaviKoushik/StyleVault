@@ -5,13 +5,12 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Search, Sparkles, TrendingUp, Zap, ArrowRight, Layers, Palette, Info, AlertTriangle, ArrowUpFromLine, ArrowDownToLine } from "lucide-react";
+import { Search, Sparkles, TrendingUp, Zap, ArrowRight, Layers, Palette, AlertTriangle, ArrowUpFromLine, ArrowDownToLine } from "lucide-react";
 import { trendResearcher, type TrendResearcherOutput } from "@/ai/flows/trend-researcher";
 import { seasonalTransitionAlert, type SeasonalTransitionOutput } from "@/ai/flows/seasonal-transition-alert";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 const suggestedTopics = [
@@ -84,53 +83,55 @@ export default function TrendResearcherPage() {
           </div>
         </header>
 
-        {/* Seasonal Transition Alert - Moved here from Home but styled similarly */}
+        {/* SEASONAL TRANSITION ALERT - High end layout */}
         {transitionAlert && (
-          <section className="animate-in slide-in-from-right duration-700">
-             <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-8 flex flex-col md:flex-row items-center gap-8 border border-accent/10">
-                <div className="md:w-1/4 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl">
+          <section className="animate-in slide-in-from-top-8 duration-1000">
+             <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10 border border-accent/10">
+                <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl border-8 border-slate-50">
                    <Image src="https://images.unsplash.com/photo-1589400445193-c881a4b0b38a" alt="Seasonal Transition" fill className="object-cover" />
-                   <div className="absolute inset-0 bg-primary/40 flex flex-col items-center justify-center p-4 text-center">
-                      <AlertTriangle className="h-12 w-12 text-white opacity-40 mb-2" />
-                      <Badge className="bg-accent text-primary border-none font-headline uppercase text-[8px] tracking-widest px-3">
-                        Active Shift
+                   <div className="absolute inset-0 bg-primary/20 flex flex-col items-center justify-center p-6 text-center">
+                      <AlertTriangle className="h-20 w-20 text-white opacity-40 mb-4" />
+                      <Badge className="bg-accent text-primary border-none font-headline uppercase text-[10px] tracking-widest px-4">
+                        Transition Alert
                       </Badge>
                    </div>
                 </div>
-                <div className="md:w-3/4 space-y-4">
-                   <div className="space-y-1">
-                     <Badge className="bg-primary/5 text-primary font-headline uppercase text-[10px] tracking-widest">Seasonal Transition</Badge>
-                     <h3 className="text-2xl font-headline font-bold text-primary italic">
+                <div className="md:w-2/3 space-y-6">
+                   <div className="space-y-2">
+                     <Badge className="bg-primary/10 text-primary font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
+                       Seasonal Intelligence
+                     </Badge>
+                     <h3 className="text-4xl font-headline font-bold text-primary italic leading-tight">
                        {transitionAlert.title}
                      </h3>
                    </div>
-                   <p className="text-sm font-body text-slate-600 italic">
+                   <p className="text-lg font-body text-slate-600 leading-relaxed italic border-l-4 border-accent pl-6">
                       "{transitionAlert.description}"
                    </p>
                    
-                   <div className="grid grid-cols-2 gap-4">
-                     <div className="space-y-1">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-accent flex items-center gap-1">
-                          <ArrowUpFromLine className="h-2 w-2" /> Bring In
-                        </span>
-                        <p className="text-[11px] font-headline font-bold text-primary">
-                          {transitionAlert.rotateIn.slice(0, 3).join(', ')}
-                        </p>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-2">
+                     <div className="p-4 rounded-2xl bg-slate-50 flex flex-col gap-2">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-accent flex items-center gap-1">
+                         <ArrowUpFromLine className="h-3 w-3" /> Rotate In
+                       </span>
+                       <p className="text-sm font-headline font-bold text-primary">
+                         {transitionAlert.rotateIn.slice(0, 3).join(', ')}...
+                       </p>
                      </div>
-                     <div className="space-y-1">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1">
-                          <ArrowDownToLine className="h-2 w-2" /> Store Away
-                        </span>
-                        <p className="text-[11px] font-headline font-bold text-slate-400">
-                          {transitionAlert.rotateOut.slice(0, 3).join(', ')}
-                        </p>
+                     <div className="p-4 rounded-2xl bg-slate-50 flex flex-col gap-2">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+                         <ArrowDownToLine className="h-3 w-3" /> Rotate Out
+                       </span>
+                       <p className="text-sm font-headline font-bold text-slate-400">
+                         {transitionAlert.rotateOut.slice(0, 3).join(', ')}...
+                       </p>
                      </div>
                    </div>
-                   
-                   <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-start gap-3">
-                      <Sparkles className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-                      <p className="text-[11px] font-body text-slate-500 leading-relaxed italic">
-                        {transitionAlert.preparationTip}
+
+                   <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
+                      <Sparkles className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                      <p className="text-sm font-body text-primary/80 italic leading-relaxed">
+                        Pro Tip: {transitionAlert.preparationTip}
                       </p>
                    </div>
                 </div>

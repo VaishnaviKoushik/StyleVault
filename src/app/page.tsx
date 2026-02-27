@@ -14,14 +14,10 @@ import {
   ShoppingBag,
   ArrowRight,
   Search,
-  AlertTriangle,
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  Wind,
+  Quote,
   Globe,
   ZapOff,
-  UserCheck,
-  Quote
+  UserCheck
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,8 +27,6 @@ import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { useState, useEffect } from "react";
-import { seasonalTransitionAlert, type SeasonalTransitionOutput } from "@/ai/flows/seasonal-transition-alert";
 
 const chartData = [
   { month: "Jan", index: 65 },
@@ -72,84 +66,11 @@ const testimonials = [
 ];
 
 export default function HomeScreen() {
-  const [transitionAlert, setTransitionAlert] = useState<SeasonalTransitionOutput | null>(null);
-  const [alertLoading, setAlertLoading] = useState(false);
-
-  useEffect(() => {
-    async function fetchData() {
-      setAlertLoading(true);
-      const currentMonth = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date());
-
-      try {
-        const transitionResult = await seasonalTransitionAlert({ currentMonth });
-        setTransitionAlert(transitionResult);
-      } catch (error) {
-        console.error("Failed to fetch dashboard intelligence:", error);
-      } finally {
-        setAlertLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
   return (
     <AppLayout>
       <div className="space-y-12 animate-in fade-in duration-1000 pt-8">
         
-        {/* SEASONAL TRANSITION ALERT - Styled like Curation card */}
-        {transitionAlert && (
-          <section className="animate-in slide-in-from-top-8 duration-1000">
-             <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10">
-                <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl border-8 border-slate-50">
-                   <Image src="https://images.unsplash.com/photo-1589400445193-c881a4b0b38a" alt="Seasonal Transition" fill className="object-cover" />
-                   <div className="absolute inset-0 bg-primary/20 flex flex-col items-center justify-center p-6 text-center">
-                      <AlertTriangle className="h-20 w-20 text-white opacity-40 mb-4" />
-                      <Badge className="bg-accent text-primary border-none font-headline uppercase text-[10px] tracking-widest px-4">
-                        Transition Alert
-                      </Badge>
-                   </div>
-                </div>
-                <div className="md:w-2/3 space-y-6">
-                   <div className="space-y-2">
-                     <Badge className="bg-primary/10 text-primary font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
-                       Seasonal Intelligence
-                     </Badge>
-                     <h3 className="text-4xl font-headline font-bold text-primary italic leading-tight">
-                       {transitionAlert.title}
-                     </h3>
-                   </div>
-                   <p className="text-lg font-body text-slate-600 leading-relaxed italic border-l-4 border-accent pl-6">
-                      "{transitionAlert.description}"
-                   </p>
-                   
-                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
-                     <div className="p-4 rounded-2xl bg-slate-50 flex flex-col gap-2">
-                       <span className="text-[10px] font-bold uppercase tracking-widest text-accent flex items-center gap-1">
-                         <ArrowUpFromLine className="h-3 w-3" /> Rotate In
-                       </span>
-                       <p className="text-xs font-headline font-bold text-primary">
-                         {transitionAlert.rotateIn.slice(0, 3).join(', ')}...
-                       </p>
-                     </div>
-                     <div className="p-4 rounded-2xl bg-slate-50 flex flex-col gap-2">
-                       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1">
-                         <ArrowDownToLine className="h-3 w-3" /> Rotate Out
-                       </span>
-                       <p className="text-xs font-headline font-bold text-slate-400">
-                         {transitionAlert.rotateOut.slice(0, 3).join(', ')}...
-                       </p>
-                     </div>
-                   </div>
-
-                   <Button asChild className="h-14 px-8 rounded-full gradient-primary text-white font-headline text-lg shadow-xl hover:scale-105 transition-all">
-                      <Link href="/trends">View Full Transition Strategy <ArrowRight className="ml-2 h-5 w-5" /></Link>
-                   </Button>
-                </div>
-             </Card>
-          </section>
-        )}
-
-        {/* 1. HERO SECTION */}
+        {/* HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <Badge className="bg-accent/10 text-accent font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
@@ -201,7 +122,7 @@ export default function HomeScreen() {
           </Card>
         </section>
 
-        {/* 3. QUICK ACTIONS */}
+        {/* QUICK ACTIONS */}
         <section className="space-y-8">
           <div className="space-y-4 text-center max-w-3xl mx-auto">
             <h3 className="text-4xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
@@ -233,7 +154,7 @@ export default function HomeScreen() {
           </div>
         </section>
 
-        {/* 4. INTEL SUMMARY CARD */}
+        {/* INTEL SUMMARY CARD */}
         <section className="animate-in slide-in-from-bottom-8 duration-1000">
            <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10">
               <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl border-8 border-slate-50">
@@ -255,7 +176,7 @@ export default function HomeScreen() {
            </Card>
         </section>
 
-        {/* 5. SIGNATURE LOOKBOOK */}
+        {/* SIGNATURE LOOKBOOK */}
         <section className="py-20 px-10 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -313,7 +234,7 @@ export default function HomeScreen() {
           </div>
         </section>
 
-        {/* 6. REAL-WORLD IMPACT & TESTIMONIALS SECTION */}
+        {/* TESTIMONIALS SECTION */}
         <section className="py-24 space-y-16">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
             <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
@@ -388,7 +309,6 @@ export default function HomeScreen() {
         </section>
       </div>
 
-      {/* Floating AI Chat Trigger */}
       <StyleVaultChat />
     </AppLayout>
   );
