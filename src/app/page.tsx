@@ -33,7 +33,7 @@ export default function HomeScreen() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <h2 className="text-5xl font-headline font-bold text-foreground tracking-tight">Good Morning, Alex ✨</h2>
-            <p className="text-lg text-muted-foreground font-body italic">Your AI stylist has curated something special today.</p>
+            <p className="text-lg text-muted-foreground font-body italic">Your StyleVault stylist has curated something special today.</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 bg-white/70 backdrop-blur-md px-5 py-2 rounded-full border border-white/40 shadow-sm">
@@ -92,7 +92,7 @@ export default function HomeScreen() {
                   <Zap className="h-5 w-5" />
                 </Button>
               </div>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest text-center">Styled just for you by ClosetMind AI</p>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest text-center">Styled just for you by StyleVault AI</p>
             </CardContent>
           </div>
         </Card>
@@ -144,7 +144,7 @@ export default function HomeScreen() {
         {/* 5. HOW YOUR AI STYLIST WORKS */}
         <section className="space-y-8 py-10">
           <h3 className="text-3xl font-headline font-bold text-center flex items-center justify-center gap-3">
-            <Sparkles className="h-6 w-6 text-primary" /> How Your AI Stylist Works
+            <Sparkles className="h-6 w-6 text-primary" /> How StyleVault AI Works
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
@@ -168,99 +168,13 @@ export default function HomeScreen() {
             ))}
           </div>
         </section>
-
-        {/* 6 & 7. PLANNER & INSIGHTS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Planner Preview */}
-          <Card className="lg:col-span-2 glass-card border-none overflow-hidden">
-            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-white/40">
-              <h4 className="text-2xl font-headline font-bold flex items-center gap-3">
-                <Calendar className="h-6 w-6 text-primary" /> Upcoming Events
-              </h4>
-              <Link href="/planner" className="text-xs font-bold text-primary hover:underline uppercase tracking-widest">View Full Planner</Link>
-            </div>
-            <CardContent className="p-8">
-              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {[
-                  { day: "Today", date: "Mar 22", outfit: "Casual Coffee", weather: "Sun", color: "bg-primary/5" },
-                  { day: "Tomorrow", date: "Mar 23", outfit: "Office Chic", weather: "Cloud", color: "bg-accent/5" },
-                  { day: "Friday", date: "Mar 24", outfit: "Date Night", weather: "Sun", color: "bg-primary/5" },
-                  { day: "Saturday", date: "Mar 25", outfit: "Yoga Look", weather: "Rain", color: "bg-accent/5" }
-                ].map((item) => (
-                  <div key={item.date} className="min-w-[160px] flex flex-col gap-3 group">
-                    <div className={cn("aspect-square rounded-[2rem] p-4 flex flex-col items-center justify-center text-center space-y-1 group-hover:scale-105 transition-all shadow-sm", item.color)}>
-                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">{item.day}</p>
-                      <p className="text-xl font-headline font-bold">{item.date}</p>
-                      <Sun className="h-5 w-5 opacity-40" />
-                    </div>
-                    <p className="text-xs font-headline font-bold text-center truncate px-2">{item.outfit}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Style Insights */}
-          <Card className="glass-card border-none p-8 space-y-8 bg-gradient-to-br from-white to-primary/5">
-            <h4 className="text-2xl font-headline font-bold flex items-center gap-3">
-              <TrendingUp className="h-6 w-6 text-primary" /> Style Insights
-            </h4>
-            <div className="space-y-6">
-              {[
-                { label: "Neutral Tones Preference", value: 63, text: "You wear neutral tones 63% of the time." },
-                { label: "Item Recency", value: 20, text: "You haven’t worn your leather jacket in 21 days." },
-                { label: "Weekend Vibes", value: 85, text: "You prefer casual outfits on weekends." }
-              ].map((insight) => (
-                <div key={insight.label} className="space-y-3">
-                  <div className="flex justify-between items-end">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{insight.label}</p>
-                    <p className="text-xs font-headline font-bold text-primary">{insight.value}%</p>
-                  </div>
-                  <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full gradient-pill" style={{ width: `${insight.value}%` }} />
-                  </div>
-                  <p className="text-xs font-body italic text-muted-foreground">{insight.text}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        {/* 8. RECENTLY ADDED ITEMS */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-2xl font-headline font-bold">Recently Added</h3>
-            <Link href="/wardrobe" className="text-sm font-bold text-primary hover:underline font-headline flex items-center gap-1">
-              VIEW FULL CLOSET <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide px-2">
-            {MOCK_WARDROBE.slice(0, 6).map((item) => (
-              <div key={item.id} className="min-w-[180px] group relative space-y-3 cursor-pointer">
-                <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-lg group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-500 border-2 border-transparent group-hover:border-primary/20 bg-white">
-                  <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                  <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md rounded-full p-1.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Zap className="h-3 w-3 text-accent" />
-                  </div>
-                  <div className="absolute bottom-4 left-4">
-                    <Badge className="bg-white/90 text-[8px] font-bold uppercase border-none shadow-md">Worn 3x</Badge>
-                  </div>
-                </div>
-                <div className="px-2">
-                  <p className="text-xs font-bold font-headline truncate group-hover:text-primary transition-colors">{item.name}</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">{item.category}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Floating AI Chat Trigger */}
-        <Button className="fixed bottom-8 right-8 h-16 px-8 rounded-full gradient-pill shadow-2xl border-glow text-white font-headline text-lg group z-50">
-          <Brain className="mr-3 h-6 w-6 group-hover:animate-pulse" />
-          Ask your stylist...
-        </Button>
       </div>
+
+      {/* Floating AI Chat Trigger */}
+      <Button className="fixed bottom-8 right-8 h-16 px-8 rounded-full gradient-pill shadow-2xl border-glow text-white font-headline text-lg group z-50">
+        <Brain className="mr-3 h-6 w-6 group-hover:animate-pulse" />
+        Ask StyleVault...
+      </Button>
     </AppLayout>
   );
 }

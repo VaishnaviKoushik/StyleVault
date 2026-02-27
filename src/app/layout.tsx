@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'ClosetMind — Professional AI Wardrobe',
+  title: 'StyleVault — Professional AI Wardrobe',
   description: 'The ultimate AI wardrobe and smart outfit planner.',
 };
 
