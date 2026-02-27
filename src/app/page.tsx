@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from "@/components/AppLayout";
@@ -172,12 +173,6 @@ export default function HomeScreen() {
               <div className="pt-6">
                 <Button asChild className="h-16 px-10 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 transition-all">
                   <Link href="/shopping">View Smart Suggestions <ArrowRight className="ml-2 h-6 w-6" /></Link>
-                </Button>
-              </div>
-
-              <div className="pt-8 border-t border-slate-200/50">
-                 <Button asChild variant="outline" className="rounded-full border-primary/20 text-primary hover:bg-primary hover:text-white font-headline h-14 px-8 transition-all">
-                   <Link href="/proposal">View Architecture <ChevronRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
               </div>
             </div>
