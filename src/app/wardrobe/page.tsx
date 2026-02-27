@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { smartShoppingSuggestions, type ShoppingSuggestionsOutput } from "@/ai/flows/smart-shopping-suggestions";
 import { analyzeFabric, type FabricIntelligenceOutput } from "@/ai/flows/fabric-intelligence";
 import { Progress } from "@/components/ui/progress";
 
@@ -26,35 +25,13 @@ export default function WardrobePage() {
   const [items, setItems] = useState<WardrobeItem[]>(MOCK_WARDROBE);
   const [editingItem, setEditingItem] = useState<WardrobeItem | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [shoppingSuggestions, setShoppingSuggestions] = useState<ShoppingSuggestionsOutput['suggestions'] | null>(null);
-  const [shoppingLoading, setShoppingLoading] = useState(false);
   const [fabricAnalysis, setFabricAnalysis] = useState<FabricIntelligenceOutput | null>(null);
   const [analyzingFabric, setAnalyzingFabric] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     setMounted(true);
-    fetchShoppingSuggestions();
   }, []);
-
-  const fetchShoppingSuggestions = async () => {
-    setShoppingLoading(true);
-    try {
-      const result = await smartShoppingSuggestions({
-        wardrobeItems: MOCK_WARDROBE.map(i => ({ name: i.name, category: i.category, color: i.color })),
-        outfits: MOCK_OUTFITS.map(o => ({ 
-          name: o.name, 
-          itemNames: o.items.map(id => MOCK_WARDROBE.find(item => item.id === id)?.name || '') 
-        })),
-        stylePreference: "minimalist, professional"
-      });
-      setShoppingSuggestions(result.suggestions);
-    } catch (error) {
-      console.error("Shopping suggestions failed:", error);
-    } finally {
-      setShoppingLoading(false);
-    }
-  };
 
   const handleFabricIntelligence = async (item: WardrobeItem) => {
     setAnalyzingFabric(true);
@@ -78,12 +55,6 @@ export default function WardrobePage() {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-
-  const categorySuggestions = useMemo(() => {
-    if (!shoppingSuggestions) return [];
-    if (activeCategory === "all") return shoppingSuggestions;
-    return shoppingSuggestions.filter(s => s.category === activeCategory);
-  }, [shoppingSuggestions, activeCategory]);
 
   const handleDelete = (id: string) => {
     setItems(prev => prev.filter(i => i.id !== id));
@@ -271,59 +242,17 @@ export default function WardrobePage() {
           </Link>
         </div>
 
-        {/* Smart Shopping Section - Bottom of closet */}
-        <section className="pt-20 border-t space-y-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <ShoppingBag className="h-8 w-8 text-primary" />
-              <h3 className="text-3xl font-headline font-bold">Smart Suggestions <Badge className="bg-primary/10 text-primary ml-2">AI POWERED</Badge></h3>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {shoppingLoading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-64 bg-slate-100 rounded-3xl animate-pulse" />
-              ))
-            ) : categorySuggestions.length > 0 ? (
-              categorySuggestions.map((suggestion, idx) => (
-                <Card key={idx} className="glass-card border-none overflow-hidden bg-white/60">
-                  <div className="relative h-40 bg-slate-100">
-                    <Image src={suggestion.imageUrl} alt={suggestion.itemName} fill className="object-cover" />
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-white/90 text-primary font-headline shadow-sm">
-                        {suggestion.matchCount} Matches
-                      </Badge>
-                    </div>
-                  </div>
-                  <CardContent className="p-5 space-y-4">
-                    <div className="space-y-1">
-                      <h4 className="text-lg font-headline font-bold text-primary truncate">{suggestion.itemName}</h4>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-[10px] border-primary/20 text-primary">{suggestion.platform}</Badge>
-                        <span className="text-[10px] text-muted-foreground font-body uppercase tracking-widest">{suggestion.category}</span>
-                      </div>
-                    </div>
-                    <p className="text-xs font-body text-slate-600 line-clamp-2 italic">"{suggestion.reason}"</p>
-                    <div className="flex gap-2">
-                      <Button asChild className="flex-1 h-10 rounded-full gradient-primary text-white font-headline text-xs">
-                        <a href={suggestion.shopUrl} target="_blank" rel="noopener noreferrer">
-                          Shop Now <ArrowRight className="ml-1 h-3 w-3" />
-                        </a>
-                      </Button>
-                      <Button size="icon" variant="outline" className="h-10 w-10 rounded-full border-primary/20 text-primary" onClick={() => toast({ title: "Added to Wishlist", description: `${suggestion.itemName} saved.` })}>
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-full py-12 text-center bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-100">
-                <p className="font-headline font-bold text-slate-300 italic">No suggestions for this category yet.</p>
+        {/* Replaced full shopping section with a CTA to the new page */}
+        <section className="pt-20 border-t">
+           <Card className="border-none shadow-xl bg-slate-50 rounded-[3rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="space-y-2">
+                 <h3 className="text-3xl font-headline font-bold text-primary italic">Missing something?</h3>
+                 <p className="text-muted-foreground font-body italic">Our AI identifies gaps in your collection to help you build a more versatile wardrobe.</p>
               </div>
-            )}
-          </div>
+              <Button asChild className="h-12 px-8 rounded-full gradient-primary text-white font-headline shadow-lg hover:scale-105 transition-all">
+                 <Link href="/shopping">Explore Smart Suggestions <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
+           </Card>
         </section>
       </div>
     </AppLayout>

@@ -11,7 +11,6 @@ import {
   TrendingUp,
   Sun,
   Zap,
-  Info,
   ChevronRight,
   Layers,
   Star,
@@ -39,7 +38,6 @@ import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer } from "rechar
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useState, useEffect } from "react";
 import { MOCK_WARDROBE, MOCK_OUTFITS } from "@/lib/mock-data";
-import { smartShoppingSuggestions, type ShoppingSuggestionsOutput } from "@/ai/flows/smart-shopping-suggestions";
 import { seasonalTransitionAlert, type SeasonalTransitionOutput } from "@/ai/flows/seasonal-transition-alert";
 import { useToast } from "@/hooks/use-toast";
 
@@ -60,50 +58,26 @@ const chartConfig = {
 };
 
 export default function HomeScreen() {
-  const [shoppingLoading, setShoppingLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<ShoppingSuggestionsOutput['suggestions'] | null>(null);
   const [transitionAlert, setTransitionAlert] = useState<SeasonalTransitionOutput | null>(null);
   const [alertLoading, setAlertLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     async function fetchData() {
-      setShoppingLoading(true);
       setAlertLoading(true);
-      
       const currentMonth = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date());
 
       try {
-        const [shoppingResult, transitionResult] = await Promise.all([
-          smartShoppingSuggestions({
-            wardrobeItems: MOCK_WARDROBE.map(i => ({ name: i.name, category: i.category, color: i.color })),
-            outfits: MOCK_OUTFITS.map(o => ({ 
-              name: o.name, 
-              itemNames: o.items.map(id => MOCK_WARDROBE.find(i => i.id === id)?.name || '') 
-            })),
-            stylePreference: "minimalist, professional"
-          }),
-          seasonalTransitionAlert({ currentMonth })
-        ]);
-        
-        setSuggestions(shoppingResult.suggestions);
+        const transitionResult = await seasonalTransitionAlert({ currentMonth });
         setTransitionAlert(transitionResult);
       } catch (error) {
         console.error("Failed to fetch dashboard intelligence:", error);
       } finally {
-        setShoppingLoading(false);
         setAlertLoading(false);
       }
     }
     fetchData();
   }, []);
-
-  const handleAddToWishlist = (itemName: string) => {
-    toast({
-      title: "Added to Wishlist",
-      description: `${itemName} has been saved to your shopping list.`,
-    });
-  };
 
   return (
     <AppLayout>
@@ -260,10 +234,10 @@ export default function HomeScreen() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {[
             { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
-            { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-accent/10 to-accent/5" },
+            { label: "Shopping", icon: ShoppingBag, desc: "AI Suggestions", href: "/shopping", color: "from-accent/10 to-accent/5" },
             { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5" },
             { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-accent/10 to-primary/5" },
-            { label: "Try-On", icon: Smartphone, desc: "AR Experience", href: "/try-on", color: "from-primary/10 to-primary/5" }
+            { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-primary/10 to-primary/5" }
           ].map((action) => (
             <Link key={action.label} href={action.href}>
               <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
@@ -279,73 +253,26 @@ export default function HomeScreen() {
           ))}
         </div>
 
-        {/* 4. SMART SHOPPING SUGGESTIONS */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-3">
-              <ShoppingBag className="h-8 w-8 text-primary" />
-              <h3 className="text-3xl font-headline font-bold text-foreground">Smart Shopping Suggestions <Badge variant="secondary" className="bg-primary/10 text-primary ml-2">AI POWERED</Badge></h3>
-            </div>
-            <p className="hidden md:block text-sm text-muted-foreground font-body italic">Maximizing your wardrobe's ROI through data-driven additions.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {shoppingLoading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <Card key={i} className="glass-card border-none p-6 space-y-4 animate-pulse">
-                  <div className="h-40 bg-slate-200 rounded-2xl w-full" />
-                  <div className="h-6 bg-slate-200 rounded-full w-3/4" />
-                  <div className="h-4 bg-slate-200 rounded-full w-full" />
-                </Card>
-              ))
-            ) : suggestions ? (
-              suggestions.map((suggestion, idx) => (
-                <Card key={idx} className="glass-card border-none overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-white/60">
-                  <div className="relative h-48 bg-slate-100 overflow-hidden">
-                    <Image 
-                      src={suggestion.imageUrl} 
-                      alt={suggestion.itemName} 
-                      fill 
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-white/90 text-primary font-headline shadow-sm">
-                        +{suggestion.matchCount} Matches
-                      </Badge>
-                    </div>
-                  </div>
-                  <CardContent className="p-6 space-y-4">
-                    <div className="space-y-1">
-                      <h4 className="text-xl font-headline font-bold text-primary truncate">{suggestion.itemName}</h4>
-                      <p className="text-xs text-muted-foreground font-body uppercase tracking-widest">{suggestion.category}</p>
-                    </div>
-                    <p className="text-sm font-body text-slate-600 line-clamp-3 italic leading-relaxed">
-                      "{suggestion.reason}"
-                    </p>
-                    <div className="flex gap-2 pt-2">
-                      <Button asChild className="flex-1 h-10 rounded-full gradient-primary text-white font-headline text-xs" variant="default">
-                        <a href={suggestion.shopUrl} target="_blank" rel="noopener noreferrer">
-                          Shop Now <ArrowRight className="ml-1 h-3 w-3" />
-                        </a>
-                      </Button>
-                      <Button 
-                        size="icon" 
-                        variant="outline" 
-                        className="h-10 w-10 rounded-full border-primary/20 text-primary hover:bg-primary/5"
-                        onClick={() => handleAddToWishlist(suggestion.itemName)}
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-full py-12 text-center bg-white/40 rounded-[2rem] border-2 border-dashed border-primary/10">
-                <p className="font-headline font-bold text-slate-400">Unable to generate suggestions at this time.</p>
+        {/* 4. INTEL SUMMARY CARD instead of full suggestions */}
+        <section className="animate-in slide-in-from-bottom-8 duration-1000">
+           <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-10 flex flex-col md:flex-row items-center gap-10">
+              <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl border-8 border-slate-50">
+                 <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" alt="Shopping" fill className="object-cover" />
+                 <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                    <ShoppingBag className="h-20 w-20 text-white opacity-40" />
+                 </div>
               </div>
-            )}
-          </div>
+              <div className="md:w-2/3 space-y-6">
+                 <Badge className="bg-primary/10 text-primary font-headline uppercase">Smart Acquisition Engine</Badge>
+                 <h3 className="text-4xl font-headline font-bold text-primary italic">Refine your collection.</h3>
+                 <p className="text-lg font-body text-slate-600 leading-relaxed italic">
+                    "Our AI has analyzed your 18 items and identified 4 key pieces that would expand your styling combinations by 40%. View your personalized shopping strategy now."
+                 </p>
+                 <Button asChild className="h-14 px-8 rounded-full gradient-primary text-white font-headline text-lg shadow-xl hover:scale-105 transition-all">
+                    <Link href="/shopping">View Smart Suggestions <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                 </Button>
+              </div>
+           </Card>
         </section>
 
         {/* 5. SIGNATURE LOOKBOOK */}

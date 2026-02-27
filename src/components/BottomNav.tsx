@@ -1,9 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Smartphone, Calendar, Sparkles, Home, User, PlusCircle } from "lucide-react";
+import { Shirt, Smartphone, Calendar, Sparkles, Home, User, PlusCircle, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -11,7 +10,7 @@ const navItems = [
   { label: "Closet", icon: Shirt, href: "/wardrobe" },
   { label: "Add", icon: PlusCircle, href: "/add-item", primary: true },
   { label: "Stylist", icon: Sparkles, href: "/ai-stylist" },
-  { label: "Try-On", icon: Smartphone, href: "/try-on" },
+  { label: "Shopping", icon: ShoppingBag, href: "/shopping" },
 ];
 
 export function BottomNav() {
