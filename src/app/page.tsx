@@ -26,7 +26,10 @@ import {
   Wind,
   Globe,
   ZapOff,
-  UserCheck
+  UserCheck,
+  Activity,
+  Cpu,
+  MousePointer2
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -201,34 +204,49 @@ export default function HomeScreen() {
           </Card>
         </section>
 
-        {/* 2. SMART GREETING */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/40 p-8 rounded-[2rem] border border-white/20 shadow-sm">
-          <div className="flex items-center gap-6">
-            <div className="h-20 w-20 rounded-full p-1 bg-gradient-to-br from-primary to-accent shadow-xl">
-              <Image 
-                src="https://picsum.photos/seed/alex/400" 
-                alt="Profile" 
-                width={80} 
-                height={80} 
-                className="rounded-full object-cover border-4 border-white"
-              />
+        {/* 2. COGNITIVE STYLE METRICS (Replacement for Smart Greeting) */}
+        <section className="bg-white/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/20 shadow-xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <Cpu className="h-32 w-32" />
+          </div>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
+            <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+              <div className="h-20 w-20 rounded-3xl bg-primary flex items-center justify-center text-white shadow-2xl transform rotate-3">
+                <Activity className="h-10 w-10" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-3xl font-headline font-bold text-primary">Cognitive Curation</h3>
+                <p className="text-sm font-body italic text-muted-foreground">Advanced algorithmic optimization of your fashion ecosystem.</p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <h2 className="text-3xl font-headline font-bold text-foreground tracking-tight">Alex Chen</h2>
-              <p className="text-muted-foreground font-body italic">Premium Fashion Curator — <span className="text-primary font-bold">StyleVault Member</span></p>
+            
+            <div className="flex flex-wrap justify-center gap-6 md:gap-12">
+              <div className="text-center space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Decision Speed</p>
+                <div className="flex items-center justify-center gap-2">
+                  <Zap className="h-4 w-4 text-accent" />
+                  <span className="text-2xl font-headline font-bold text-primary">-15m / day</span>
+                </div>
+              </div>
+              <div className="w-px h-12 bg-slate-100 hidden md:block" />
+              <div className="text-center space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Inventory Health</p>
+                <div className="flex items-center justify-center gap-2">
+                  <UserCheck className="h-4 w-4 text-primary" />
+                  <span className="text-2xl font-headline font-bold text-primary">98.4%</span>
+                </div>
+              </div>
+              <div className="w-px h-12 bg-slate-100 hidden md:block" />
+              <div className="text-center space-y-1">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Style Entropy</p>
+                <div className="flex items-center justify-center gap-2">
+                  <MousePointer2 className="h-4 w-4 text-accent" />
+                  <span className="text-2xl font-headline font-bold text-primary">Minimal</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-3 glass-card px-6 py-3 rounded-full shadow-sm bg-white/60">
-              <Sun className="h-5 w-5 text-accent" />
-              <span className="font-headline font-bold">72°F London</span>
-            </div>
-            <div className="flex items-center gap-3 glass-card px-6 py-3 rounded-full shadow-sm bg-white/60">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <span className="font-headline font-bold text-primary">Score: 92</span>
-            </div>
-          </div>
-        </div>
+        </section>
 
         {/* 3. QUICK ACTIONS */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
