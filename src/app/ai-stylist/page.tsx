@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -20,15 +19,19 @@ import {
   Plane,
   Umbrella,
   Heart,
-  Trophy
+  Trophy,
+  AlertTriangle,
+  ShoppingBag,
+  ArrowRight
 } from "lucide-react";
-import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
+import { aiOutfitSuggester, type AiOutfitSuggesterOutput } from "@/ai/flows/ai-outfit-suggester";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const occasions = [
   { label: "Work", icon: Briefcase, value: "work" },
@@ -46,7 +49,11 @@ const occasions = [
 export default function AiStylistPage() {
   const [loading, setLoading] = useState(false);
   const [selectedOccasion, setSelectedOccasion] = useState("");
-  const [suggestion, setSuggestion] = useState<any>(null);
+  const [suggestion, setSuggestion] = useState<{
+    items: any[];
+    reasoning: string;
+    shoppingAdvised: boolean;
+  } | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -73,7 +80,8 @@ export default function AiStylistPage() {
       
       setSuggestion({
         items: suggestedItems,
-        reasoning: `Based on the ${selectedOccasion} occasion, I've curated this look from your collection. It balances style and appropriate etiquette.`
+        reasoning: result.stylistNote,
+        shoppingAdvised: result.shoppingAdvised
       });
     } catch (err) {
       toast({ title: "Failed to generate suggestion", variant: "destructive" });
@@ -87,7 +95,6 @@ export default function AiStylistPage() {
       title: "Saved to Planner",
       description: "This outfit has been scheduled in your Style Journal.",
     });
-    // In a real app, this would persist to a database
     setTimeout(() => {
       router.push('/planner');
     }, 1500);
@@ -152,7 +159,6 @@ export default function AiStylistPage() {
                   </div>
                   <span className="font-headline">Partly Cloudy</span>
                 </div>
-                <p className="text-xs text-muted-foreground font-body italic text-center">AI automatically factors weather into suggestions.</p>
               </CardContent>
             </Card>
 
@@ -187,19 +193,46 @@ export default function AiStylistPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-6 space-y-8">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {suggestion.items.map((item: any) => (
-                      <div key={item.id} className="space-y-2">
-                        <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md">
-                          <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                        </div>
-                        <p className="text-xs font-headline font-bold text-center truncate">{item.name}</p>
-                        <Badge variant="secondary" className="w-full justify-center text-[10px] uppercase font-headline">
-                          {item.category}
-                        </Badge>
+                  {suggestion.shoppingAdvised && (
+                    <div className="bg-accent/5 border border-accent/20 p-4 rounded-2xl flex items-start gap-4">
+                      <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center shrink-0">
+                        <AlertTriangle className="h-5 w-5 text-primary" />
                       </div>
-                    ))}
-                  </div>
+                      <div className="flex-1 space-y-1">
+                        <h4 className="font-headline font-bold text-primary">Wardrobe Gap Detected</h4>
+                        <p className="text-sm font-body text-slate-600">
+                          Your current collection is missing essential pieces to complete this specific look perfectly.
+                        </p>
+                        <Button variant="link" asChild className="p-0 h-auto text-accent font-bold">
+                          <Link href="/shopping">Consult Shopping Engine <ArrowRight className="ml-1 h-3 w-3" /></Link>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {suggestion.items.length > 0 ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      {suggestion.items.map((item: any) => (
+                        <div key={item.id} className="space-y-2">
+                          <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md">
+                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                          </div>
+                          <p className="text-xs font-headline font-bold text-center truncate">{item.name}</p>
+                          <Badge variant="secondary" className="w-full justify-center text-[10px] uppercase font-headline">
+                            {item.category}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 space-y-4">
+                      <ShoppingBag className="h-12 w-12 text-primary/20 mx-auto" />
+                      <p className="font-body italic text-muted-foreground">No matching items found in your closet for this specific vibe.</p>
+                      <Button asChild className="rounded-full gradient-primary text-white">
+                        <Link href="/shopping">Shop for {selectedOccasion} Essentials</Link>
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="bg-secondary/20 p-6 rounded-xl border border-primary/10">
                     <h4 className="font-headline font-bold text-primary mb-2 flex items-center gap-2">
@@ -214,6 +247,7 @@ export default function AiStylistPage() {
                     <Button 
                       className="flex-1 font-headline bg-primary hover:bg-primary/90 h-12 flex items-center justify-center gap-2"
                       onClick={handleSaveToPlanner}
+                      disabled={suggestion.items.length === 0}
                     >
                       <CalendarCheck className="h-5 w-5" /> Save to Planner
                     </Button>
