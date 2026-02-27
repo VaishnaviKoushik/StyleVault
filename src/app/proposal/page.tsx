@@ -1,4 +1,3 @@
-
 "use client";
 
 import { AppLayout } from "@/components/AppLayout";
@@ -51,11 +50,11 @@ export default function ProposalPage() {
             <Card className="border-none shadow-xl bg-gradient-to-br from-white to-secondary/20 overflow-hidden">
               <div className="h-2 bg-primary w-full" />
               <CardHeader className="text-center py-12">
-                <Badge className="w-fit mx-auto bg-accent mb-4">The Future of Fashion</Badge>
-                <CardTitle className="text-5xl font-headline font-bold text-foreground mb-4">ClosetMind: Style Meets Intelligence</CardTitle>
+                <Badge className="w-fit mx-auto bg-accent mb-4 text-primary">The Future of Fashion</Badge>
+                <CardTitle className="text-5xl font-headline font-bold text-foreground mb-4">StyleVault: Style Meets Intelligence</CardTitle>
                 <CardDescription className="text-xl font-body max-w-3xl mx-auto leading-relaxed">
                   In an era where technology touches every facet of our lives, the way we manage our personal style remains largely manual. 
-                  ClosetMind bridges this gap by acting as a <strong>Personal Digital Stylist</strong>.
+                  StyleVault bridges this gap by acting as a <strong>Personal Digital Stylist</strong>.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-12 px-12">
@@ -122,7 +121,7 @@ export default function ProposalPage() {
               <CardHeader>
                 <CardTitle className="text-3xl font-headline font-bold flex items-center gap-3">
                   <CheckCircle2 className="h-8 w-8 text-primary" />
-                  ClosetMind Ecosystem: The Smart Solution
+                  StyleVault Ecosystem: The Smart Solution
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
@@ -290,7 +289,7 @@ export default function ProposalPage() {
                 <div className="md:col-span-2 bg-primary text-white p-6 rounded-2xl flex items-center justify-between gap-6 shadow-lg">
                   <div className="space-y-2">
                     <h4 className="text-2xl font-headline font-bold italic">"Innovation is the ultimate tool for traditional craft."</h4>
-                    <p className="font-body opacity-90">ClosetMind helps tailors evolve into high-tech fashion advisors.</p>
+                    <p className="font-body opacity-90">StyleVault helps tailors evolve into high-tech fashion advisors.</p>
                   </div>
                   <Scissors className="h-20 w-20 opacity-20 hidden lg:block" />
                 </div>

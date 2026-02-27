@@ -5,18 +5,15 @@ import { Button } from "@/components/ui/button";
 import { 
   Sparkles, 
   Camera, 
-  MapPin, 
-  Zap, 
-  ArrowRight, 
-  Sun, 
-  ChevronRight, 
   Brain, 
   Calendar, 
   Palette,
   Clock,
   Shirt,
   TrendingUp,
-  CloudSun
+  Sun,
+  Zap,
+  Info
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -108,7 +105,7 @@ export default function HomeScreen() {
             { label: "Add New Item", icon: Camera, desc: "Digitize your closet", href: "/add-item", color: "from-primary/10 to-primary/5" },
             { label: "AI Stylist", icon: Brain, desc: "Powered by Gemini", href: "/ai-stylist", color: "from-accent/10 to-accent/5" },
             { label: "My Outfits", icon: Palette, desc: "Signature looks", href: "/outfits", color: "from-primary/10 to-accent/5" },
-            { label: "AR Try-On", icon: Shirt, desc: "Virtual mirror", href: "/try-on", color: "from-accent/10 to-primary/5" }
+            { label: "Project Brief", icon: Info, desc: "App Presentation", href: "/proposal", color: "from-accent/10 to-primary/5" }
           ].map((action) => (
             <Link key={action.label} href={action.href}>
               <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
@@ -155,30 +152,40 @@ export default function HomeScreen() {
           </Card>
         </div>
 
-        {/* 5. STYLEVAULT TECHNOLOGY PREVIEW */}
+        {/* 5. STYLEVAULT TECHNOLOGY PREVIEW & CAPTIONS */}
         <section className="py-12 px-10 rounded-[3rem] bg-primary text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/20 to-transparent pointer-events-none" />
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-3/5 space-y-6">
-              <Badge className="bg-accent text-primary font-headline uppercase px-4 py-1">Advanced AI</Badge>
-              <h3 className="text-5xl font-headline font-bold">Redefining Personal Style with Gemini</h3>
+              <Badge className="bg-accent text-primary font-headline uppercase px-4 py-1">The StyleVault Vision</Badge>
+              <h3 className="text-5xl font-headline font-bold leading-tight">Redefining Personal Style with Generative Intelligence</h3>
               <p className="text-lg opacity-80 font-body leading-relaxed">
-                StyleVault uses state-of-the-art vision and language models to understand your clothing preferences, local weather, and calendar events to recommend the perfect look, every single time.
+                StyleVault isn't just a closet app; it's a cognitive style engine. By merging computer vision with generative AI, we transform your static wardrobe into a dynamic palette of possibilities.
               </p>
-              <div className="flex gap-4">
-                <div className="flex items-center gap-2">
-                   <div className="h-2 w-2 rounded-full bg-accent" />
-                   <span className="text-sm font-headline">Vision Analysis</span>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                <div className="space-y-2 border-l-2 border-accent/40 pl-4">
+                  <h4 className="font-headline font-bold text-accent">Intelligent Coordination</h4>
+                  <p className="text-xs opacity-70 font-body">Gemini-powered logic analyzes fabric weight, color theory, and historical preferences to curate daily looks.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                   <div className="h-2 w-2 rounded-full bg-accent" />
-                   <span className="text-sm font-headline">Predictive Planning</span>
+                <div className="space-y-2 border-l-2 border-accent/40 pl-4">
+                  <h4 className="font-headline font-bold text-accent">Predictive Planning</h4>
+                  <p className="text-xs opacity-70 font-body">Automatically cross-references local weather and calendar sync to ensure you're dressed perfectly for every climate and occasion.</p>
                 </div>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <Button asChild variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10 font-headline">
+                   <Link href="/proposal">Learn More About the App <Info className="ml-2 h-4 w-4" /></Link>
+                </Button>
               </div>
             </div>
             <div className="md:w-1/3 flex justify-center">
-               <div className="h-48 w-48 rounded-full border-4 border-accent/30 flex items-center justify-center animate-pulse">
-                  <Brain className="h-24 w-24 text-accent" />
+               <div className="h-64 w-64 rounded-full border-4 border-accent/30 flex items-center justify-center animate-pulse relative">
+                  <Brain className="h-32 w-32 text-accent" />
+                  <div className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                    <Sparkles className="h-10 w-10 text-accent" />
+                  </div>
                </div>
             </div>
           </div>
