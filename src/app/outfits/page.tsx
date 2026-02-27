@@ -10,6 +10,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function OutfitsPage() {
   const [view, setView] = useState<"list" | "create">("list");
