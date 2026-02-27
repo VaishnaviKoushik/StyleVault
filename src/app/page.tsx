@@ -275,7 +275,7 @@ export default function HomeScreen() {
                 Elite Signature
               </Badge>
               <h3 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] text-primary italic">
-                Curation <span className="text-accent italic">Perfected.</span>
+                Refine your <span className="text-accent italic">collections.</span>
               </h3>
               <p className="text-xl text-muted-foreground font-body leading-relaxed max-w-2xl italic border-r-4 border-accent pr-6 text-right lg:text-left lg:border-r-0 lg:border-l-4 lg:pl-6">
                 "We've redefined the professional wardrobe. StyleVault is a cognitive style engine merging vision with creative intelligence."
