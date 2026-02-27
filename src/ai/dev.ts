@@ -7,3 +7,4 @@ import '@/ai/flows/style-vault-chat.ts';
 import '@/ai/flows/color-palette-analysis.ts';
 import '@/ai/flows/smart-shopping-suggestions.ts';
 import '@/ai/flows/fabric-intelligence.ts';
+import '@/ai/flows/trend-researcher.ts';

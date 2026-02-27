@@ -19,7 +19,8 @@ import {
   Smartphone,
   ShoppingBag,
   Heart,
-  ArrowRight
+  ArrowRight,
+  Search
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -214,12 +215,13 @@ export default function HomeScreen() {
         </Card>
 
         {/* 4. QUICK ACTIONS GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {[
             { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
-            { label: "Try-On", icon: Smartphone, desc: "AR Experience", href: "/try-on", color: "from-accent/10 to-accent/5" },
+            { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-accent/10 to-accent/5" },
             { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5" },
-            { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-accent/10 to-primary/5" }
+            { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-accent/10 to-primary/5" },
+            { label: "Try-On", icon: Smartphone, desc: "AR Experience", href: "/try-on", color: "from-primary/10 to-primary/5" }
           ].map((action) => (
             <Link key={action.label} href={action.href}>
               <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
