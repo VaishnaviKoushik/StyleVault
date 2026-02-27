@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,12 @@ export default function WardrobePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [items, setItems] = useState<WardrobeItem[]>(MOCK_WARDROBE);
   const [editingItem, setEditingItem] = useState<WardrobeItem | null>(null);
+  const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredItems = items.filter(item => {
     const matchesCategory = activeCategory === "all" || item.category === activeCategory;
@@ -48,6 +53,8 @@ export default function WardrobePage() {
       });
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <AppLayout>

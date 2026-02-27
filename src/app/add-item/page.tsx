@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ChevronLeft, Sparkles, Upload, Image as ImageIcon } from "lucide-react";
+import { Check, ChevronLeft, Sparkles, Upload, Image as ImageIcon, FolderOpen } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -18,9 +18,14 @@ export default function AddItemPage() {
   const [step, setStep] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [mounted, setMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,6 +45,8 @@ export default function AddItemPage() {
     router.push('/wardrobe');
   };
 
+  if (!mounted) return null;
+
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500">
@@ -49,7 +56,7 @@ export default function AddItemPage() {
           </Button>
           <div className="space-y-0.5">
             <h2 className="text-3xl font-headline font-bold text-primary">Catalog New Item</h2>
-            <p className="text-muted-foreground font-body">Digitize your wardrobe with AI assisted tagging.</p>
+            <p className="text-muted-foreground font-body">Upload a photo to digitize your wardrobe.</p>
           </div>
         </header>
 
@@ -102,15 +109,15 @@ export default function AddItemPage() {
                           className="object-cover"
                         />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <Upload className="h-12 w-12 text-white" />
+                          <FolderOpen className="h-12 w-12 text-white" />
                         </div>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center text-primary space-y-4 p-8 text-center">
-                        <ImageIcon className="h-16 w-16 opacity-40" />
+                        <FolderOpen className="h-16 w-16 opacity-40" />
                         <div className="space-y-1">
-                          <p className="font-headline font-bold text-lg">Click to Upload</p>
-                          <p className="text-xs font-body text-muted-foreground">Select a garment photo from your device</p>
+                          <p className="font-headline font-bold text-lg">Browse Files</p>
+                          <p className="text-xs font-body text-muted-foreground">Choose a high-quality photo from your device storage</p>
                         </div>
                       </div>
                     )}
@@ -120,24 +127,24 @@ export default function AddItemPage() {
                     className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
                     onClick={triggerUpload}
                   >
-                    {previewUrl ? "Change Photo" : "Choose File"} <Upload className="ml-2 h-5 w-5" />
+                    {previewUrl ? "Change File" : "Choose File"} <Upload className="ml-2 h-5 w-5" />
                   </Button>
                 </div>
 
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-headline font-bold text-foreground">Upload Guidelines</h3>
+                  <h3 className="text-2xl font-headline font-bold text-foreground">File Upload Tips</h3>
                   <ul className="space-y-4 text-muted-foreground font-body">
                     <li className="flex items-start gap-3">
                       <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">1</div>
-                      <span>Use high-quality photos with good lighting.</span>
+                      <span>Ensure the item is fully visible and not obstructed.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">2</div>
-                      <span>Flat-lay or ghost-mannequin style works best for AI tagging.</span>
+                      <span>Plain backgrounds help the AI identify garment edges.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold">3</div>
-                      <span>PNG or JPG formats are supported.</span>
+                      <span>Upload JPG, PNG, or WEBP images up to 10MB.</span>
                     </li>
                   </ul>
                   <Button 
@@ -213,34 +220,17 @@ export default function AddItemPage() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                    <h3 className="text-3xl font-headline font-bold">White Linen Shirt</h3>
+                    <h3 className="text-3xl font-headline font-bold">New Wardrobe Item</h3>
                     <div className="flex gap-2">
-                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">Tops</Badge>
-                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">Summer</Badge>
+                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">Uncategorized</Badge>
+                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">New</Badge>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-8">
                   <div className="space-y-4">
                     <h4 className="text-2xl font-headline font-bold text-foreground">Final Review</h4>
-                    <div className="grid grid-cols-2 gap-6 text-foreground">
-                      <div className="space-y-1">
-                        <p className="text-xs font-bold text-muted-foreground uppercase">Brand</p>
-                        <p className="font-headline font-bold">Everlane</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs font-bold text-muted-foreground uppercase">Fabric</p>
-                        <p className="font-headline font-bold">100% Linen</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs font-bold text-muted-foreground uppercase">Season</p>
-                        <p className="font-headline font-bold">Spring / Summer</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs font-bold text-muted-foreground uppercase">Occasions</p>
-                        <p className="font-headline font-bold">Casual, Work</p>
-                      </div>
-                    </div>
+                    <p className="text-muted-foreground">The AI is currently processing your image to extract fabric, style, and season details automatically.</p>
                   </div>
                   <div className="flex gap-4">
                     <Button variant="outline" className="flex-1 h-16 rounded-full font-headline border-primary text-primary" onClick={() => setStep(1)}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,12 @@ export default function OutfitsPage() {
   const [outfits, setOutfits] = useState<Outfit[]>(MOCK_OUTFITS);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [newOutfitName, setNewOutfitName] = useState("");
+  const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleShare = (name: string) => {
     toast({
@@ -68,6 +73,8 @@ export default function OutfitsPage() {
       description: "Your new look has been saved to your collection.",
     });
   };
+
+  if (!mounted) return null;
 
   return (
     <AppLayout>
