@@ -1,4 +1,3 @@
-
 export interface WardrobeItem {
   id: string;
   name: string;
@@ -215,6 +214,16 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     occasion: ['formal', 'work'],
     imageUrl: 'https://images.unsplash.com/photo-1589400445193-c881a4b0b38a?q=80&w=1080',
     description: 'A timeless beige trench coat for rainy or windy weather.'
+  },
+  {
+    id: 'd1',
+    name: 'Blue Cocktail Dress',
+    category: 'dress',
+    color: 'Blue',
+    brand: 'Reform',
+    occasion: ['formal', 'date night'],
+    imageUrl: 'https://images.unsplash.com/photo-1539008835270-348f9353995f?q=80&w=1080',
+    description: 'Elegant navy blue dress with a high neckline.'
   }
 ];
 

@@ -1,7 +1,7 @@
 'use server';
 /**
  * @fileOverview A Genkit flow for generating smart shopping suggestions with direct platform links and consistent stock imagery.
- *
+ * 
  * - smartShoppingSuggestions - A function that handles wardrobe gap analysis and shopping recommendations.
  * - ShoppingSuggestionsInput - The input type.
  * - ShoppingSuggestionsOutput - The return type.
@@ -108,6 +108,24 @@ const smartShoppingSuggestionsFlow = ai.defineFlow(
             platform: 'Myntra',
             shopUrl: 'https://www.myntra.com/tan-leather-loafers',
             imageUrl: 'https://images.unsplash.com/photo-1710632609125-da337a1e1ddd?q=80&w=1080'
+          },
+          {
+             itemName: 'Gold Mesh Watch',
+             reason: 'A timeless accessory to complete your business casual outfits.',
+             matchCount: 12,
+             category: 'accessory',
+             platform: 'Amazon',
+             shopUrl: 'https://www.amazon.in/s?k=gold+mesh+watch',
+             imageUrl: 'https://images.unsplash.com/photo-1524805444758-09912d619dce?q=80&w=1080'
+          },
+          {
+            itemName: 'Classic Beige Trench Coat',
+            reason: 'Perfect for transitional weather and adds a layer of sophistication to your work attire.',
+            matchCount: 5,
+            category: 'outerwear',
+            platform: 'Myntra',
+            shopUrl: 'https://www.myntra.com/beige-trench-coat',
+            imageUrl: 'https://images.unsplash.com/photo-1589400445193-c881a4b0b38a?q=80&w=1080'
           }
         ]
       };
