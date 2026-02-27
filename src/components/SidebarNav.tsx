@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Layers, Calendar, Sparkles, Home, LogOut } from "lucide-react";
+import { Shirt, Layers, Calendar, Sparkles, Home, LogOut, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { label: "Outfit Assembler", icon: Layers, href: "/outfits" },
   { label: "Outfit Planner", icon: Calendar, href: "/planner" },
   { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
+  { label: "Project Proposal", icon: FileText, href: "/proposal" },
 ];
 
 export function SidebarNav() {

@@ -2,7 +2,7 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, CloudSun, Calendar as CalendarIcon, ArrowRight } from "lucide-react";
+import { Plus, CloudSun, Calendar as CalendarIcon, ArrowRight, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
 import Image from "next/image";
@@ -11,9 +11,16 @@ export default function Home() {
   return (
     <AppLayout>
       <div className="space-y-8">
-        <header className="space-y-2">
-          <h2 className="text-3xl font-headline font-bold text-foreground">Welcome back, Fashionista</h2>
-          <p className="text-muted-foreground font-body text-lg italic">"Style is a way to say who you are without having to speak."</p>
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-headline font-bold text-foreground">Welcome back, Fashionista</h2>
+            <p className="text-muted-foreground font-body text-lg italic">"Style is a way to say who you are without having to speak."</p>
+          </div>
+          <Link href="/proposal">
+            <Button variant="ghost" className="font-headline text-accent flex items-center gap-2 hover:bg-accent/10">
+              <Lightbulb className="h-4 w-4" /> View Project Vision
+            </Button>
+          </Link>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
