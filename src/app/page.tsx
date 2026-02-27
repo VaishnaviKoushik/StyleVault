@@ -20,7 +20,11 @@ import {
   ShoppingBag,
   Heart,
   ArrowRight,
-  Search
+  Search,
+  AlertTriangle,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Wind
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,6 +37,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { useState, useEffect } from "react";
 import { MOCK_WARDROBE, MOCK_OUTFITS } from "@/lib/mock-data";
 import { smartShoppingSuggestions, type ShoppingSuggestionsOutput } from "@/ai/flows/smart-shopping-suggestions";
+import { seasonalTransitionAlert, type SeasonalTransitionOutput } from "@/ai/flows/seasonal-transition-alert";
 import { useToast } from "@/hooks/use-toast";
 
 const chartData = [
@@ -54,28 +59,40 @@ const chartConfig = {
 export default function HomeScreen() {
   const [shoppingLoading, setShoppingLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<ShoppingSuggestionsOutput['suggestions'] | null>(null);
+  const [transitionAlert, setTransitionAlert] = useState<SeasonalTransitionOutput | null>(null);
+  const [alertLoading, setAlertLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    async function fetchSuggestions() {
+    async function fetchData() {
       setShoppingLoading(true);
+      setAlertLoading(true);
+      
+      const currentMonth = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date());
+
       try {
-        const result = await smartShoppingSuggestions({
-          wardrobeItems: MOCK_WARDROBE.map(i => ({ name: i.name, category: i.category, color: i.color })),
-          outfits: MOCK_OUTFITS.map(o => ({ 
-            name: o.name, 
-            itemNames: o.items.map(id => MOCK_WARDROBE.find(i => i.id === id)?.name || '') 
-          })),
-          stylePreference: "minimalist, professional"
-        });
-        setSuggestions(result.suggestions);
+        const [shoppingResult, transitionResult] = await Promise.all([
+          smartShoppingSuggestions({
+            wardrobeItems: MOCK_WARDROBE.map(i => ({ name: i.name, category: i.category, color: i.color })),
+            outfits: MOCK_OUTFITS.map(o => ({ 
+              name: o.name, 
+              itemNames: o.items.map(id => MOCK_WARDROBE.find(i => i.id === id)?.name || '') 
+            })),
+            stylePreference: "minimalist, professional"
+          }),
+          seasonalTransitionAlert({ currentMonth })
+        ]);
+        
+        setSuggestions(shoppingResult.suggestions);
+        setTransitionAlert(transitionResult);
       } catch (error) {
-        console.error("Failed to fetch shopping suggestions:", error);
+        console.error("Failed to fetch dashboard intelligence:", error);
       } finally {
         setShoppingLoading(false);
+        setAlertLoading(false);
       }
     }
-    fetchSuggestions();
+    fetchData();
   }, []);
 
   const handleAddToWishlist = (itemName: string) => {
@@ -88,6 +105,73 @@ export default function HomeScreen() {
   return (
     <AppLayout>
       <div className="space-y-12 animate-in fade-in duration-1000 pt-8">
+        
+        {/* NEW FEATURE: SEASONAL TRANSITION ALERT (PROACTIVE AI) */}
+        {transitionAlert && (
+          <section className="animate-in slide-in-from-top-8 duration-1000">
+            <Card className="border-none shadow-2xl bg-gradient-to-r from-primary/95 to-primary text-white overflow-hidden rounded-[2.5rem] relative group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                <Wind className="h-40 w-40" />
+              </div>
+              <CardContent className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-10 relative z-10">
+                <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4 max-w-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center shadow-lg">
+                      <AlertTriangle className="h-5 w-5 text-primary" />
+                    </div>
+                    <Badge className="bg-white/20 text-white border-none font-headline uppercase tracking-widest">
+                      Seasonal Transition Detected
+                    </Badge>
+                  </div>
+                  <h3 className="text-4xl md:text-5xl font-headline font-bold leading-tight italic">
+                    {transitionAlert.title}
+                  </h3>
+                  <p className="text-lg font-body italic opacity-80 border-l-2 border-accent/40 pl-6 leading-relaxed">
+                    "{transitionAlert.description}"
+                  </p>
+                </div>
+
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                  <div className="p-5 rounded-3xl bg-white/10 backdrop-blur-md space-y-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <ArrowUpFromLine className="h-4 w-4 text-accent" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Rotate In</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {transitionAlert.rotateIn.map((item, i) => (
+                        <li key={i} className="font-headline font-bold text-sm flex items-center gap-2">
+                          <div className="h-1 w-1 rounded-full bg-accent" /> {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="p-5 rounded-3xl bg-white/10 backdrop-blur-md space-y-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <ArrowDownToLine className="h-4 w-4 text-white/60" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">Rotate Out</span>
+                    </div>
+                    <ul className="space-y-1">
+                      {transitionAlert.rotateOut.map((item, i) => (
+                        <li key={i} className="font-headline font-bold text-sm flex items-center gap-2 opacity-70">
+                          <div className="h-1 w-1 rounded-full bg-white/40" /> {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="sm:col-span-2 p-5 rounded-3xl bg-accent text-primary space-y-2 shadow-xl border border-white/20">
+                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 flex items-center gap-2">
+                      <Sparkles className="h-3 w-3" /> Professional Storage Advice
+                    </p>
+                    <p className="font-body text-sm font-bold italic leading-relaxed">
+                      {transitionAlert.preparationTip}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        )}
+
         {/* 1. ELITE INTELLIGENCE HERO (TOP SECTION) */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
