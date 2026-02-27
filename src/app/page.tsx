@@ -64,11 +64,6 @@ export default function HomeScreen() {
             <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed max-w-lg border-l-4 border-accent pl-6">
               "Transforming your wardrobe into a dynamic, performance-driven asset through generative logic."
             </p>
-            <div className="flex gap-4 pt-4">
-              <Button asChild className="h-14 px-8 rounded-full gradient-primary text-white font-headline text-lg shadow-xl hover:scale-105 transition-all">
-                <Link href="/ai-stylist">Explore AI Insights <Sparkles className="ml-2 h-5 w-5" /></Link>
-              </Button>
-            </div>
           </div>
 
           {/* EDITORIAL IMAGE COMPOSITION */}
