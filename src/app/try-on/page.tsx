@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, ChevronLeft, Sparkles, ArrowLeftRight, RotateCcw, Share2, Save, Check, Image as ImageIcon } from "lucide-react";
+import { Camera, ChevronLeft, Sparkles, ArrowLeftRight, RotateCcw, Share2, Save, Check, Image as ImageIcon, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
+import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function TryOnScreen() {
   const router = useRouter();
+  const { toast } = useToast();
+  
+  // UI State
   const [photoTaken, setPhotoTaken] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -19,6 +24,15 @@ export default function TryOnScreen() {
   const [showResult, setShowResult] = useState(false);
   const [sliderValue, setSliderValue] = useState(50);
   const [selectedItem, setSelectedItem] = useState(MOCK_WARDROBE[0]);
+  
+  // Camera & Upload State
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock carousel options (First 4 items)
   const carouselItems = MOCK_WARDROBE.slice(0, 4);
@@ -30,16 +44,76 @@ export default function TryOnScreen() {
     "Rendering final look ✨"
   ];
 
+  // Camera initialization
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      setHasCameraPermission(true);
+      setIsCameraActive(true);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setHasCameraPermission(false);
+      toast({
+        variant: 'destructive',
+        title: 'Camera Access Denied',
+        description: 'Please enable camera permissions in your browser settings to take a selfie.',
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      if (context) {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/png');
+        setCapturedImage(dataUrl);
+        setPhotoTaken(true);
+        stopCamera();
+      }
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCapturedImage(reader.result as string);
+        setPhotoTaken(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleGenerate = () => {
     if (!photoTaken) {
-      setPhotoTaken(true);
+      toast({
+        title: "Photo Required",
+        description: "Please take a selfie or upload a photo first.",
+      });
       return;
     }
     
     setIsGenerating(true);
     let stepIndex = 0;
     
-    // Cycle through 4 steps at 600ms intervals
     const interval = setInterval(() => {
       if (stepIndex < steps.length) {
         setGenStep(steps[stepIndex]);
@@ -47,7 +121,6 @@ export default function TryOnScreen() {
         stepIndex++;
       } else {
         clearInterval(interval);
-        // 500ms post-interval delay before showing result
         setTimeout(() => {
           setIsGenerating(false);
           setShowResult(true);
@@ -59,12 +132,23 @@ export default function TryOnScreen() {
   const handleReset = () => {
     setShowResult(false);
     setPhotoTaken(false);
+    setCapturedImage(null);
     setProgress(0);
     setGenStep("");
+    stopCamera();
   };
 
+  // Clean up camera on unmount
+  useEffect(() => {
+    return () => stopCamera();
+  }, []);
+
+  // Hardcoded Prototype Images
+  const mockBeforeImage = capturedImage || "https://images.unsplash.com/photo-1687825520757-93e18a996f8c";
+  const mockAfterImage = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab";
+
   return (
-    <div className="h-full flex flex-col animate-in fade-in duration-500 bg-background">
+    <div className="h-full flex flex-col animate-in fade-in duration-500 bg-background overflow-hidden">
       <header className="px-6 py-4 flex items-center justify-between bg-white/50 backdrop-blur-md z-10 border-b">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ChevronLeft className="h-6 w-6" />
@@ -73,28 +157,56 @@ export default function TryOnScreen() {
         <Badge variant="secondary" className="bg-accent/10 text-accent font-headline uppercase text-[10px]">PREVIEW MODE</Badge>
       </header>
 
-      <div className="flex-1 overflow-y-auto scrollbar-hide">
+      <div className="flex-1 overflow-y-auto scrollbar-hide pb-24">
         {!showResult ? (
           <div className="px-6 space-y-6 pt-6 pb-8 max-w-2xl mx-auto">
+            {/* Camera Permission Alert if Denied */}
+            {hasCameraPermission === false && (
+              <Alert variant="destructive">
+                <AlertTitle>Camera Access Required</AlertTitle>
+                <AlertDescription>
+                  Please allow camera access in your browser settings to use the selfie feature.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Split View Setup */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase px-1">Your Photo</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase px-1 flex justify-between">
+                  Your Photo
+                  {photoTaken && (
+                    <button onClick={() => { setPhotoTaken(false); setCapturedImage(null); }} className="text-destructive hover:underline">
+                      Remove
+                    </button>
+                  )}
+                </label>
+                
                 <div 
                   className={cn(
-                    "aspect-[3/4] rounded-3xl overflow-hidden relative border-2 transition-all cursor-pointer",
-                    photoTaken ? "border-accent shadow-lg" : "border-dashed border-primary/20 bg-primary/5 hover:bg-primary/10"
+                    "aspect-[3/4] rounded-3xl overflow-hidden relative border-2 transition-all group",
+                    photoTaken ? "border-accent shadow-lg" : "border-dashed border-primary/20 bg-primary/5"
                   )}
-                  onClick={() => setPhotoTaken(true)}
                 >
-                  {photoTaken ? (
+                  {isCameraActive ? (
+                    <div className="relative w-full h-full">
+                      <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                        <Button size="icon" className="h-12 w-12 rounded-full bg-white text-primary shadow-xl" onClick={capturePhoto}>
+                          <Camera className="h-6 w-6" />
+                        </Button>
+                        <Button size="icon" variant="destructive" className="h-12 w-12 rounded-full shadow-xl" onClick={stopCamera}>
+                          <X className="h-6 w-6" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : photoTaken ? (
                     <>
                       <Image 
-                        src="https://images.unsplash.com/photo-1687825520757-93e18a996f8c" 
+                        src={capturedImage || mockBeforeImage} 
                         alt="Selfie" 
                         fill 
                         className="object-cover"
-                        data-ai-hint="person selfie"
                       />
                       <div className="absolute inset-0 bg-accent/10 pointer-events-none" />
                       <div className="absolute top-3 right-3 bg-accent text-white p-1 rounded-full shadow-lg">
@@ -102,13 +214,24 @@ export default function TryOnScreen() {
                       </div>
                     </>
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-primary gap-2">
-                      <ImageIcon className="h-8 w-8 opacity-40" />
-                      <span className="text-[10px] font-bold font-headline uppercase tracking-widest">Select Photo</span>
+                    <div className="h-full flex flex-col items-center justify-center p-4 text-center">
+                      <div className="flex flex-col gap-3 w-full">
+                        <Button variant="outline" className="h-16 rounded-2xl flex flex-col gap-1 border-primary/20 hover:bg-primary/5" onClick={startCamera}>
+                          <Camera className="h-5 w-5 text-primary" />
+                          <span className="text-[10px] font-bold font-headline uppercase">Take Selfie</span>
+                        </Button>
+                        <Button variant="outline" className="h-16 rounded-2xl flex flex-col gap-1 border-primary/20 hover:bg-primary/5" onClick={() => fileInputRef.current?.click()}>
+                          <Upload className="h-5 w-5 text-primary" />
+                          <span className="text-[10px] font-bold font-headline uppercase">Upload Photo</span>
+                        </Button>
+                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileUpload} />
+                      </div>
                     </div>
                   )}
+                  <canvas ref={canvasRef} className="hidden" />
                 </div>
               </div>
+
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-muted-foreground uppercase px-1">Selected Item</label>
                 <div className="aspect-[3/4] rounded-3xl overflow-hidden relative border-2 border-primary shadow-lg">
@@ -133,8 +256,8 @@ export default function TryOnScreen() {
                   <div 
                     key={item.id} 
                     className={cn(
-                      "min-w-[120px] aspect-square rounded-2xl overflow-hidden border-4 cursor-pointer transition-all shrink-0",
-                      selectedItem.id === item.id ? "border-primary shadow-xl scale-105" : "border-transparent opacity-60 grayscale-[0.5]"
+                      "min-w-[120px] aspect-square rounded-2xl overflow-hidden border-4 cursor-pointer transition-all shrink-0 relative",
+                      selectedItem.id === item.id ? "border-primary shadow-xl scale-105" : "border-transparent opacity-60"
                     )}
                     onClick={() => setSelectedItem(item)}
                   >
@@ -158,15 +281,16 @@ export default function TryOnScreen() {
                 <Button 
                   className="w-full h-16 rounded-full gradient-pill text-lg font-headline shadow-xl border-glow text-white"
                   onClick={handleGenerate}
+                  disabled={!photoTaken}
                 >
-                  {!photoTaken ? "Choose Your Photo First" : "Generate AI Try-On"}
+                  {photoTaken ? "Generate AI Try-On" : "Capture Photo First"}
                   <Sparkles className="ml-2 h-5 w-5" />
                 </Button>
               )}
             </div>
             
             <p className="text-[10px] text-center text-muted-foreground font-body italic">
-              * This is a high-fidelity interface prototype demonstrating the AR workflow.
+              * This is a high-fidelity interface prototype demonstrating the AI workflow.
             </p>
           </div>
         ) : (
@@ -176,7 +300,7 @@ export default function TryOnScreen() {
               {/* After Image (Styled Outfit) */}
               <div className="absolute inset-0">
                 <Image 
-                  src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
+                  src={mockAfterImage} 
                   alt="Result" 
                   fill 
                   className="object-cover"
@@ -190,7 +314,7 @@ export default function TryOnScreen() {
               >
                 <div className="w-[100vw] h-full relative">
                    <Image 
-                    src="https://images.unsplash.com/photo-1687825520757-93e18a996f8c" 
+                    src={capturedImage || mockBeforeImage} 
                     alt="Before" 
                     fill 
                     className="object-cover"
@@ -232,11 +356,11 @@ export default function TryOnScreen() {
                 <RotateCcw className="h-6 w-6 text-primary" />
                 <span className="text-[10px] font-bold font-headline text-muted-foreground uppercase">New Session</span>
               </Button>
-              <Button variant="outline" className="h-20 rounded-3xl flex flex-col gap-2 border-none bg-white shadow-md hover:shadow-lg transition-all">
+              <Button variant="outline" className="h-20 rounded-3xl flex flex-col gap-2 border-none bg-white shadow-md hover:shadow-lg transition-all" onClick={() => toast({ title: "Saved!", description: "Look added to your history." })}>
                 <Save className="h-6 w-6 text-accent" />
                 <span className="text-[10px] font-bold font-headline text-muted-foreground uppercase">Save Result</span>
               </Button>
-              <Button variant="outline" className="h-20 rounded-3xl flex flex-col gap-2 border-none bg-white shadow-md hover:shadow-lg transition-all">
+              <Button variant="outline" className="h-20 rounded-3xl flex flex-col gap-2 border-none bg-white shadow-md hover:shadow-lg transition-all" onClick={() => toast({ title: "Sharing...", description: "Opening system share." })}>
                 <Share2 className="h-6 w-6 text-primary" />
                 <span className="text-[10px] font-bold font-headline text-muted-foreground uppercase">Share Look</span>
               </Button>
