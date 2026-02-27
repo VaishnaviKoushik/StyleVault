@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Clock, MapPin, Plus, Edit3, Trash2, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
@@ -29,7 +29,10 @@ export default function PlannerPage() {
   const [currentViewingOutfit, setCurrentViewingOutfit] = useState<any>(null);
   const { toast } = useToast();
 
-  // Generate the current week for the horizontal selector
+  useEffect(() => {
+    // Component mounted
+  }, []);
+
   const weekDays = useMemo(() => {
     const start = startOfWeek(date, { weekStartsOn: 1 });
     return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
@@ -108,7 +111,7 @@ export default function PlannerPage() {
                   <DialogTitle className="font-headline text-3xl font-bold text-center">Curate for {format(date, 'MMM do')}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 py-6">
-                  <div className="grid gap-4 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="grid gap-4 max-h-[450px] overflow-y-auto pr-2 scrollbar-hide">
                     {MOCK_OUTFITS.map(outfit => (
                       <button 
                         key={outfit.id} 
@@ -140,7 +143,7 @@ export default function PlannerPage() {
         </header>
 
         {/* Horizontal Week Selector */}
-        <div className="bg-white rounded-[2.5rem] p-4 shadow-xl shadow-slate-200/50 border border-slate-100/50 flex items-center gap-4">
+        <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-4 shadow-xl border border-white/40 flex items-center gap-4">
           <Button variant="ghost" size="icon" className="rounded-full h-12 w-12" onClick={() => setDate(addDays(date, -7))}>
             <ChevronLeft className="h-6 w-6" />
           </Button>
@@ -177,7 +180,7 @@ export default function PlannerPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
           {/* Calendar Widget Sidebar */}
           <div className="lg:col-span-1 space-y-8">
-            <Card className="border-none shadow-2xl bg-white rounded-[3rem] overflow-hidden p-4">
+            <Card className="border-none shadow-2xl bg-white/70 backdrop-blur-md rounded-[3rem] overflow-hidden p-4 border border-white/40">
               <Calendar
                 mode="single"
                 selected={date}
@@ -212,9 +215,9 @@ export default function PlannerPage() {
                   const outfit = MOCK_OUTFITS.find(o => o.id === schedule.outfitId);
                   if (!outfit) return null;
                   return (
-                    <Card key={schedule.id} className="border-none shadow-2xl bg-white rounded-[3rem] overflow-hidden group hover:shadow-primary/5 transition-all duration-500">
+                    <Card key={schedule.id} className="border-none shadow-2xl bg-white/70 backdrop-blur-md rounded-[3rem] overflow-hidden group hover:shadow-primary/5 transition-all duration-500 border border-white/40">
                       <div className="md:flex">
-                        <div className="md:w-2/5 relative min-h-[300px] bg-slate-50 p-6 flex items-center justify-center">
+                        <div className="md:w-2/5 relative min-h-[300px] bg-slate-50/50 p-6 flex items-center justify-center">
                            <div className="grid grid-cols-2 gap-3 w-full">
                             {outfit.items.slice(0, 4).map((itemId, idx) => {
                               const item = MOCK_WARDROBE.find(i => i.id === itemId);
@@ -273,7 +276,7 @@ export default function PlannerPage() {
                 })}
 
                 <button 
-                  className="w-full py-12 border-4 border-dashed border-slate-100 rounded-[3rem] flex flex-col items-center justify-center text-slate-300 hover:border-accent/40 hover:text-accent hover:bg-accent/5 transition-all group"
+                  className="w-full py-12 border-4 border-dashed border-white/40 rounded-[3rem] flex flex-col items-center justify-center text-primary/40 hover:border-accent/40 hover:text-accent hover:bg-white/20 transition-all group"
                   onClick={() => setIsSelectOutfitOpen(true)}
                 >
                   <Plus className="h-12 w-12 mb-2 group-hover:scale-110 transition-transform" />
@@ -281,13 +284,13 @@ export default function PlannerPage() {
                 </button>
               </div>
             ) : (
-              <div className="text-center py-24 bg-white/40 rounded-[4rem] border-4 border-dashed border-slate-100 flex flex-col items-center justify-center space-y-6">
-                <div className="h-24 w-24 rounded-full bg-slate-50 flex items-center justify-center">
-                  <CalendarIcon className="h-10 w-10 text-slate-200" />
+              <div className="text-center py-24 bg-white/40 backdrop-blur-md rounded-[4rem] border-4 border-dashed border-white/40 flex flex-col items-center justify-center space-y-6">
+                <div className="h-24 w-24 rounded-full bg-white/60 flex items-center justify-center">
+                  <CalendarIcon className="h-10 w-10 text-primary/20" />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-2xl font-headline font-bold text-slate-400">Empty Itinerary</p>
-                  <p className="text-muted-foreground font-body italic">Your schedule is open. Perfect for an AI-suggested look.</p>
+                  <p className="text-2xl font-headline font-bold text-primary/40">Empty Itinerary</p>
+                  <p className="text-muted-foreground font-body italic">Your schedule is open. Perfect time to get an AI suggestion!</p>
                 </div>
                 <Button className="rounded-full h-14 px-10 gradient-pill font-headline text-white border-glow shadow-xl" asChild>
                   <Link href="/ai-stylist">Generate Daily Look <Sparkles className="ml-2 h-5 w-5" /></Link>
@@ -343,7 +346,7 @@ export default function PlannerPage() {
               </DialogTitle>
               <p className="text-muted-foreground font-body italic">Assembled items for your upcoming event.</p>
             </DialogHeader>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-4 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
               {currentViewingOutfit?.items.map((itemId: string) => {
                 const item = MOCK_WARDROBE.find(i => i.id === itemId);
                 if (!item) return null;
@@ -367,7 +370,6 @@ export default function PlannerPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  </AppLayout>
-);
+    </AppLayout>
+  );
 }
