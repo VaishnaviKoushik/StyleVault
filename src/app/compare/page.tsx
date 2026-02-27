@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeftRight, Sparkles, Share2, Users, Trophy, TrendingUp, BarChart3, Plus, ChevronRight, Check } from "lucide-react";
+import { ArrowLeftRight, Sparkles, Share2, Users, Trophy, TrendingUp, Palette, BarChart3, Plus, ChevronRight, Check } from "lucide-react";
 import { MOCK_OUTFITS, MOCK_WARDROBE, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import { cn } from "@/lib/utils";

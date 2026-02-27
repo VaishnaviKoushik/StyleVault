@@ -1,16 +1,18 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Search, Sparkles, TrendingUp, Zap, ArrowRight, Layers, Palette, Info } from "lucide-react";
+import { Search, Sparkles, TrendingUp, Zap, ArrowRight, Layers, Palette, Info, AlertTriangle, ArrowUpFromLine, ArrowDownToLine } from "lucide-react";
 import { trendResearcher, type TrendResearcherOutput } from "@/ai/flows/trend-researcher";
+import { seasonalTransitionAlert, type SeasonalTransitionOutput } from "@/ai/flows/seasonal-transition-alert";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const suggestedTopics = [
   "Quiet Luxury",
@@ -24,7 +26,25 @@ export default function TrendResearcherPage() {
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<TrendResearcherOutput | null>(null);
+  const [transitionAlert, setTransitionAlert] = useState<SeasonalTransitionOutput | null>(null);
+  const [alertLoading, setAlertLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchAlert() {
+      setAlertLoading(true);
+      const currentMonth = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date());
+      try {
+        const result = await seasonalTransitionAlert({ currentMonth });
+        setTransitionAlert(result);
+      } catch (error) {
+        console.error("Failed to fetch transition alert:", error);
+      } finally {
+        setAlertLoading(false);
+      }
+    }
+    fetchAlert();
+  }, []);
 
   const handleResearch = async (searchTopic?: string) => {
     const finalTopic = searchTopic || topic;
@@ -47,7 +67,7 @@ export default function TrendResearcherPage() {
 
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto space-y-12 pt-8 animate-in fade-in duration-700">
+      <div className="max-w-6xl mx-auto space-y-12 pt-8 animate-in fade-in duration-700">
         <header className="space-y-4">
           <Badge className="bg-primary/10 text-primary font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
             Global Intelligence
@@ -63,6 +83,60 @@ export default function TrendResearcherPage() {
             </div>
           </div>
         </header>
+
+        {/* Seasonal Transition Alert - Moved here from Home but styled similarly */}
+        {transitionAlert && (
+          <section className="animate-in slide-in-from-right duration-700">
+             <Card className="border-none shadow-2xl bg-white overflow-hidden rounded-[3rem] p-8 flex flex-col md:flex-row items-center gap-8 border border-accent/10">
+                <div className="md:w-1/4 relative aspect-square rounded-[2rem] overflow-hidden shadow-xl">
+                   <Image src="https://images.unsplash.com/photo-1589400445193-c881a4b0b38a" alt="Seasonal Transition" fill className="object-cover" />
+                   <div className="absolute inset-0 bg-primary/40 flex flex-col items-center justify-center p-4 text-center">
+                      <AlertTriangle className="h-12 w-12 text-white opacity-40 mb-2" />
+                      <Badge className="bg-accent text-primary border-none font-headline uppercase text-[8px] tracking-widest px-3">
+                        Active Shift
+                      </Badge>
+                   </div>
+                </div>
+                <div className="md:w-3/4 space-y-4">
+                   <div className="space-y-1">
+                     <Badge className="bg-primary/5 text-primary font-headline uppercase text-[10px] tracking-widest">Seasonal Transition</Badge>
+                     <h3 className="text-2xl font-headline font-bold text-primary italic">
+                       {transitionAlert.title}
+                     </h3>
+                   </div>
+                   <p className="text-sm font-body text-slate-600 italic">
+                      "{transitionAlert.description}"
+                   </p>
+                   
+                   <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-1">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-accent flex items-center gap-1">
+                          <ArrowUpFromLine className="h-2 w-2" /> Bring In
+                        </span>
+                        <p className="text-[11px] font-headline font-bold text-primary">
+                          {transitionAlert.rotateIn.slice(0, 3).join(', ')}
+                        </p>
+                     </div>
+                     <div className="space-y-1">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+                          <ArrowDownToLine className="h-2 w-2" /> Store Away
+                        </span>
+                        <p className="text-[11px] font-headline font-bold text-slate-400">
+                          {transitionAlert.rotateOut.slice(0, 3).join(', ')}
+                        </p>
+                     </div>
+                   </div>
+                   
+                   <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-start gap-3">
+                      <Sparkles className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                      <p className="text-[11px] font-body text-slate-500 leading-relaxed italic">
+                        {transitionAlert.preparationTip}
+                      </p>
+                   </div>
+                </div>
+             </Card>
+          </section>
+        )}
 
         {/* Search Section */}
         <section className="space-y-6">
