@@ -171,20 +171,8 @@ export default function PlannerPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-          {/* Calendar Sidebar */}
-          <div className="lg:col-span-1 hidden lg:block space-y-8">
-            <Card className="border-none shadow-xl bg-white rounded-[2rem] overflow-hidden p-4">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={(d) => d && setDate(d)}
-                className="w-full flex justify-center font-body"
-              />
-            </Card>
-          </div>
-
-          {/* Agenda List */}
-          <div className="lg:col-span-3 space-y-8">
+          {/* Agenda List - Full Width */}
+          <div className="lg:col-span-4 space-y-8">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
                 <Clock className="h-6 w-6 text-primary/40" />
