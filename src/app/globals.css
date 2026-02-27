@@ -4,53 +4,26 @@
 
 @layer base {
   :root {
-    --background: 240 33% 98%;
-    --foreground: 240 10% 3.9%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 222 47% 11%;
     --primary: 255 72% 58%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
     --accent: 174 100% 39%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
     --ring: 255 72% 58%;
-    --radius: 1.5rem;
-
-    --violet-start: 255 72% 58%;
-    --violet-end: 255 92% 76%;
-    --teal-accent: 174 100% 39%;
-    --pink-accent: 295 91% 72%;
-  }
-
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --radius: 2rem;
   }
 }
 
@@ -68,13 +41,9 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/75 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(110,74,224,0.1)];
+    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_10px_40px_rgba(110,74,224,0.08)];
   }
   
-  .glass-card-subtle {
-    @apply bg-white/60 backdrop-blur-lg border border-white/10;
-  }
-
   .gradient-primary {
     @apply bg-gradient-to-br from-[#6E4AE0] to-[#A78BFA];
   }
@@ -84,23 +53,7 @@
   }
 
   .border-glow {
-    @apply shadow-[0_0_15px_rgba(110,74,224,0.3)];
-  }
-
-  .border-glow-teal {
-    @apply shadow-[0_0_15px_rgba(0,201,183,0.3)];
-  }
-
-  .mobile-container {
-    @apply relative w-[393px] h-[852px] bg-[#F8F9FF] overflow-hidden rounded-[55px] border-[12px] border-[#1C1C1E] shadow-2xl mx-auto my-8;
-  }
-
-  .safe-area-top {
-    @apply pt-[59px];
-  }
-
-  .safe-area-bottom {
-    @apply pb-[34px];
+    @apply shadow-[0_0_25px_rgba(110,74,224,0.25)];
   }
 
   .scrollbar-hide::-webkit-scrollbar {
@@ -109,6 +62,15 @@
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Web Responsive Overrides */
+  .main-content-area {
+    @apply flex-1 flex flex-col min-w-0 bg-slate-50 overflow-y-auto;
+  }
+
+  .page-container {
+    @apply flex-1 max-w-7xl mx-auto w-full px-6 py-10 pb-24 md:pb-10;
   }
 }
 

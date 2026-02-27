@@ -1,21 +1,24 @@
-
 import { BottomNav } from "./BottomNav";
 import { SidebarNav } from "./SidebarNav";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-slate-50">
       {/* Desktop Sidebar */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block border-r bg-white z-50">
         <SidebarNav />
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-background overflow-y-auto">
-        <div className="flex-1 max-w-7xl mx-auto w-full px-4 pt-6 pb-24 md:pb-6">
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto main-content-area">
+        <div className="page-container">
           {children}
         </div>
-        <BottomNav />
+        
+        {/* Mobile Nav - visible only on smaller screens */}
+        <div className="lg:hidden">
+          <BottomNav />
+        </div>
       </div>
     </div>
   );

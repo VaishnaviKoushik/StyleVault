@@ -1,38 +1,48 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Layers, Calendar, Sparkles, Home } from "lucide-react";
+import { Shirt, Layers, Calendar, Sparkles, Home, User, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Home", icon: Home, href: "/" },
-  { label: "Wardrobe", icon: Shirt, href: "/wardrobe" },
-  { label: "Outfits", icon: Layers, href: "/outfits" },
-  { label: "Planner", icon: Calendar, href: "/planner" },
-  { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
+  { label: "Closet", icon: Shirt, href: "/wardrobe" },
+  { label: "Add", icon: PlusCircle, href: "/add-item", primary: true },
+  { label: "Stylist", icon: Sparkles, href: "/ai-stylist" },
+  { label: "Profile", icon: User, href: "/settings" },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border flex items-center justify-around h-16 px-2 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-slate-100 flex items-center justify-around h-20 px-4 pb-4">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         const Icon = item.icon;
+        
+        if (item.primary) {
+          return (
+            <Link key={item.href} href={item.href} className="relative -top-6">
+              <div className="h-14 w-14 rounded-full gradient-pill border-glow flex items-center justify-center text-white shadow-xl">
+                <Icon className="h-7 w-7" />
+              </div>
+            </Link>
+          );
+        }
+
         return (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center flex-1 py-1 transition-colors",
-              isActive ? "text-accent" : "text-muted-foreground"
+              "flex flex-col items-center justify-center flex-1 py-1 transition-all",
+              isActive ? "text-primary scale-110" : "text-muted-foreground"
             )}
           >
-            <Icon className={cn("h-5 w-5 mb-1", isActive && "stroke-[2.5px]")} />
-            <span className="text-[10px] font-medium font-headline">{item.label}</span>
+            <Icon className={cn("h-6 w-6 mb-1", isActive && "stroke-[2.5px]")} />
+            <span className="text-[10px] font-bold font-headline uppercase tracking-widest">{item.label}</span>
           </Link>
         );
       })}

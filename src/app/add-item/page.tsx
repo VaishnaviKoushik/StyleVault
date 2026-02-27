@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from "react";
+import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Camera, Check, ChevronLeft, Sparkles, X } from "lucide-react";
+import { Camera, Check, ChevronLeft, Sparkles, X, Upload } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 const steps = ["Capture", "Details", "Confirm"];
 
@@ -24,150 +26,200 @@ export default function AddItemPage() {
   };
 
   return (
-    <div className="h-full flex flex-col animate-in slide-in-from-right duration-300">
-      <header className="px-6 py-4 flex items-center justify-between">
-        <Button variant="ghost" size="icon" onClick={() => step > 0 ? setStep(step - 1) : router.back()}>
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-        <h2 className="text-lg font-headline font-bold">Add New Item</h2>
-        <div className="w-10" />
-      </header>
-
-      {/* Stepper */}
-      <div className="px-8 flex items-center justify-between mb-8">
-        {steps.map((s, i) => (
-          <div key={s} className="flex items-center gap-2">
-            <div className={cn(
-              "h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs transition-colors",
-              step >= i ? "bg-[#6E4AE0] text-white shadow-lg" : "bg-[#8E8E93]/10 text-[#8E8E93]"
-            )}>
-              {step > i ? <Check className="h-4 w-4" /> : i + 1}
-            </div>
-            {i < steps.length - 1 && (
-              <div className={cn("h-[2px] w-12", step > i ? "bg-[#6E4AE0]" : "bg-[#8E8E93]/10")} />
-            )}
+    <AppLayout>
+      <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+        <header className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => step > 0 ? setStep(step - 1) : router.back()}>
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          <div className="space-y-0.5">
+            <h2 className="text-3xl font-headline font-bold">Catalog New Item</h2>
+            <p className="text-muted-foreground font-body">Digitize your wardrobe with AI assisted tagging.</p>
           </div>
-        ))}
-      </div>
+        </header>
 
-      <div className="flex-1 px-6 space-y-6">
-        {step === 0 && (
-          <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
-            <div 
-              className="relative aspect-[3/4] rounded-[40px] border-4 border-dashed border-[#6E4AE0]/20 bg-[#6E4AE0]/5 flex flex-col items-center justify-center cursor-pointer group hover:bg-[#6E4AE0]/10 transition-all overflow-hidden"
-              onClick={() => setPhotoTaken(true)}
-            >
-              {photoTaken ? (
-                <>
+        {/* Stepper */}
+        <div className="flex items-center justify-center gap-12 mb-12">
+          {steps.map((s, i) => (
+            <div key={s} className="flex flex-col items-center gap-2">
+              <div className={cn(
+                "h-12 w-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300",
+                step >= i ? "bg-primary text-white shadow-xl scale-110" : "bg-slate-200 text-muted-foreground"
+              )}>
+                {step > i ? <Check className="h-6 w-6" /> : i + 1}
+              </div>
+              <span className={cn(
+                "text-xs font-headline font-bold uppercase tracking-widest",
+                step >= i ? "text-primary" : "text-muted-foreground"
+              )}>{s}</span>
+            </div>
+          ))}
+        </div>
+
+        <Card className="border-none shadow-2xl bg-white overflow-hidden">
+          <CardContent className="p-8">
+            {step === 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div 
+                  className="relative aspect-[3/4] rounded-3xl border-4 border-dashed border-primary/20 bg-primary/5 flex flex-col items-center justify-center cursor-pointer group hover:bg-primary/10 transition-all overflow-hidden"
+                  onClick={() => setPhotoTaken(true)}
+                >
+                  {photoTaken ? (
+                    <>
+                      <Image 
+                        src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
+                        alt="Captured" 
+                        fill 
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                        <div className="h-20 w-20 rounded-full bg-accent text-white flex items-center justify-center shadow-2xl border-4 border-white">
+                          <Check className="h-10 w-10" />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="h-24 w-24 rounded-full bg-white shadow-xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <Camera className="h-10 w-10" />
+                      </div>
+                      <div className="mt-6 text-center space-y-2">
+                        <p className="text-xl font-headline font-bold">Upload Garment Photo</p>
+                        <p className="text-xs text-muted-foreground font-body uppercase tracking-[0.2em]">Drag and drop or click to browse</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-headline font-bold">Image Guidelines</h3>
+                  <ul className="space-y-4 text-muted-foreground font-body">
+                    <li className="flex items-start gap-3">
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">✨</div>
+                      <span>Use a neutral background for best AI recognition.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">✨</div>
+                      <span>Ensure the item is well-lit and fully visible.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">✨</div>
+                      <span>Multiple angles help AI understand fabric texture.</span>
+                    </li>
+                  </ul>
+                  <Button 
+                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
+                    disabled={!photoTaken}
+                    onClick={() => setStep(1)}
+                  >
+                    Continue to Details <Sparkles className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 1 && (
+              <div className="space-y-8 max-w-2xl mx-auto">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">Item Name</label>
+                  <Input placeholder="e.g. White Linen Shirt" className="h-14 rounded-2xl bg-slate-50 border-none shadow-sm font-headline text-xl px-6 focus-visible:ring-primary" />
+                </div>
+                
+                <div className="space-y-4">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">Category</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {["Tops", "Bottoms", "Shoes", "Bags", "Dresses", "Outerwear"].map(c => (
+                      <Button key={c} variant="outline" className="rounded-2xl border-slate-100 bg-slate-50 h-14 font-headline hover:bg-primary hover:text-white transition-all shadow-sm">
+                        {c}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">Main Color</label>
+                  <div className="flex flex-wrap gap-4 px-2">
+                    {[
+                      { name: 'Black', hex: '#000000' },
+                      { name: 'White', hex: '#FFFFFF' },
+                      { name: 'Beige', hex: '#F5F5DC' },
+                      { name: 'Navy', hex: '#1E3A8A' },
+                      { name: 'Sage', hex: '#94A3B8' },
+                      { name: 'Burgundy', hex: '#7F1D1D' }
+                    ].map(color => (
+                      <div key={color.name} className="flex flex-col items-center gap-2">
+                        <div 
+                          className="h-12 w-12 rounded-full border-4 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform ring-1 ring-slate-100" 
+                          style={{ backgroundColor: color.hex }}
+                        />
+                        <span className="text-[10px] font-bold text-muted-foreground">{color.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Button 
+                  className="w-full h-16 rounded-full gradient-pill font-headline text-xl shadow-xl shadow-primary/20"
+                  onClick={() => setStep(2)}
+                >
+                  Review AI Tagging
+                </Button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
                   <Image 
                     src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
-                    alt="Captured" 
+                    alt="Review" 
                     fill 
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-[#00C9B7]/20 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-[#00C9B7] text-white flex items-center justify-center shadow-2xl border-4 border-white">
-                      <Check className="h-8 w-8" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
+                    <h3 className="text-3xl font-headline font-bold">White Linen Shirt</h3>
+                    <div className="flex gap-2">
+                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">Tops</Badge>
+                      <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-xs">Summer</Badge>
                     </div>
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="h-20 w-20 rounded-full bg-white shadow-xl flex items-center justify-center text-[#6E4AE0] group-hover:scale-110 transition-transform">
-                    <Camera className="h-8 w-8" />
+                </div>
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <h4 className="text-2xl font-headline font-bold">Final Review</h4>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-muted-foreground uppercase">Brand</p>
+                        <p className="font-headline font-bold">Everlane</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-muted-foreground uppercase">Fabric</p>
+                        <p className="font-headline font-bold">100% Linen</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-muted-foreground uppercase">Season</p>
+                        <p className="font-headline font-bold">Spring / Summer</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-muted-foreground uppercase">Occasions</p>
+                        <p className="font-headline font-bold">Casual, Work</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-4 text-center">
-                    <p className="font-headline font-bold">Tap to capture</p>
-                    <p className="text-[10px] text-[#8E8E93] font-body uppercase tracking-widest mt-1">or select from gallery</p>
-                  </div>
-                </>
-              )}
-            </div>
-            <Button 
-              className="w-full h-14 rounded-full gradient-pill font-headline text-lg"
-              disabled={!photoTaken}
-              onClick={() => setStep(1)}
-            >
-              Continue <Sparkles className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
-        )}
-
-        {step === 1 && (
-          <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-[#8E8E93] uppercase px-2">Item Name</label>
-              <Input placeholder="e.g. White Linen Shirt" className="h-14 rounded-2xl bg-white border-none shadow-sm font-headline text-lg px-6" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-[#8E8E93] uppercase px-2">Category</label>
-              <div className="grid grid-cols-3 gap-2">
-                {["Tops", "Bottoms", "Shoes", "Bags", "Dresses", "Outerwear"].map(c => (
-                  <Button key={c} variant="outline" className="rounded-xl border-none bg-white shadow-sm h-12 font-headline text-xs hover:bg-[#6E4AE0] hover:text-white transition-all">
-                    {c}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-[#8E8E93] uppercase px-2">Main Color</label>
-              <div className="flex justify-between px-2">
-                {[
-                  { name: 'Black', hex: '#000000' },
-                  { name: 'White', hex: '#FFFFFF' },
-                  { name: 'Red', hex: '#EF4444' },
-                  { name: 'Blue', hex: '#3B82F6' },
-                  { name: 'Green', hex: '#10B981' },
-                  { name: 'Beige', hex: '#F5F5DC' }
-                ].map(color => (
-                  <div 
-                    key={color.name} 
-                    className="h-10 w-10 rounded-full border-2 border-white shadow-md cursor-pointer hover:scale-110 transition-transform" 
-                    style={{ backgroundColor: color.hex }}
-                  />
-                ))}
-              </div>
-            </div>
-            <Button 
-              className="w-full h-14 rounded-full gradient-pill font-headline text-lg mt-8"
-              onClick={() => setStep(2)}
-            >
-              Review Item
-            </Button>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="space-y-8 animate-in zoom-in-95 duration-300">
-            <div className="glass-card rounded-[40px] overflow-hidden">
-              <div className="relative aspect-[3/4]">
-                <Image 
-                  src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" 
-                  alt="Review" 
-                  fill 
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-8 left-8 right-8 text-white space-y-2">
-                  <h3 className="text-2xl font-headline font-bold">White Linen Shirt</h3>
-                  <div className="flex gap-2">
-                    <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-[10px]">Tops</Badge>
-                    <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-[10px]">White</Badge>
+                  <div className="flex gap-4">
+                    <Button variant="outline" className="flex-1 h-16 rounded-full font-headline border-primary text-primary" onClick={() => setStep(1)}>
+                      Edit Details
+                    </Button>
+                    <Button className="flex-1 h-16 rounded-full gradient-pill font-headline text-white border-glow" onClick={handleComplete}>
+                      Save to Closet
+                    </Button>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex gap-3">
-              <Button variant="outline" className="flex-1 h-14 rounded-full font-headline border-[#6E4AE0] text-[#6E4AE0]" onClick={() => setStep(1)}>
-                Edit Details
-              </Button>
-              <Button className="flex-1 h-14 rounded-full gradient-pill font-headline text-white border-glow" onClick={handleComplete}>
-                Save to Closet
-              </Button>
-            </div>
-          </div>
-        )}
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </AppLayout>
   );
 }
