@@ -5,7 +5,23 @@ import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, CloudRain, Zap, Sun, Thermometer, Briefcase, PartyPopper, Users, CalendarCheck } from "lucide-react";
+import { 
+  Sparkles, 
+  CloudRain, 
+  Zap, 
+  Sun, 
+  Thermometer, 
+  Briefcase, 
+  PartyPopper, 
+  Users, 
+  CalendarCheck,
+  Music,
+  Dumbbell,
+  Plane,
+  Umbrella,
+  Heart,
+  Trophy
+} from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
 import Image from "next/image";
@@ -18,7 +34,13 @@ const occasions = [
   { label: "Work", icon: Briefcase, value: "work" },
   { label: "Casual", icon: Users, value: "casual" },
   { label: "Formal", icon: Sparkles, value: "formal" },
-  { label: "Date Night", icon: PartyPopper, value: "night out" },
+  { label: "Date Night", icon: Heart, value: "night out" },
+  { label: "Party", icon: Music, value: "party" },
+  { label: "Sporty", icon: Dumbbell, value: "sporty" },
+  { label: "Travel", icon: Plane, value: "travel" },
+  { label: "Beach", icon: Umbrella, value: "beach" },
+  { label: "Wedding", icon: PartyPopper, value: "wedding" },
+  { label: "Gala", icon: Trophy, value: "gala" },
 ];
 
 export default function AiStylistPage() {
