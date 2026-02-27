@@ -1,4 +1,3 @@
-
 export interface WardrobeItem {
   id: string;
   name: string;
@@ -26,7 +25,7 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     color: 'White',
     brand: 'Everlane',
     occasion: ['work', 'casual'],
-    imageUrl: 'https://picsum.photos/seed/clothing1/400/500',
+    imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1080',
     description: 'A breathable white linen shirt, perfect for summer days.'
   },
   {
@@ -36,7 +35,7 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     color: 'Blue',
     brand: 'Levi\'s',
     occasion: ['casual'],
-    imageUrl: 'https://picsum.photos/seed/clothing2/400/500',
+    imageUrl: 'https://images.unsplash.com/photo-1714143136372-ddaf8b606da7?q=80&w=1080',
     description: 'Classic straight-leg denim jeans in a medium wash.'
   },
   {
@@ -46,7 +45,7 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     color: 'Black',
     brand: 'Dr. Martens',
     occasion: ['casual', 'work', 'night out'],
-    imageUrl: 'https://picsum.photos/seed/clothing3/400/500',
+    imageUrl: 'https://images.unsplash.com/photo-1710632609125-da337a1e1ddd?q=80&w=1080',
     description: 'Durable black leather boots with signature stitching.'
   },
   {
@@ -56,7 +55,7 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     color: 'Beige',
     brand: 'Burberry',
     occasion: ['formal', 'work'],
-    imageUrl: 'https://picsum.photos/seed/clothing4/400/500',
+    imageUrl: 'https://images.unsplash.com/photo-1589400445193-c881a4b0b38a?q=80&w=1080',
     description: 'A timeless beige trench coat for rainy or windy weather.'
   },
   {
@@ -66,7 +65,7 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     color: 'Multi',
     brand: 'Hermès',
     occasion: ['formal', 'casual'],
-    imageUrl: 'https://picsum.photos/seed/clothing5/400/500',
+    imageUrl: 'https://images.unsplash.com/photo-1677478863154-55ecce8c7536?q=80&w=1080',
     description: 'Elegant silk scarf with a vibrant floral pattern.'
   },
   {
@@ -78,16 +77,6 @@ export const MOCK_WARDROBE: WardrobeItem[] = [
     occasion: ['work', 'formal', 'casual'],
     imageUrl: 'https://picsum.photos/seed/clothing6/400/500',
     description: 'Soft merino wool turtleneck in classic black.'
-  },
-  {
-    id: '7',
-    name: 'Pleated Midi Skirt',
-    category: 'bottom',
-    color: 'Forest Green',
-    brand: 'Zara',
-    occasion: ['work', 'formal'],
-    imageUrl: 'https://picsum.photos/seed/clothing7/400/500',
-    description: 'Forest green pleated skirt with a slight shimmer.'
   }
 ];
 
@@ -102,7 +91,7 @@ export const MOCK_OUTFITS: Outfit[] = [
   {
     id: 'o2',
     name: 'Evening Out',
-    items: ['6', '7', '3', '5'],
+    items: ['6', '3', '5'],
     occasion: 'night out',
     createdAt: '2024-03-21T18:00:00Z'
   }
