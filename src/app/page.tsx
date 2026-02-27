@@ -24,7 +24,10 @@ import {
   AlertTriangle,
   ArrowDownToLine,
   ArrowUpFromLine,
-  Wind
+  Wind,
+  Globe,
+  ZapOff,
+  UserCheck
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -106,7 +109,7 @@ export default function HomeScreen() {
     <AppLayout>
       <div className="space-y-12 animate-in fade-in duration-1000 pt-8">
         
-        {/* NEW FEATURE: SEASONAL TRANSITION ALERT (PROACTIVE AI) */}
+        {/* SEASONAL TRANSITION ALERT */}
         {transitionAlert && (
           <section className="animate-in slide-in-from-top-8 duration-1000">
             <Card className="border-none shadow-2xl bg-gradient-to-r from-primary/95 to-primary text-white overflow-hidden rounded-[2.5rem] relative group">
@@ -172,7 +175,7 @@ export default function HomeScreen() {
           </section>
         )}
 
-        {/* 1. ELITE INTELLIGENCE HERO (TOP SECTION) */}
+        {/* 1. HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <Badge className="bg-accent/10 text-accent font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
@@ -224,7 +227,7 @@ export default function HomeScreen() {
           </Card>
         </section>
 
-        {/* 2. SMART GREETING & STATUS */}
+        {/* 2. SMART GREETING */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/40 p-8 rounded-[2rem] border border-white/20 shadow-sm">
           <div className="flex items-center gap-6">
             <div className="h-20 w-20 rounded-full p-1 bg-gradient-to-br from-primary to-accent shadow-xl">
@@ -253,52 +256,7 @@ export default function HomeScreen() {
           </div>
         </div>
 
-        {/* 3. HERO SECTION – TODAY’S AI OUTFIT */}
-        <Card className="glass-card border-none shadow-2xl overflow-hidden group relative">
-          <div className="md:flex">
-            <div className="md:w-1/2 relative aspect-[4/3] md:aspect-auto overflow-hidden">
-              <div className="grid grid-cols-2 h-full gap-0.5 bg-slate-100">
-                <div className="relative h-full w-full">
-                  <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" alt="Shirt" fill className="object-cover" />
-                </div>
-                <div className="grid grid-rows-2 gap-0.5 h-full">
-                  <div className="relative h-full w-full">
-                    <Image src="https://images.unsplash.com/photo-1714143136372-ddaf8b606da7" alt="Jeans" fill className="object-cover" />
-                  </div>
-                  <div className="relative h-full w-full">
-                    <Image src="https://images.unsplash.com/photo-1710632609125-da337a1e1ddd" alt="Boots" fill className="object-cover" />
-                  </div>
-                </div>
-              </div>
-              <div className="absolute top-6 left-6">
-                <Badge className="bg-white/90 text-primary font-headline shadow-lg px-4 py-1">98% Match</Badge>
-              </div>
-            </div>
-            <CardContent className="md:w-1/2 p-10 flex flex-col justify-center space-y-8 relative z-10 bg-white/40 backdrop-blur-sm">
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Badge variant="outline" className="text-[10px] font-bold border-primary/20 text-primary uppercase px-3">Casual</Badge>
-                  <Badge variant="outline" className="text-[10px] font-bold border-primary/20 text-primary uppercase px-3">Mon-Fri</Badge>
-                </div>
-                <h3 className="text-4xl font-headline font-bold tracking-tight text-primary">The "Morning Meetings" Look</h3>
-                <p className="text-muted-foreground font-body text-lg leading-relaxed italic">
-                  "A crisp white linen shirt paired with relaxed denim ensures a polished yet effortless vibe for your current schedule."
-                </p>
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <Button asChild className="flex-1 h-14 rounded-full gradient-primary font-headline text-lg text-white shadow-xl hover:scale-[1.02] transition-all">
-                  <Link href="/planner">Schedule Outfit <Clock className="ml-2 h-5 w-5" /></Link>
-                </Button>
-                <Button variant="outline" className="h-14 w-14 rounded-full border-primary/20 text-primary hover:bg-primary/5 transition-all">
-                  <Zap className="h-5 w-5" />
-                </Button>
-              </div>
-            </CardContent>
-          </div>
-        </Card>
-
-        {/* 4. QUICK ACTIONS GRID */}
+        {/* 3. QUICK ACTIONS */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {[
             { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
@@ -321,7 +279,7 @@ export default function HomeScreen() {
           ))}
         </div>
 
-        {/* NEW FEATURE: SMART SHOPPING SUGGESTIONS (AI POWERED) */}
+        {/* 4. SMART SHOPPING SUGGESTIONS */}
         <section className="space-y-6">
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-3">
@@ -390,7 +348,7 @@ export default function HomeScreen() {
           </div>
         </section>
 
-        {/* 5. SIGNATURE LOOKBOOK & PORTFOLIO */}
+        {/* 5. SIGNATURE LOOKBOOK */}
         <section className="py-20 px-10 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -446,6 +404,83 @@ export default function HomeScreen() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* 6. REAL-WORLD IMPACT SECTION */}
+        <section className="py-24 space-y-16">
+          <div className="text-center space-y-4 max-w-3xl mx-auto">
+            <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
+              Real-World Impact
+            </Badge>
+            <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
+              Style with Purpose. <span className="text-accent italic block">Impact with Every Choice.</span>
+            </h3>
+            <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
+              "We believe that a well-curated wardrobe is the foundation for both personal peak performance and global environmental responsibility."
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                title: "Sustainable Curation",
+                desc: "StyleVault reduces the environmental footprint of fashion by maximizing the utility of items you already own, actively discouraging the 'fast fashion' cycle through intelligent rotation and gap analysis.",
+                icon: Globe,
+                accent: "text-primary"
+              },
+              {
+                title: "Cognitive Clarity",
+                desc: "By offloading the daily 'what to wear' choice to our AI engine, users save an average of 15-20 minutes every morning, eliminating decision fatigue and freeing up mental space for high-impact creative work.",
+                icon: ZapOff,
+                accent: "text-accent"
+              },
+              {
+                title: "Professional Evolution",
+                desc: "Our color theory and fabric intelligence tools ensure your visual identity is consistently aligned with your professional goals, leveraging the psychology of style to build presence and authority.",
+                icon: UserCheck,
+                accent: "text-primary"
+              }
+            ].map((impact, idx) => (
+              <div key={idx} className="space-y-6 group">
+                <div className={cn("h-16 w-16 rounded-2xl bg-white shadow-xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500", impact.accent)}>
+                  <impact.icon className="h-8 w-8" />
+                </div>
+                <div className="space-y-4">
+                  <h4 className="text-2xl font-headline font-bold text-primary">{impact.title}</h4>
+                  <p className="text-sm text-muted-foreground font-body leading-relaxed border-l-2 border-slate-100 pl-4">
+                    {impact.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Card className="border-none shadow-2xl bg-white rounded-[3rem] p-12 flex flex-col md:flex-row items-center gap-12 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+            <div className="md:w-1/3 relative aspect-square rounded-[2rem] overflow-hidden shadow-2xl">
+              <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" alt="Sustainable" fill className="object-cover" />
+              <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] flex items-center justify-center">
+                <Globe className="h-20 w-20 text-white opacity-40" />
+              </div>
+            </div>
+            <div className="md:w-2/3 space-y-6">
+              <h4 className="text-3xl font-headline font-bold text-primary italic">The "StyleVault" Standard</h4>
+              <p className="text-lg font-body text-slate-600 leading-relaxed italic">
+                "Our technology isn't just about clothes; it's about the conscious curation of a life lived with intentionality. From the textiles we wear to the time we save, every algorithm is built to empower the modern professional while respecting the planet."
+              </p>
+              <div className="flex gap-4 pt-4">
+                <div className="text-center">
+                  <p className="text-3xl font-headline font-bold text-primary">82%</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Waste Reduction</p>
+                </div>
+                <div className="w-px h-10 bg-slate-100" />
+                <div className="text-center">
+                  <p className="text-3xl font-headline font-bold text-accent">120h</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase">Time Saved / Year</p>
+                </div>
+              </div>
+            </div>
+          </Card>
         </section>
       </div>
 
