@@ -493,6 +493,7 @@ export default function TryOnScreen() {
                             src={`https://picsum.photos/seed/${suggestion.itemName}/400/300`} 
                             alt={suggestion.itemName} 
                             fill 
+                            data-ai-hint="fashion item"
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                           <div className="absolute top-2 left-2">
@@ -512,7 +513,7 @@ export default function TryOnScreen() {
                           <div className="flex gap-2">
                             <Button asChild className="flex-1 h-8 rounded-full gradient-primary text-white font-headline text-[10px]">
                               <a href={suggestion.shopUrl} target="_blank" rel="noopener noreferrer">
-                                Shop <ArrowRight className="ml-1 h-3 w-3" />
+                                Shop Now <ArrowRight className="ml-1 h-3 w-3" />
                               </a>
                             </Button>
                             <Button 

@@ -31,7 +31,7 @@ const ShoppingSuggestionsOutputSchema = z.object({
     matchCount: z.number().describe('How many existing items or outfits this piece would complement.'),
     category: z.string().describe('The category of the suggested item.'),
     platform: z.enum(['Amazon', 'Myntra', 'Flipkart', 'Meesho']).describe('The recommended shopping platform.'),
-    shopUrl: z.string().describe('The search URL for the platform.'),
+    shopUrl: z.string().describe('The direct search URL for the platform.'),
   })).describe('A list of up to 4 smart shopping suggestions.'),
 });
 export type ShoppingSuggestionsOutput = z.infer<typeof ShoppingSuggestionsOutputSchema>;
@@ -45,7 +45,11 @@ const shoppingPrompt = ai.definePrompt({
   input: { schema: ShoppingSuggestionsInputSchema },
   output: { schema: ShoppingSuggestionsOutputSchema },
   prompt: `You are a data-driven fashion strategist. Analyze a user's wardrobe and suggest high-value additions.
-Assign a specific platform (Amazon, Myntra, Flipkart, or Meesho) based on the item type (e.g., Meesho for ethnic/value, Myntra for lifestyle, Amazon for essentials).
+Assign a specific platform (Amazon, Myntra, Flipkart, or Meesho) based on the item type:
+- Amazon: Essentials, high-utility items, outerwear.
+- Myntra: Premium lifestyle, branded fashion, footwear.
+- Flipkart: Casual wear, accessories, value-for-money fashion.
+- Meesho: Ethnic wear, trendy value items, jewelry.
 
 Current Wardrobe:
 {{#each wardrobeItems}}
@@ -55,11 +59,15 @@ Current Wardrobe:
 User Style: {{{stylePreference}}}
 
 Your Task:
-1. Identify missing essentials.
+1. Identify missing essentials that complement existing outfits.
 2. Suggest items that maximize new combinations.
-3. Provide a platform-specific search URL.
+3. Provide a direct search URL for the platform using the following structures:
+   - Amazon: https://www.amazon.in/s?k={{itemName}}
+   - Myntra: https://www.myntra.com/{{itemName}} (replace spaces with -)
+   - Flipkart: https://www.flipkart.com/search?q={{itemName}}
+   - Meesho: https://www.meesho.com/search?q={{itemName}}
 
-Format the 'reason' to be convincing.`,
+Format the 'reason' to be professional and data-backed.`,
 });
 
 const smartShoppingSuggestionsFlow = ai.defineFlow(
@@ -74,12 +82,12 @@ const smartShoppingSuggestionsFlow = ai.defineFlow(
       return output!;
     } catch (error: any) {
       // Fallback logic for Quota Exceeded (429) or other API errors
-      if (error.message?.includes('429') || error.message?.includes('quota')) {
+      if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('RESOURCES_EXHAUSTED')) {
         return {
           suggestions: [
             {
               itemName: 'Classic White Linen Shirt',
-              reason: 'Linen is essential for summer breathability and complements 8 of your existing items.',
+              reason: 'Linen is essential for breathability and complements 8 of your existing items including blue denims.',
               matchCount: 8,
               category: 'top',
               platform: 'Amazon',
@@ -87,7 +95,7 @@ const smartShoppingSuggestionsFlow = ai.defineFlow(
             },
             {
               itemName: 'Tan Leather Loafers',
-              reason: 'Elevate your casual looks; these match perfectly with your blue denim and beige chinos.',
+              reason: 'Elevate your casual looks; these match perfectly with your blue denim and beige chinos for a polished vibe.',
               matchCount: 6,
               category: 'shoes',
               platform: 'Myntra',
