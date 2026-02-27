@@ -5,13 +5,14 @@ import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, CloudRain, Zap, Sun, Thermometer, Briefcase, PartyPopper, Users } from "lucide-react";
+import { Sparkles, CloudRain, Zap, Sun, Thermometer, Briefcase, PartyPopper, Users, CalendarCheck } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
 import { MOCK_WARDROBE } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const occasions = [
   { label: "Work", icon: Briefcase, value: "work" },
@@ -25,6 +26,7 @@ export default function AiStylistPage() {
   const [selectedOccasion, setSelectedOccasion] = useState("");
   const [suggestion, setSuggestion] = useState<any>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleGenerate = async () => {
     if (!selectedOccasion) {
@@ -56,6 +58,17 @@ export default function AiStylistPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSaveToPlanner = () => {
+    toast({
+      title: "Saved to Planner",
+      description: "This outfit has been scheduled in your Style Journal.",
+    });
+    // In a real app, this would persist to a database
+    setTimeout(() => {
+      router.push('/planner');
+    }, 1500);
   };
 
   return (
@@ -176,8 +189,11 @@ export default function AiStylistPage() {
                   </div>
 
                   <div className="flex gap-4">
-                    <Button className="flex-1 font-headline bg-primary hover:bg-primary/90 h-12">
-                      Save to Planner
+                    <Button 
+                      className="flex-1 font-headline bg-primary hover:bg-primary/90 h-12 flex items-center justify-center gap-2"
+                      onClick={handleSaveToPlanner}
+                    >
+                      <CalendarCheck className="h-5 w-5" /> Save to Planner
                     </Button>
                     <Button 
                       variant="outline" 
