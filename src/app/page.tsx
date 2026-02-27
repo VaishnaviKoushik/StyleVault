@@ -215,27 +215,36 @@ export default function HomeScreen() {
         </section>
 
         {/* 3. QUICK ACTIONS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {[
-            { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
-            { label: "Shopping", icon: ShoppingBag, desc: "AI Suggestions", href: "/shopping", color: "from-accent/10 to-accent/5" },
-            { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5" },
-            { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-accent/10 to-primary/5" },
-            { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-primary/10 to-primary/5" }
-          ].map((action) => (
-            <Link key={action.label} href={action.href}>
-              <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
-                <div className="h-14 w-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                  <action.icon className="h-7 w-7" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-headline font-bold text-xl">{action.label}</h4>
-                  <p className="text-xs text-muted-foreground font-body opacity-80">{action.desc}</p>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        <section className="space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-3xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
+            <p className="text-muted-foreground font-body italic border-l-2 border-accent/20 pl-4 max-w-2xl">
+              "Access specialized AI engines to decode trends, optimize acquisition, and orchestrate your signature visual identity."
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            {[
+              { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
+              { label: "Shopping", icon: ShoppingBag, desc: "AI Suggestions", href: "/shopping", color: "from-accent/10 to-accent/5" },
+              { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5" },
+              { label: "Assembler", icon: Palette, desc: "Create looks", href: "/outfits", color: "from-accent/10 to-primary/5" },
+              { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-primary/10 to-primary/5" }
+            ].map((action) => (
+              <Link key={action.label} href={action.href}>
+                <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
+                  <div className="h-14 w-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <action.icon className="h-7 w-7" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-headline font-bold text-xl">{action.label}</h4>
+                    <p className="text-xs text-muted-foreground font-body opacity-80">{action.desc}</p>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {/* 4. INTEL SUMMARY CARD */}
         <section className="animate-in slide-in-from-bottom-8 duration-1000">
