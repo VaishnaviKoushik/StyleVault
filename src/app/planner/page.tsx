@@ -18,16 +18,24 @@ import { cn } from "@/lib/utils";
 import { addDays, format, startOfWeek, isSameDay } from "date-fns";
 
 export default function PlannerPage() {
+  const [mounted, setMounted] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
-  const [scheduledOutfits, setScheduledOutfits] = useState<any[]>([
-    { id: 's1', date: new Date(), outfitId: 'o1', time: '09:00 AM', location: 'Office' }
-  ]);
+  const [scheduledOutfits, setScheduledOutfits] = useState<any[]>([]);
   const [isSelectOutfitOpen, setIsSelectOutfitOpen] = useState(false);
   const [isEditEventOpen, setIsEditEventOpen] = useState(false);
   const [isViewItemsOpen, setIsViewItemsOpen] = useState(false);
   const [currentEditingEvent, setCurrentEditingEvent] = useState<any>(null);
   const [currentViewingOutfit, setCurrentViewingOutfit] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setMounted(true);
+    // Initialize date and schedules on client only to avoid hydration mismatch
+    setDate(new Date());
+    setScheduledOutfits([
+      { id: 's1', date: new Date(), outfitId: 'o1', time: '09:00 AM', location: 'Office' }
+    ]);
+  }, []);
 
   const weekDays = useMemo(() => {
     const start = startOfWeek(date, { weekStartsOn: 1 });
@@ -84,6 +92,27 @@ export default function PlannerPage() {
   const activeSchedules = scheduledOutfits.filter(s => 
     isSameDay(new Date(s.date), date)
   );
+
+  if (!mounted) {
+    return (
+      <AppLayout>
+        <div className="max-w-6xl mx-auto space-y-10 animate-pulse pt-8">
+           <div className="flex justify-between items-start">
+             <div className="space-y-2">
+               <div className="h-10 w-48 bg-slate-200 rounded-lg" />
+               <div className="h-4 w-32 bg-slate-200 rounded-lg" />
+             </div>
+             <div className="h-12 w-40 bg-slate-200 rounded-full" />
+           </div>
+           <div className="h-24 bg-white rounded-[3rem] border border-slate-100" />
+           <div className="space-y-6">
+              <div className="h-8 w-64 bg-slate-200 rounded-lg" />
+              <div className="h-64 bg-white rounded-[2.5rem] border border-slate-50" />
+           </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
