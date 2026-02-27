@@ -12,7 +12,10 @@ import {
   Sun,
   Zap,
   Info,
-  ChevronRight
+  ChevronRight,
+  Layers,
+  Star,
+  Shield
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,10 +54,10 @@ export default function HomeScreen() {
             </Badge>
             <h1 className="text-6xl md:text-8xl font-headline font-bold leading-none tracking-tighter">
               <span className="text-primary italic block">Style is</span>
-              <span className="text-accent italic block ml-12 md:ml-24">Algorithmic.</span>
+              <span className="text-accent italic block ml-12 md:ml-24 underline decoration-accent/20">Algorithmic.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed max-w-lg border-l-4 border-accent/30 pl-6">
-              "We've merged human creativity with generative logic to transform your wardrobe into a dynamic, performance-driven asset."
+            <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed max-w-lg border-l-4 border-accent pl-6">
+              "Transforming your wardrobe into a dynamic, performance-driven asset through generative logic."
             </p>
             <div className="flex gap-4 pt-4">
               <Button asChild className="h-14 px-8 rounded-full gradient-primary text-white font-headline text-lg shadow-xl hover:scale-105 transition-all">
@@ -191,41 +194,60 @@ export default function HomeScreen() {
           ))}
         </div>
 
-        {/* 5. STYLEVAULT TECHNOLOGY PREVIEW */}
-        <section className="py-20 px-10 rounded-[4rem] bg-primary text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/20 to-transparent pointer-events-none" />
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div className="lg:w-3/5 space-y-8">
-              <Badge className="bg-accent text-primary font-headline uppercase px-6 py-1 tracking-widest">StyleVault Vision</Badge>
-              <h3 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] italic">
-                Redefining personal style through intelligence.
+        {/* 5. SIGNATURE LOOKBOOK & PORTFOLIO (NEW SECTION) */}
+        <section className="py-20 px-10 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
+            <div className="lg:w-1/2 space-y-8">
+              <Badge className="bg-primary/10 text-primary font-headline uppercase px-6 py-1 tracking-widest border-none">
+                Elite Signature
+              </Badge>
+              <h3 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] text-primary italic">
+                Curation <span className="text-accent italic">Perfected.</span>
               </h3>
-              <p className="text-xl opacity-80 font-body leading-relaxed max-w-2xl">
-                StyleVault isn't just a closet app; it's a cognitive style engine. We merge computer vision with generative AI to transform your static wardrobe into a dynamic palette of possibilities.
+              <p className="text-xl text-muted-foreground font-body leading-relaxed max-w-2xl italic border-r-4 border-accent pr-6 text-right lg:text-left lg:border-r-0 lg:border-l-4 lg:pl-6">
+                "We've redefined the professional wardrobe. StyleVault is a cognitive style engine merging vision with creative intelligence."
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6">
-                <div className="space-y-2 border-l-2 border-accent/40 pl-6">
-                  <h4 className="font-headline font-bold text-2xl text-accent">Coordination</h4>
-                  <p className="text-sm opacity-70 font-body">Gemini-powered logic analyzes fabric, color theory, and historical preference.</p>
+                <div className="space-y-3 group cursor-default">
+                  <div className="h-12 w-12 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg transition-transform group-hover:rotate-6">
+                    <Star className="h-6 w-6" />
+                  </div>
+                  <h4 className="font-headline font-bold text-2xl text-primary">Mastery</h4>
+                  <p className="text-sm text-muted-foreground font-body">Gemini-powered analysis of color theory and historical styling preference.</p>
                 </div>
-                <div className="space-y-2 border-l-2 border-accent/40 pl-6">
-                  <h4 className="font-headline font-bold text-2xl text-accent">Predictive</h4>
-                  <p className="text-sm opacity-70 font-body">Cross-references weather and calendar sync to ensure perfect climate prep.</p>
+                <div className="space-y-3 group cursor-default">
+                  <div className="h-12 w-12 rounded-xl bg-accent text-white flex items-center justify-center shadow-lg transition-transform group-hover:-rotate-6">
+                    <Shield className="h-6 w-6" />
+                  </div>
+                  <h4 className="font-headline font-bold text-2xl text-primary">Security</h4>
+                  <p className="text-sm text-muted-foreground font-body">Your digital inventory is protected with professional-grade cloud security.</p>
                 </div>
               </div>
 
-              <Button asChild variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10 font-headline h-14 px-8 mt-8">
-                 <Link href="/proposal">The Architecture <ChevronRight className="ml-2 h-4 w-4" /></Link>
+              <Button asChild variant="outline" className="rounded-full border-primary/20 text-primary hover:bg-primary hover:text-white font-headline h-14 px-8 mt-8 transition-all">
+                 <Link href="/proposal">View Architecture <ChevronRight className="ml-2 h-4 w-4" /></Link>
               </Button>
             </div>
-            <div className="lg:w-1/3 flex justify-center">
-               <div className="h-80 w-80 rounded-full border-4 border-accent/30 flex items-center justify-center animate-pulse relative">
-                  <Brain className="h-40 w-40 text-accent" />
-                  <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
-                    <Sparkles className="h-12 w-12 text-accent" />
-                  </div>
-               </div>
+            
+            <div className="lg:w-1/2 grid grid-cols-2 gap-4">
+              <div className="space-y-4 mt-8">
+                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
+                  <Image src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c" alt="Accessory" fill className="object-cover" />
+                </div>
+                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
+                  <Image src="https://images.unsplash.com/photo-1524805444758-09912d619dce" alt="Watch" fill className="object-cover" />
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
+                  <Image src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371" alt="Glasses" fill className="object-cover" />
+                </div>
+                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
+                  <Image src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7" alt="Bag" fill className="object-cover" />
+                </div>
+              </div>
             </div>
           </div>
         </section>
