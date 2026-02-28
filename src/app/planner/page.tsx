@@ -20,17 +20,19 @@ import {
   X,
   Share2,
   ArrowLeftRight,
-  LayoutGrid
+  LayoutGrid,
+  MapPin
 } from "lucide-react";
 import { MOCK_OUTFITS, MOCK_WARDROBE, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addDays, format, startOfWeek, isSameDay } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function UnifiedPlannerPage() {
   const [mounted, setMounted] = useState(false);
@@ -42,6 +44,11 @@ export default function UnifiedPlannerPage() {
   const [isSelectOutfitOpen, setIsSelectOutfitOpen] = useState(false);
   const [isViewItemsOpen, setIsViewItemsOpen] = useState(false);
   const [currentViewingOutfit, setCurrentViewingOutfit] = useState<any>(null);
+
+  // Manual Event Entry State
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventTime, setEventTime] = useState("12:00 PM");
+  const [tempSelectedOutfitId, setTempSelectedOutfitId] = useState<string | null>(null);
 
   // Lookbook/Assembler State
   const [outfits, setOutfits] = useState<Outfit[]>(MOCK_OUTFITS);
@@ -70,17 +77,32 @@ export default function UnifiedPlannerPage() {
     toast({ title: "Outfit Unscheduled", variant: "destructive" });
   };
 
-  const handleSchedule = (outfitId: string) => {
+  const handleScheduleConfirm = () => {
+    if (!tempSelectedOutfitId) {
+      toast({ title: "Please select an outfit", variant: "destructive" });
+      return;
+    }
+    
     const newSchedule = {
       id: Math.random().toString(36).substr(2, 9),
       date: date,
-      outfitId: outfitId,
-      time: '12:00 PM',
-      location: 'New Event'
+      outfitId: tempSelectedOutfitId,
+      time: eventTime || 'All Day',
+      location: eventTitle || 'New Event'
     };
+
     setScheduledOutfits([...scheduledOutfits, newSchedule]);
     setIsSelectOutfitOpen(false);
-    toast({ title: "Outfit Scheduled", description: `Planned for ${format(date, 'MMM do')}.` });
+    
+    // Reset temporary states
+    setEventTitle("");
+    setEventTime("12:00 PM");
+    setTempSelectedOutfitId(null);
+    
+    toast({ 
+      title: "Event Scheduled", 
+      description: `Planned for ${format(date, 'MMM do')}.` 
+    });
   };
 
   const handleViewItems = (outfitId: string) => {
@@ -247,7 +269,7 @@ export default function UnifiedPlannerPage() {
                   <CalendarIcon className="h-12 w-12 text-slate-200" />
                   <p className="text-xl font-headline font-bold text-slate-300">Nothing planned for this day</p>
                   <Button className="rounded-full h-12 px-8 bg-primary text-white" onClick={() => setIsSelectOutfitOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" /> Select from Lookbook
+                    <Plus className="mr-2 h-4 w-4" /> Schedule Event
                   </Button>
                 </div>
               )}
@@ -278,7 +300,7 @@ export default function UnifiedPlannerPage() {
                     </div>
                   </CardContent>
                   <div className="p-4 bg-slate-50 flex justify-between gap-2 border-t">
-                    <Button variant="ghost" size="sm" className="flex-1" onClick={() => { setDate(new Date()); handleSchedule(outfit.id); setActiveTab("schedule"); }}>
+                    <Button variant="ghost" size="sm" className="flex-1" onClick={() => { setDate(new Date()); setTempSelectedOutfitId(outfit.id); setIsSelectOutfitOpen(true); }}>
                       <CalendarIcon className="mr-2 h-4 w-4" /> Schedule
                     </Button>
                     <Button variant="ghost" size="sm" className="flex-1 text-destructive" onClick={() => handleDeleteOutfit(outfit.id)}>
@@ -364,27 +386,91 @@ export default function UnifiedPlannerPage() {
         </Tabs>
       </div>
 
-      {/* Select Outfit Dialog (From Planner) */}
+      {/* Unified Schedule Event Dialog */}
       <Dialog open={isSelectOutfitOpen} onOpenChange={setIsSelectOutfitOpen}>
-        <DialogContent className="sm:max-w-md bg-white rounded-[2rem] border-none shadow-2xl">
-          <DialogHeader><DialogTitle className="font-headline text-2xl font-bold text-center">Schedule a Look</DialogTitle></DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="grid gap-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
-              {outfits.map(outfit => (
-                <button key={outfit.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-slate-50 hover:bg-white hover:border-primary transition-all text-left" onClick={() => handleSchedule(outfit.id)}>
-                  <div className="flex -space-x-3">
-                    {outfit.items.slice(0, 3).map((itemId, idx) => (
-                      <div key={idx} className="h-10 w-10 rounded-full border-2 border-white overflow-hidden shadow-sm relative">
-                        <Image src={MOCK_WARDROBE.find(i => i.id === itemId)?.imageUrl || ''} alt="" fill className="object-cover" />
-                      </div>
-                    ))}
-                  </div>
-                  <span className="font-headline font-bold text-base flex-1">{outfit.name}</span>
-                  <ChevronRight className="h-4 w-4 text-slate-300" />
-                </button>
-              ))}
+        <DialogContent className="sm:max-w-xl bg-white rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+          <DialogHeader className="p-8 bg-slate-50 border-b">
+            <DialogTitle className="font-headline text-2xl font-bold text-primary">Schedule Event</DialogTitle>
+            <p className="text-sm text-muted-foreground font-body">Detail your event and select a look from your lookbook.</p>
+          </DialogHeader>
+          
+          <div className="p-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Event / Location</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
+                  <Input 
+                    placeholder="e.g. Dinner at Savoy" 
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                    className="pl-10 h-12 rounded-xl bg-slate-50 border-none font-body"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Time</label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
+                  <Input 
+                    placeholder="e.g. 08:00 PM" 
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                    className="pl-10 h-12 rounded-xl bg-slate-50 border-none font-body"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Select Lookbook Signature</label>
+              <ScrollArea className="h-[280px] pr-4">
+                <div className="grid gap-3">
+                  {outfits.map(outfit => {
+                    const isSelected = tempSelectedOutfitId === outfit.id;
+                    return (
+                      <button 
+                        key={outfit.id} 
+                        className={cn(
+                          "flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group",
+                          isSelected ? "bg-primary border-primary text-white" : "bg-white border-slate-100 hover:border-primary/20"
+                        )} 
+                        onClick={() => setTempSelectedOutfitId(outfit.id)}
+                      >
+                        <div className="flex -space-x-4">
+                          {outfit.items.slice(0, 3).map((itemId, idx) => (
+                            <div key={idx} className="h-12 w-12 rounded-full border-2 border-white overflow-hidden shadow-sm relative shrink-0">
+                              <Image src={MOCK_WARDROBE.find(i => i.id === itemId)?.imageUrl || ''} alt="" fill className="object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn("font-headline font-bold truncate", isSelected ? "text-white" : "text-primary")}>
+                            {outfit.name}
+                          </p>
+                          <p className={cn("text-[10px] font-body uppercase tracking-wider", isSelected ? "text-white/60" : "text-slate-400")}>
+                            {outfit.occasion}
+                          </p>
+                        </div>
+                        {isSelected && <Check className="h-5 w-5 text-accent" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </ScrollArea>
             </div>
           </div>
+
+          <DialogFooter className="p-8 bg-slate-50 border-t flex gap-3">
+            <Button variant="ghost" className="rounded-full font-headline" onClick={() => setIsSelectOutfitOpen(false)}>Cancel</Button>
+            <Button 
+              className="rounded-full gradient-primary text-white font-headline h-12 px-8 flex-1" 
+              onClick={handleScheduleConfirm}
+              disabled={!tempSelectedOutfitId}
+            >
+              Confirm Journal Entry <Check className="ml-2 h-4 w-4" />
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
