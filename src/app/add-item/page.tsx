@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ChevronLeft, Sparkles, Upload, FolderOpen, X, RefreshCw } from "lucide-react";
+import { Check, ChevronLeft, Sparkles, Upload, FolderOpen, X, RefreshCw, Camera } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -41,12 +41,20 @@ export default function AddItemPage() {
   const [selectedColor, setSelectedColor] = useState("");
   const [mounted, setMounted] = useState(false);
   const [saving, setSaving] = useState(false);
+  
+  // Camera State
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
+    return () => stopCamera();
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,12 +63,58 @@ export default function AddItemPage() {
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      setIsCameraActive(false);
       toast({ title: "Image Loaded", description: "Ready for digital analysis." });
     }
   };
 
   const triggerUpload = () => {
     fileInputRef.current?.click();
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      setHasCameraPermission(true);
+      setIsCameraActive(true);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setHasCameraPermission(false);
+      toast({
+        variant: 'destructive',
+        title: 'Camera Access Denied',
+        description: 'Please enable camera permissions in your browser settings to use the live analysis feature.',
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      if (context) {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/png');
+        setPreviewUrl(dataUrl);
+        stopCamera();
+        toast({ title: "Photo Captured", description: "Ready for digital analysis." });
+      }
+    }
   };
 
   const handleComplete = () => {
@@ -83,12 +137,16 @@ export default function AddItemPage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500">
         <header className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="rounded-full active:scale-90" onClick={() => step > 0 ? setStep(step - 1) : router.back()}>
+          <Button variant="ghost" size="icon" className="rounded-full active:scale-90" onClick={() => {
+            if (isCameraActive) stopCamera();
+            else if (step > 0) setStep(step - 1);
+            else router.back();
+          }}>
             <ChevronLeft className="h-6 w-6" />
           </Button>
           <div className="space-y-0.5">
             <h2 className="text-3xl font-headline font-bold text-primary">Catalog New Item</h2>
-            <p className="text-muted-foreground font-body">Upload a photo to digitize your wardrobe.</p>
+            <p className="text-muted-foreground font-body">Upload or snap a photo to digitize your wardrobe.</p>
           </div>
         </header>
 
@@ -126,14 +184,25 @@ export default function AddItemPage() {
                   <div 
                     className={cn(
                       "relative aspect-[3/4] rounded-3xl border-4 border-dashed flex flex-col items-center justify-center cursor-pointer group transition-all overflow-hidden active:scale-[0.98]",
-                      previewUrl 
+                      previewUrl || isCameraActive
                         ? "border-primary/40 bg-white" 
                         : "border-primary/20 bg-primary/5 hover:bg-primary/10"
                     )}
-                    onClick={triggerUpload}
                   >
-                    {previewUrl ? (
+                    {isCameraActive ? (
                       <div className="relative w-full h-full">
+                        <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4">
+                          <Button size="icon" className="h-14 w-14 rounded-full bg-white text-primary shadow-2xl hover:scale-110 transition-transform" onClick={capturePhoto}>
+                            <Camera className="h-6 w-6" />
+                          </Button>
+                          <Button size="icon" variant="destructive" className="h-14 w-14 rounded-full shadow-2xl" onClick={stopCamera}>
+                            <X className="h-6 w-6" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : previewUrl ? (
+                      <div className="relative w-full h-full" onClick={triggerUpload}>
                         <Image 
                           src={previewUrl} 
                           alt="Uploaded" 
@@ -145,7 +214,7 @@ export default function AddItemPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center justify-center text-primary space-y-4 p-8 text-center">
+                      <div className="flex flex-col items-center justify-center text-primary space-y-4 p-8 text-center" onClick={triggerUpload}>
                         <FolderOpen className="h-16 w-16 opacity-40" />
                         <div className="space-y-1">
                           <p className="font-headline font-bold text-lg">Browse Files</p>
@@ -153,14 +222,26 @@ export default function AddItemPage() {
                         </div>
                       </div>
                     )}
+                    <canvas ref={canvasRef} className="hidden" />
                   </div>
 
-                  <Button 
-                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white active:scale-95 transition-all"
-                    onClick={triggerUpload}
-                  >
-                    {previewUrl ? "Change File" : "Choose File"} <Upload className="ml-2 h-5 w-5" />
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button 
+                      className="flex-1 h-14 rounded-full gradient-pill font-headline text-white active:scale-95 transition-all"
+                      onClick={triggerUpload}
+                    >
+                      {previewUrl ? "Change File" : "Browse Files"} <Upload className="ml-2 h-4 w-4" />
+                    </Button>
+                    {!isCameraActive && (
+                      <Button 
+                        variant="outline"
+                        className="flex-1 h-14 rounded-full border-primary/20 text-primary font-headline active:scale-95 transition-all"
+                        onClick={startCamera}
+                      >
+                        Open Camera <Camera className="ml-2 h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-6">
@@ -181,7 +262,7 @@ export default function AddItemPage() {
                   </ul>
                   <Button 
                     className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white active:scale-95 transition-all disabled:opacity-50"
-                    disabled={!previewUrl}
+                    disabled={!previewUrl || isCameraActive}
                     onClick={() => setStep(1)}
                   >
                     Continue to Details <Sparkles className="ml-2 h-5 w-5" />
