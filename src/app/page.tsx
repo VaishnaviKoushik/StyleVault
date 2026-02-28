@@ -28,27 +28,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
 
-const testimonials = [
-  {
-    quote: "StyleVault has completely transformed my morning routine. I save at least 20 minutes a day, and I've never felt more confident in my choices.",
-    author: "Sarah J.",
-    role: "Creative Director",
-    avatar: "https://picsum.photos/seed/sarah/100/100"
-  },
-  {
-    quote: "The color analysis tool is a total game changer for my clients. It's like having a professional stylist in your pocket at all times.",
-    author: "Michael R.",
-    role: "Personal Stylist",
-    avatar: "https://picsum.photos/seed/michael/100/100"
-  },
-  {
-    quote: "I finally feel like I'm using 100% of my wardrobe. The AI gap analysis is brilliant—it identified exactly what my collection was missing.",
-    author: "Elena T.",
-    role: "Tech Executive",
-    avatar: "https://picsum.photos/seed/elena/100/100"
-  }
-];
-
 export default function HomeScreen() {
   return (
     <AppLayout>
@@ -112,8 +91,8 @@ export default function HomeScreen() {
 
         {/* QUICK ACTIONS */}
         <section className="py-24 space-y-12">
-          <div className="space-y-4 text-center max-w-3xl mx-auto">
-            <h3 className="text-4xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
+          <div className="space-y-4 text-center max-w-4xl mx-auto">
+            <h3 className="text-5xl md:text-7xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
             <p className="text-muted-foreground font-body italic border-t border-accent/20 pt-4 px-10">
               "Access specialized AI engines to decode trends, optimize acquisition, and orchestrate your signature visual identity."
             </p>
@@ -194,7 +173,7 @@ export default function HomeScreen() {
               The Process
             </Badge>
             <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
-              How StyleVault <span className="text-accent italic">Works.</span>
+              How StyleVault Works.
             </h3>
             <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
               "We've simplified the journey from a cluttered closet to a curated signature wardrobe."
@@ -250,41 +229,6 @@ export default function HomeScreen() {
           </div>
         </section>
 
-        {/* TESTIMONIALS SECTION */}
-        <section className="py-24 space-y-16">
-          <div className="text-center space-y-4 max-w-3xl mx-auto">
-            <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
-              Community Voices
-            </Badge>
-            <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
-              Style with Purpose. <span className="text-accent italic block">Proven Results.</span>
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t, idx) => (
-              <Card key={idx} className="border-none shadow-xl bg-white rounded-[2.5rem] p-8 flex flex-col justify-between group hover:-translate-y-2 transition-all duration-500">
-                <div className="space-y-6">
-                  <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary/20">
-                    <Quote className="h-8 w-8" />
-                  </div>
-                  <p className="text-lg font-body text-slate-600 leading-relaxed italic">
-                    "{t.quote}"
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 pt-8 border-t border-slate-50 mt-8">
-                  <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-primary/10">
-                    <Image src={t.avatar} alt={t.author} fill className="object-cover" />
-                  </div>
-                  <div>
-                    <h5 className="font-headline font-bold text-primary">{t.author}</h5>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t.role}</p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
       </div>
 
       <StyleVaultChat />
