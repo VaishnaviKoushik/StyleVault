@@ -54,9 +54,6 @@ export default function HomeScreen() {
         {/* HERO SECTION */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <Badge className="bg-accent/10 text-accent font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
-              Intelligence Dashboard
-            </Badge>
             <h1 className="text-6xl md:text-8xl font-headline font-bold leading-none tracking-tighter">
               <span className="text-primary italic block">Style is</span>
               <span className="text-accent italic block ml-12 md:ml-24 underline decoration-accent/20">Algorithmic.</span>
