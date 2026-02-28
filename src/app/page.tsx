@@ -78,8 +78,8 @@ export default function HomeScreen() {
         {/* SMART STYLE TOOLS - GRID SYSTEM */}
         <section className="py-32 section-rhythm-accent">
           <div className="container mx-auto px-6 lg:px-12">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
-              <div className="space-y-4 max-w-3xl">
+            <div className="flex flex-col items-center text-center gap-8 mb-20">
+              <div className="space-y-4 max-w-4xl mx-auto">
                 <h3 className="text-5xl md:text-7xl font-headline font-bold text-primary italic leading-none">
                   The Intelligent <span className="text-accent">Studio.</span>
                 </h3>
