@@ -1,7 +1,9 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
   title: 'StyleVault — Professional AI Wardrobe',
@@ -21,10 +23,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Belleza&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-slate-50 min-h-screen">
-        <TooltipProvider>
-          {children}
-          <Toaster />
-        </TooltipProvider>
+        <FirebaseClientProvider>
+          <TooltipProvider>
+            {children}
+            <Toaster />
+          </TooltipProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );

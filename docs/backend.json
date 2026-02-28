@@ -1,0 +1,62 @@
+
+{
+  "entities": {
+    "WardrobeItem": {
+      "title": "WardrobeItem",
+      "description": "A single clothing item in the user's digital closet.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["top", "bottom", "shoes", "accessory", "outerwear", "dress"] },
+        "color": { "type": "string" },
+        "brand": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "occasion": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "category", "imageUrl"]
+    },
+    "Outfit": {
+      "title": "Outfit",
+      "description": "A curated combination of wardrobe items.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "items": { "type": "array", "items": { "type": "string" } },
+        "occasion": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "items"]
+    },
+    "JournalEntry": {
+      "title": "JournalEntry",
+      "description": "A scheduled outfit for a specific date and event.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date" },
+        "outfitId": { "type": "string" },
+        "time": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["date", "outfitId"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/wardrobe": {
+      "schema": { "$ref": "#/entities/WardrobeItem" },
+      "description": "The user's digital closet collection."
+    },
+    "/outfits": {
+      "schema": { "$ref": "#/entities/Outfit" },
+      "description": "Saved outfit combinations."
+    },
+    "/journal": {
+      "schema": { "$ref": "#/entities/JournalEntry" },
+      "description": "Scheduled outfits and style logs."
+    }
+  }
+}
