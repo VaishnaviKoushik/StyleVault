@@ -20,7 +20,11 @@ import {
   Plus,
   ChevronRight,
   Info,
-  RefreshCw
+  RefreshCw,
+  Trophy,
+  Trees,
+  Sun,
+  Presentation
 } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
 import { MOCK_WARDROBE, MOCK_OUTFITS, Outfit } from "@/lib/mock-data";
@@ -42,6 +46,10 @@ const occasions = [
   { label: "Sporty", icon: Dumbbell, value: "sporty" },
   { label: "Travel", icon: Plane, value: "travel" },
   { label: "Beach", icon: Umbrella, value: "beach" },
+  { label: "Gala", icon: Trophy, value: "gala" },
+  { label: "Outdoor", icon: Trees, value: "outdoor" },
+  { label: "Holiday", icon: Sun, value: "holiday" },
+  { label: "Meeting", icon: Presentation, value: "meeting" },
 ];
 
 export default function AiStylistPage() {
@@ -189,7 +197,7 @@ export default function AiStylistPage() {
                           onClick={() => setSelectedOccasion(occ.value)}
                         >
                           <Icon className="h-6 w-6" />
-                          <span className="text-xs font-bold uppercase tracking-widest">{occ.label}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest leading-none text-center px-1">{occ.label}</span>
                         </Button>
                       );
                     })}
@@ -287,7 +295,7 @@ export default function AiStylistPage() {
                   <div className="h-full flex flex-col items-center justify-center p-10 bg-white rounded-[3rem] shadow-inner space-y-6">
                     <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                     <div className="text-center space-y-2">
-                      <h3 className="text-2xl font-headline font-bold text-primary italic">Stylist your collection...</h3>
+                      <h3 className="text-2xl font-headline font-bold text-primary italic">Styling your collection...</h3>
                       <p className="text-muted-foreground font-body italic">Aggregating visual harmony data</p>
                     </div>
                   </div>

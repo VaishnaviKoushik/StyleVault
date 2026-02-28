@@ -80,10 +80,10 @@ export default function HomeScreen() {
           <div className="container mx-auto px-6 lg:px-12">
             <div className="flex flex-col items-center text-center gap-8 mb-20">
               <div className="space-y-4 max-w-4xl mx-auto">
-                <h3 className="text-5xl md:text-7xl font-headline font-bold text-primary italic leading-none">
+                <h3 className="text-5xl md:text-7xl font-headline font-bold text-primary italic leading-none text-center">
                   The Intelligent <span className="text-accent">Studio.</span>
                 </h3>
-                <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed">
+                <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed text-center">
                   "Specialized modules designed to decode trends, optimize acquisitions, and orchestrate your visual identity."
                 </p>
               </div>
@@ -185,7 +185,7 @@ export default function HomeScreen() {
               <h3 className="text-6xl md:text-8xl font-headline font-bold italic leading-none">
                 Algorithmic <span className="text-accent">Success.</span>
               </h3>
-              <p className="text-2xl text-slate-400 font-body leading-relaxed italic max-w-3xl mx-auto">
+              <p className="text-2xl text-slate-400 font-body leading-relaxed italic max-w-3xl mx-auto text-center">
                 "We've simplified the journey from a cluttered physical closet to a perfectly curated digital signature."
               </p>
             </div>
