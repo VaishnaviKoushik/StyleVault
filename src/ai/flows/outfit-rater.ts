@@ -31,6 +31,7 @@ const OutfitRaterOutputSchema = z.object({
     styleConsistency: z.number().min(0).max(100),
   }),
   stylingTips: z.array(z.string()).describe('Specific tips to improve or enhance the outfit.'),
+  proTechnique: z.string().optional().describe('A high-level styling technique (e.g. "The Rule of Thirds") applicable to this look.'),
 });
 export type OutfitRaterOutput = z.infer<typeof OutfitRaterOutputSchema>;
 
@@ -55,6 +56,7 @@ const raterPrompt = ai.definePrompt({
 3. Breakdown the score into Color Harmony, Seasonal Match, and Style Consistency.
 4. Provide a professional reasoning for the score.
 5. List 2-3 specific, actionable "Styling Tips" to improve the look (e.g., "Add a silver necklace to contrast the dark tones" or "Swap for lighter denim to balance the heavy jacket").
+6. Suggest one "Pro Technique" that would make this look more high-end (e.g., "The Sandwich Method", "Tonal Layering", or "Juxtaposition").
 
 Tone: Sophisticated, encouraging, and highly professional.`,
 });
@@ -83,7 +85,8 @@ const outfitRaterFlow = ai.defineFlow(
           "Ensure footwear matches the leather tones of your accessories.",
           "Consider a structured outer layer to add more depth to the silhouette.",
           "Use a monochromatic accessory to tie the color palette together."
-        ]
+        ],
+        proTechnique: "Tonal Layering: Stick to different shades of the same color to create a sophisticated, expensive-looking ensemble."
       };
     }
   }

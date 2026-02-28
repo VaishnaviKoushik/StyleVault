@@ -27,12 +27,14 @@ import {
   History,
   TrendingUp,
   Zap,
-  Info
+  Info,
+  Lightbulb,
+  ArrowRight
 } from "lucide-react";
 import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -83,6 +85,8 @@ export default function MasterVaultPage() {
   // --- OUTFIT RATING STATE ---
   const [ratingLoading, setRatingLoading] = useState(false);
   const [ratingResult, setRatingResult] = useState<OutfitRaterOutput | null>(null);
+  const [isImproveDialogOpen, setIsImproveDialogOpen] = useState(false);
+  const [improving, setImproving] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -125,6 +129,14 @@ export default function MasterVaultPage() {
     } finally {
       setRatingLoading(false);
     }
+  };
+
+  const handleImproveOutfit = async () => {
+    setImproving(true);
+    setIsImproveDialogOpen(true);
+    // Simulate a deeper styling analysis
+    await new Promise(r => setTimeout(r, 1500));
+    setImproving(false);
   };
 
   const handleFabricIntelligence = async (item: WardrobeItem) => {
@@ -449,7 +461,12 @@ export default function MasterVaultPage() {
                               ) : null}
                               
                               <div className="pt-4 flex gap-4">
-                                <Button className="flex-1 h-14 rounded-full font-headline text-lg border-primary text-primary hover:bg-primary/5 transition-all" variant="outline">
+                                <Button 
+                                  className="flex-1 h-14 rounded-full font-headline text-lg border-primary text-primary hover:bg-primary/5 transition-all" 
+                                  variant="outline"
+                                  onClick={handleImproveOutfit}
+                                  disabled={!ratingResult}
+                                >
                                   Improve This Outfit
                                 </Button>
                               </div>
@@ -665,6 +682,72 @@ export default function MasterVaultPage() {
             <Button variant="ghost" className="rounded-full px-6" onClick={() => setIsSelectOutfitOpen(false)}>Cancel</Button>
             <Button className="rounded-full gradient-primary text-white px-10 flex-1" onClick={handleScheduleConfirm}>Save Entry</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isImproveDialogOpen} onOpenChange={setIsImproveDialogOpen}>
+        <DialogContent className="sm:max-w-2xl bg-white rounded-[3rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogHeader className="p-10 bg-primary text-white space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
+                <Lightbulb className="h-6 w-6 text-accent" />
+              </div>
+              <div className="space-y-1">
+                <DialogTitle className="font-headline text-3xl font-bold italic">Stylist's Deep Dive</DialogTitle>
+                <DialogDescription className="text-white/60 font-body">Expert techniques to perfect your assembly.</DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <div className="p-10">
+            {improving ? (
+              <div className="py-20 flex flex-col items-center justify-center space-y-6">
+                <div className="h-16 w-16 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                <p className="font-headline font-bold text-primary italic text-xl">Refining styling logic...</p>
+              </div>
+            ) : ratingResult ? (
+              <div className="space-y-10">
+                <section className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <TrendingUp className="h-5 w-5 text-accent" />
+                    <h4 className="font-headline font-bold text-2xl text-primary">Required Changes</h4>
+                  </div>
+                  <div className="grid gap-4">
+                    {ratingResult.stylingTips.map((tip, idx) => (
+                      <div key={idx} className="p-6 rounded-[1.5rem] bg-slate-50 border border-slate-100 flex items-start gap-4 group hover:bg-white hover:shadow-lg transition-all">
+                        <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center font-headline font-bold shrink-0">
+                          {idx + 1}
+                        </div>
+                        <p className="font-body text-slate-700 leading-relaxed pt-1">{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                {ratingResult.proTechnique && (
+                  <Card className="border-none shadow-xl bg-accent/5 rounded-[2rem] p-8 border-l-8 border-accent">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-5 w-5 text-accent" />
+                        <span className="text-[10px] font-bold text-accent uppercase tracking-widest">Masterclass Technique</span>
+                      </div>
+                      <p className="text-xl font-headline font-bold text-primary italic leading-tight">
+                        "{ratingResult.proTechnique}"
+                      </p>
+                    </div>
+                  </Card>
+                )}
+
+                <div className="flex gap-4">
+                  <Button className="flex-1 h-16 rounded-full gradient-primary text-white font-headline text-lg shadow-xl" onClick={() => setIsImproveDialogOpen(false)}>
+                    Apply These Changes
+                  </Button>
+                  <Button variant="ghost" className="h-16 px-8 rounded-full font-headline text-slate-400" onClick={() => setIsImproveDialogOpen(false)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </DialogContent>
       </Dialog>
     </AppLayout>
