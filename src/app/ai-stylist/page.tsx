@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense, useMemo } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -51,6 +51,7 @@ import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { MOCK_WARDROBE, MOCK_OUTFITS } from "@/lib/mock-data";
 
 const occasions = [
   { label: "Work", icon: Briefcase, value: "work" },
@@ -68,6 +69,20 @@ const occasions = [
 ];
 
 export default function AiStylistPage() {
+  return (
+    <Suspense fallback={
+      <AppLayout>
+        <div className="h-full flex items-center justify-center p-20">
+          <RefreshCw className="h-10 w-10 animate-spin text-primary/20" />
+        </div>
+      </AppLayout>
+    }>
+      <AiStylistContent />
+    </Suspense>
+  );
+}
+
+function AiStylistContent() {
   const searchParams = useSearchParams();
   const db = useFirestore();
   const initialTab = searchParams.get('tab') || 'stylist';
@@ -87,11 +102,19 @@ export default function AiStylistPage() {
   const [capsule, setCapsule] = useState<CapsuleOutput | null>(null);
 
   // Firestore Data
-  const { data: wardrobeItemsRaw } = useCollection(db ? query(collection(db, 'wardrobe')) : null);
+  const { data: wardrobeItemsRaw, loading: firestoreLoading } = useCollection(db ? query(collection(db, 'wardrobe')) : null);
   const { data: savedOutfitsRaw } = useCollection(db ? query(collection(db, 'outfits')) : null);
   
-  const wardrobeItems = wardrobeItemsRaw || [];
-  const savedOutfits = savedOutfitsRaw || [];
+  // Logic: Use Firestore items if they exist, otherwise fallback to MOCK data for a better UX
+  const wardrobeItems = useMemo(() => {
+    const items = wardrobeItemsRaw || [];
+    return items.length > 0 ? items : MOCK_WARDROBE;
+  }, [wardrobeItemsRaw]);
+
+  const savedOutfits = useMemo(() => {
+    const outfits = savedOutfitsRaw || [];
+    return outfits.length > 0 ? outfits : MOCK_OUTFITS;
+  }, [savedOutfitsRaw]);
 
   // Feed State
   const [postCaption, setPostCaption] = useState("");
@@ -148,7 +171,7 @@ export default function AiStylistPage() {
           name: i.name,
           category: i.category,
           color: i.color,
-          description: i.description
+          description: i.description || "A versatile garment from the collection."
         }))
       });
 
@@ -161,6 +184,7 @@ export default function AiStylistPage() {
       });
       toast({ title: "Outfit ready!", description: `Styling for "${finalOccasion}" complete.` });
     } catch (err) {
+      console.error("Styling error:", err);
       toast({ title: "Failed to generate suggestion", variant: "destructive" });
     } finally {
       setLoading(false);
@@ -218,7 +242,8 @@ export default function AiStylistPage() {
       if (customUploadedImage) {
         imageUrl = customUploadedImage;
       } else if (selectedOutfitForPost) {
-        const firstItem = wardrobeItems.find(i => i.id === selectedOutfitForPost.items[0]);
+        const firstItemId = selectedOutfitForPost.items[0];
+        const firstItem = wardrobeItems.find(i => i.id === firstItemId);
         imageUrl = firstItem?.imageUrl || imageUrl;
       }
 
@@ -411,7 +436,7 @@ export default function AiStylistPage() {
                   <div className="h-full flex flex-col items-center justify-center p-10 bg-white rounded-[3rem] shadow-inner space-y-6">
                     <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                     <div className="text-center space-y-2">
-                      <h3 className="text-2xl font-headline font-bold text-primary italic">Styling your collection...</h3>
+                      <h3 className="text-2xl font-headline font-bold text-primary italic">Stylist your collection...</h3>
                       <p className="text-muted-foreground font-body italic">Aggregating visual harmony data</p>
                     </div>
                   </div>
