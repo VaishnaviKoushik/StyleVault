@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -5,6 +6,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Sparkles, 
   Briefcase, 
@@ -17,7 +19,6 @@ import {
   AlertTriangle,
   ShoppingBag,
   ArrowRight,
-  ArrowLeftRight,
   Plus,
   ChevronRight,
   Info,
@@ -29,12 +30,16 @@ import {
   Type,
   Layers,
   Bookmark,
-  CheckCircle2
+  CheckCircle2,
+  Send,
+  MessageCircle,
+  Share2,
+  Clock
 } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
 import { generateCapsule, type CapsuleOutput } from "@/ai/flows/capsule-generator";
 import { useCollection, useFirestore } from "@/firebase";
-import { collection, query } from "firebase/firestore";
+import { collection, query, addDoc, serverTimestamp, orderBy } from "firebase/firestore";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -79,26 +84,38 @@ export default function AiStylistPage() {
   const [capsuleLoading, setCapsuleLoading] = useState(false);
   const [capsule, setCapsule] = useState<CapsuleOutput | null>(null);
 
-  // Firestore Data - Handling initial null states with defaults
+  // Firestore Data
   const { data: wardrobeItemsRaw } = useCollection(db ? query(collection(db, 'wardrobe')) : null);
   const { data: savedOutfitsRaw } = useCollection(db ? query(collection(db, 'outfits')) : null);
   
   const wardrobeItems = wardrobeItemsRaw || [];
   const savedOutfits = savedOutfitsRaw || [];
 
-  // Compare State
-  const [selectedStyleA, setSelectedStyleA] = useState<any | null>(null);
-  const [selectedStyleB, setSelectedStyleB] = useState<any | null>(null);
-  const [activeBattles, setActiveBattles] = useState([
+  // Feed State
+  const [postCaption, setPostCaption] = useState("");
+  const [selectedOutfitForPost, setSelectedOutfitForPost] = useState<any | null>(null);
+  const [isPosting, setIsPosting] = useState(false);
+  
+  const [mockFeed, setMockFeed] = useState([
     {
-      id: 'b1',
-      styleAName: "Modern Work",
-      styleBName: "Weekend Casual",
-      styleAImg: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1080",
-      styleBImg: "https://images.unsplash.com/photo-1714143136372-ddaf8b606da7?q=80&w=1080",
-      votesA: 64,
-      votesB: 36,
-      timeLeft: '14h 22m',
+      id: 'f1',
+      userName: "Alex Rivers",
+      userAvatar: "https://picsum.photos/seed/user1/100",
+      caption: "Channeling minimalist energy for the weekend. The linen blend is everything.",
+      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1080",
+      likes: 24,
+      comments: 3,
+      time: '2h ago'
+    },
+    {
+      id: 'f2',
+      userName: "Sasha Blue",
+      userAvatar: "https://picsum.photos/seed/user2/100",
+      caption: "Finally digitized the vintage vault! This silk scarf ensemble is a mood.",
+      image: "https://images.unsplash.com/photo-1677478863154-55ecce8c7536?q=80&w=1080",
+      likes: 42,
+      comments: 8,
+      time: '5h ago'
     }
   ]);
 
@@ -171,11 +188,33 @@ export default function AiStylistPage() {
     }
   };
 
-  const handleVote = (battleId: string, option: 'A' | 'B') => {
-    toast({
-      title: "Vote Recorded!",
-      description: `You chose Style ${option}.`,
-    });
+  const handleCreatePost = () => {
+    if (!selectedOutfitForPost) {
+      toast({ title: "Select an Outfit", description: "Choose a signature look to share with the community." });
+      return;
+    }
+
+    setIsPosting(true);
+    // Simulate API delay
+    setTimeout(() => {
+      const firstItem = wardrobeItems.find(i => i.id === selectedOutfitForPost.items[0]);
+      const newPost = {
+        id: Math.random().toString(36).substr(2, 9),
+        userName: "You",
+        userAvatar: "https://picsum.photos/seed/you/100",
+        caption: postCaption || `Featured Look: ${selectedOutfitForPost.name}`,
+        image: firstItem?.imageUrl || "https://picsum.photos/seed/post/800",
+        likes: 0,
+        comments: 0,
+        time: 'Just now'
+      };
+
+      setMockFeed([newPost, ...mockFeed]);
+      setSelectedOutfitForPost(null);
+      setPostCaption("");
+      setIsPosting(false);
+      toast({ title: "Post Published!", description: "Your style is now live in the global feed." });
+    }, 1000);
   };
 
   return (
@@ -183,7 +222,7 @@ export default function AiStylistPage() {
       <div className="space-y-8 animate-in fade-in duration-700">
         <header className="flex items-center justify-between">
           <div>
-            <h2 className="text-4xl font-headline font-bold text-foreground">Style Lab</h2>
+            <h2 className="text-4xl font-headline font-bold text-foreground tracking-tighter">Style Lab</h2>
             <p className="text-muted-foreground font-body">Combine AI insights with community feedback.</p>
           </div>
           <Tooltip>
@@ -194,7 +233,7 @@ export default function AiStylistPage() {
             </TooltipTrigger>
             <TooltipContent className="bg-primary text-white border-none rounded-xl p-4 max-w-[250px]">
               <p className="text-xs font-body leading-relaxed">
-                The Style Lab is where our AI designs outfits based on your actual wardrobe. Use <strong>AI Stylist</strong> for quick looks, <strong>Capsule</strong> for a minimalist core, or <strong>Style Compare</strong> for feedback.
+                The Style Lab is where our AI designs outfits based on your actual wardrobe. Use <strong>AI Stylist</strong> for quick looks, <strong>Capsule</strong> for a minimalist core, or <strong>Style Feed</strong> to share your vibe.
               </p>
             </TooltipContent>
           </Tooltip>
@@ -208,8 +247,8 @@ export default function AiStylistPage() {
             <TabsTrigger value="capsule" className="py-3 font-headline text-sm md:text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
               Capsule
             </TabsTrigger>
-            <TabsTrigger value="compare" className="py-3 font-headline text-sm md:text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
-              Style Compare
+            <TabsTrigger value="feed" className="py-3 font-headline text-sm md:text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+              Style Feed
             </TabsTrigger>
           </TabsList>
 
@@ -466,93 +505,152 @@ export default function AiStylistPage() {
             )}
           </TabsContent>
 
-          {/* STYLE COMPARE CONTENT */}
-          <TabsContent value="compare" className="space-y-12">
+          {/* STYLE FEED CONTENT */}
+          <TabsContent value="feed" className="space-y-12">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2 space-y-8">
                 <div className="flex items-center justify-between px-4">
-                  <h3 className="text-3xl font-headline font-bold text-primary italic">Active Comparisons</h3>
-                  <Badge variant="secondary" className="bg-slate-100 text-slate-400 font-headline uppercase tracking-widest text-[10px]">Community Feed</Badge>
+                  <h3 className="text-3xl font-headline font-bold text-primary italic">Community Highlights</h3>
+                  <Badge variant="secondary" className="bg-slate-100 text-slate-400 font-headline uppercase tracking-widest text-[10px]">Live Inspiration</Badge>
                 </div>
-                {activeBattles.map(battle => (
-                  <Card key={battle.id} className="border-none shadow-2xl bg-white rounded-[3.5rem] overflow-hidden">
-                    <CardHeader className="bg-slate-50/50 p-8 border-b flex flex-row justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <Users className="h-5 w-5 text-primary opacity-40" />
-                        <span className="font-headline font-bold text-primary">Global Comparison</span>
-                      </div>
-                      <Badge className="bg-accent text-primary font-headline uppercase px-4 py-1 tracking-widest">Ends in {battle.timeLeft}</Badge>
-                    </CardHeader>
-                    <CardContent className="p-10 space-y-10">
-                      <div className="grid grid-cols-2 gap-12 relative">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-16 rounded-full bg-accent text-primary flex items-center justify-center font-headline font-bold z-10 border-4 border-white shadow-2xl italic text-xl">VS</div>
-                        
-                        <div className="space-y-6">
-                          <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer" onClick={() => handleVote(battle.id, 'A')}>
-                            <Image src={battle.styleAImg} alt="" fill className="object-cover" />
-                            <div className="absolute bottom-6 left-6 right-6 flex justify-center text-white">
-                              <span className="text-3xl font-headline font-bold italic drop-shadow-lg">{battle.votesA}%</span>
-                            </div>
+                
+                <div className="grid gap-8">
+                  {mockFeed.map(post => (
+                    <Card key={post.id} className="border-none shadow-2xl bg-white rounded-[3.5rem] overflow-hidden group">
+                      <div className="p-8 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="h-12 w-12 rounded-full overflow-hidden relative border-2 border-slate-50">
+                            <Image src={post.userAvatar} alt="" fill className="object-cover" />
                           </div>
-                          <Button className="w-full h-14 rounded-full font-headline text-lg shadow-lg active:scale-95 transition-all" onClick={() => handleVote(battle.id, 'A')}>Option A</Button>
+                          <div>
+                            <h4 className="font-headline font-bold text-primary leading-none">{post.userName}</h4>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Verified Curator</span>
+                          </div>
                         </div>
+                        <div className="flex items-center gap-2 text-slate-300">
+                          <Clock className="h-3 w-3" />
+                          <span className="text-[10px] font-bold uppercase tracking-widest">{post.time}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="relative aspect-video mx-8 rounded-[2rem] overflow-hidden shadow-xl">
+                        <Image src={post.image} alt="" fill className="object-cover group-hover:scale-105 transition-transform duration-1000" />
+                      </div>
 
-                        <div className="space-y-6">
-                          <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer" onClick={() => handleVote(battle.id, 'B')}>
-                            <Image src={battle.styleBImg} alt="" fill className="object-cover" />
-                            <div className="absolute bottom-6 left-6 right-6 flex justify-center text-white">
-                              <span className="text-3xl font-headline font-bold italic drop-shadow-lg">{battle.votesB}%</span>
-                            </div>
+                      <CardContent className="p-10 space-y-6">
+                        <p className="text-xl font-body italic text-slate-600 leading-relaxed">
+                          "{post.caption}"
+                        </p>
+                        
+                        <div className="flex items-center justify-between pt-4 border-t">
+                          <div className="flex items-center gap-6">
+                            <button className="flex items-center gap-2 text-slate-400 hover:text-accent transition-colors">
+                              <Heart className="h-5 w-5" />
+                              <span className="text-xs font-bold font-headline">{post.likes}</span>
+                            </button>
+                            <button className="flex items-center gap-2 text-slate-400 hover:text-primary transition-colors">
+                              <MessageCircle className="h-5 w-5" />
+                              <span className="text-xs font-bold font-headline">{post.comments}</span>
+                            </button>
                           </div>
-                          <Button className="w-full h-14 rounded-full font-headline text-lg shadow-lg active:scale-95 transition-all" onClick={() => handleVote(battle.id, 'B')}>Option B</Button>
+                          <button className="text-slate-300 hover:text-primary transition-colors">
+                            <Share2 className="h-5 w-5" />
+                          </button>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-8">
-                <Card className="border-none shadow-xl bg-white p-10 space-y-8 rounded-[3rem]">
+                <Card className="border-none shadow-xl bg-white p-10 space-y-8 rounded-[3rem] sticky top-32">
                   <div className="space-y-2">
-                    <h3 className="font-headline font-bold text-2xl text-primary italic leading-none">New Battle</h3>
-                    <p className="text-sm text-muted-foreground font-body italic">Get feedback on two different assembly ideas.</p>
+                    <h3 className="font-headline font-bold text-2xl text-primary italic leading-none">Share Your Look</h3>
+                    <p className="text-sm text-muted-foreground font-body italic">Post your favorite signatures to the global feed.</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50 active:scale-95", selectedStyleA ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleA(null)}>
-                      {selectedStyleA ? <span className="text-xs font-bold text-primary text-center px-4 font-headline uppercase leading-relaxed">{selectedStyleA.name}</span> : <Plus className="h-8 w-8 text-slate-200" />}
+                  
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Select Outfit</label>
+                      <div 
+                        className={cn(
+                          "aspect-video rounded-[2rem] border-4 border-dashed transition-all flex flex-col items-center justify-center cursor-pointer bg-slate-50 active:scale-95 overflow-hidden group",
+                          selectedOutfitForPost ? "border-accent bg-accent/5" : "border-slate-100 hover:border-primary/20"
+                        )}
+                        onClick={() => setSelectedOutfitForPost(null)}
+                      >
+                        {selectedOutfitForPost ? (
+                          <div className="relative w-full h-full">
+                            <Image 
+                              src={wardrobeItems.find(i => i.id === selectedOutfitForPost.items[0])?.imageUrl || "https://picsum.photos/seed/post/400"} 
+                              alt="" fill className="object-cover" 
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:opacity-100 opacity-0 transition-opacity flex items-center justify-center">
+                              <RefreshCw className="h-10 w-10 text-white" />
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <Plus className="h-8 w-8 text-slate-200 mb-2" />
+                            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Choose Outfit</span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    
-                    <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50 active:scale-95", selectedStyleB ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleB(null)}>
-                      {selectedStyleB ? <span className="text-xs font-bold text-primary text-center px-4 font-headline uppercase leading-relaxed">{selectedStyleB.name}</span> : <Plus className="h-8 w-8 text-slate-200" />}
+
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Style Note</label>
+                      <Textarea 
+                        placeholder="What's the vibe of this assembly?" 
+                        value={postCaption}
+                        onChange={(e) => setPostCaption(e.target.value)}
+                        className="rounded-2xl bg-slate-50 border-none min-h-[120px] font-body text-sm p-4 italic"
+                      />
                     </div>
+
+                    <Button 
+                      className="w-full h-16 rounded-full font-headline text-xl gradient-primary text-white shadow-xl shadow-primary/20 active:scale-[0.98] transition-all"
+                      disabled={!selectedOutfitForPost || isPosting}
+                      onClick={handleCreatePost}
+                    >
+                      {isPosting ? <RefreshCw className="h-6 w-6 animate-spin mr-2" /> : <Send className="h-5 w-5 mr-2" />}
+                      Publish Look
+                    </Button>
                   </div>
-                  <Button className="w-full h-16 rounded-full font-headline text-xl gradient-primary text-white shadow-xl shadow-primary/20 active:scale-[0.98] transition-all" disabled={!selectedStyleA || !selectedStyleB}>Initiate Style Battle</Button>
                 </Card>
 
                 <div className="space-y-6">
                   <h4 className="font-headline font-bold text-xs text-slate-400 uppercase tracking-[0.3em] px-4">Your Signature Outfits</h4>
-                  <div className="grid gap-3 max-h-[500px] overflow-y-auto pr-4 scrollbar-hide">
-                    {savedOutfits.map(outfit => (
-                      <button 
-                        key={outfit.id} 
-                        className="p-4 bg-white rounded-[2rem] border-2 border-slate-50 shadow-sm flex items-center gap-4 cursor-pointer hover:border-accent hover:shadow-md active:scale-[0.98] transition-all text-left group"
-                        onClick={() => {
-                          if (!selectedStyleA) setSelectedStyleA(outfit);
-                          else if (!selectedStyleB) setSelectedStyleB(outfit);
-                        }}
-                      >
-                        <div className="h-14 w-14 rounded-2xl overflow-hidden relative shadow-md">
-                          <Image src={wardrobeItems.find(i => i.id === outfit.items[0])?.imageUrl || 'https://picsum.photos/seed/1/400'} alt="" fill className="object-cover" />
+                  <ScrollArea className="h-[400px] pr-4">
+                    <div className="grid gap-3">
+                      {savedOutfits.length > 0 ? (
+                        savedOutfits.map(outfit => (
+                          <button 
+                            key={outfit.id} 
+                            className={cn(
+                              "p-4 bg-white rounded-[2rem] border-2 shadow-sm flex items-center gap-4 cursor-pointer hover:border-accent hover:shadow-md active:scale-[0.98] transition-all text-left group",
+                              selectedOutfitForPost?.id === outfit.id ? "border-accent ring-4 ring-accent/10" : "border-slate-50"
+                            )}
+                            onClick={() => setSelectedOutfitForPost(outfit)}
+                          >
+                            <div className="h-14 w-14 rounded-2xl overflow-hidden relative shadow-md">
+                              <Image src={wardrobeItems.find(i => i.id === outfit.items[0])?.imageUrl || 'https://picsum.photos/seed/1/400'} alt="" fill className="object-cover" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm font-bold font-headline block truncate text-primary group-hover:text-accent transition-colors">{outfit.name}</span>
+                              <span className="text-[10px] font-body uppercase tracking-widest text-slate-300">{outfit.occasion}</span>
+                            </div>
+                            <ChevronRight className={cn("h-5 w-5 text-slate-200 group-hover:text-accent transition-all", selectedOutfitForPost?.id === outfit.id && "rotate-90 text-accent")} />
+                          </button>
+                        ))
+                      ) : (
+                        <div className="p-8 text-center bg-white/40 rounded-[2rem] border-2 border-dashed border-slate-100">
+                          <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No signature looks yet</p>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-bold font-headline block truncate text-primary group-hover:text-accent transition-colors">{outfit.name}</span>
-                          <span className="text-[10px] font-body uppercase tracking-widest text-slate-300">{outfit.occasion}</span>
-                        </div>
-                        <ChevronRight className="h-5 w-5 text-slate-200 group-hover:text-accent transition-all" />
-                      </button>
-                    ))}
-                  </div>
+                      )}
+                    </div>
+                  </ScrollArea>
                 </div>
               </div>
             </div>

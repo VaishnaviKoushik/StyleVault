@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from "react";
@@ -7,7 +8,8 @@ export default function CompareRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/ai-stylist?tab=compare');
+    // Redirect to the unified Style Feed tab in AI Stylist
+    router.replace('/ai-stylist?tab=feed');
   }, [router]);
 
   return (
