@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Home, PlusCircle, Presentation, Layers, Radio } from "lucide-react";
+import { Shirt, Home, PlusCircle, Presentation, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -10,7 +10,6 @@ const navItems = [
   { label: "Vault", icon: Shirt, href: "/wardrobe" },
   { label: "Add", icon: PlusCircle, href: "/add-item", primary: true },
   { label: "Capsule", icon: Layers, href: "/capsule" },
-  { label: "Radar", icon: Radio, href: "/trend-radar" },
 ];
 
 export function BottomNav() {
