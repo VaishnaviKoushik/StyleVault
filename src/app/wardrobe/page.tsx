@@ -24,7 +24,10 @@ import {
   Bookmark,
   Palette,
   LayoutGrid,
-  History
+  History,
+  TrendingUp,
+  Zap,
+  Info
 } from "lucide-react";
 import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
@@ -34,12 +37,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeFabric, type FabricIntelligenceOutput } from "@/ai/flows/fabric-intelligence";
+import { outfitRater, type OutfitRaterOutput } from "@/ai/flows/outfit-rater";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { addDays, format, startOfWeek, isSameDay } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const categories = ["all", "top", "bottom", "dress", "shoes", "accessory", "outerwear"];
 
@@ -74,6 +79,10 @@ export default function MasterVaultPage() {
   const [outfits, setOutfits] = useState<Outfit[]>(MOCK_OUTFITS);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [newOutfitName, setNewOutfitName] = useState("");
+  
+  // --- OUTFIT RATING STATE ---
+  const [ratingLoading, setRatingLoading] = useState(false);
+  const [ratingResult, setRatingResult] = useState<OutfitRaterOutput | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -82,12 +91,42 @@ export default function MasterVaultPage() {
     ]);
   }, []);
 
+  // Trigger AI Rating when selection changes (minimum 2 items)
+  useEffect(() => {
+    if (selectedItems.length >= 2) {
+      handleRateOutfit();
+    } else {
+      setRatingResult(null);
+    }
+  }, [selectedItems]);
+
   const weekDays = useMemo(() => {
     const start = startOfWeek(date, { weekStartsOn: 1 });
     return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
   }, [date]);
 
   // --- HANDLERS ---
+  const handleRateOutfit = async () => {
+    if (selectedItems.length < 2) return;
+    setRatingLoading(true);
+    try {
+      const selectedGarments = selectedItems.map(id => MOCK_WARDROBE.find(i => i.id === id)).filter(Boolean) as WardrobeItem[];
+      const result = await outfitRater({
+        items: selectedGarments.map(i => ({
+          name: i.name,
+          category: i.category,
+          color: i.color,
+          description: i.description
+        }))
+      });
+      setRatingResult(result);
+    } catch (error) {
+      console.error("Rating failed:", error);
+    } finally {
+      setRatingLoading(false);
+    }
+  };
+
   const handleFabricIntelligence = async (item: WardrobeItem) => {
     setAnalyzingFabric(true);
     setFabricAnalysis(null);
@@ -339,6 +378,85 @@ export default function MasterVaultPage() {
                             )}
                           </div>
                         </Card>
+                        
+                        {/* --- AI OUTFIT EVALUATION SECTION --- */}
+                        {selectedItems.length >= 2 && (
+                          <Card className="p-10 rounded-[3rem] shadow-2xl bg-white border-none animate-in slide-in-from-bottom-4 duration-500">
+                            <div className="space-y-8">
+                              <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                  <h4 className="font-headline font-bold text-2xl text-primary italic leading-none">AI Outfit Evaluation</h4>
+                                  <p className="text-[10px] text-muted-foreground font-body uppercase tracking-widest px-1">Professional Style Protocol</p>
+                                </div>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-300" onClick={handleRateOutfit} disabled={ratingLoading}>
+                                      <RefreshCw className={cn("h-5 w-5", ratingLoading && "animate-spin")} />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Recalculate Analysis</TooltipContent>
+                                </Tooltip>
+                              </div>
+
+                              {ratingLoading ? (
+                                <div className="py-12 flex flex-col items-center justify-center space-y-4">
+                                  <div className="h-12 w-12 rounded-full border-4 border-accent border-t-transparent animate-spin" />
+                                  <p className="font-headline font-bold text-primary italic">Syncing Stylist Data...</p>
+                                </div>
+                              ) : ratingResult ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                  <div className="space-y-6">
+                                    <div className="flex items-baseline gap-2">
+                                      <span className="text-7xl font-headline font-bold text-primary italic leading-none">{ratingResult.score}</span>
+                                      <span className="text-2xl font-headline font-bold text-accent leading-none">% Match</span>
+                                    </div>
+                                    <Progress value={ratingResult.score} className="h-4 bg-slate-100" />
+                                    <p className="text-lg font-body text-slate-600 leading-relaxed italic border-l-4 border-accent pl-6 py-1">
+                                      "{ratingResult.reasoning}"
+                                    </p>
+                                  </div>
+                                  <div className="space-y-8">
+                                    <div className="space-y-4">
+                                      {[
+                                        { label: "Color Harmony", value: ratingResult.breakdown.colorHarmony },
+                                        { label: "Seasonal Match", value: ratingResult.breakdown.seasonalMatch },
+                                        { label: "Style Consistency", value: ratingResult.breakdown.styleConsistency }
+                                      ].map((metric) => (
+                                        <div key={metric.label} className="space-y-2">
+                                          <div className="flex justify-between text-[10px] font-bold font-headline uppercase tracking-widest">
+                                            <span className="text-muted-foreground">{metric.label}</span>
+                                            <span className="text-primary">{metric.value}%</span>
+                                          </div>
+                                          <Progress value={metric.value} className="h-1.5" />
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <div className="space-y-3">
+                                      <h5 className="font-headline font-bold text-sm text-primary flex items-center gap-2">
+                                        <TrendingUp className="h-4 w-4 text-accent" /> Styling Tips
+                                      </h5>
+                                      <ul className="space-y-2">
+                                        {ratingResult.stylingTips.map((tip, idx) => (
+                                          <li key={idx} className="flex gap-3 text-sm font-body text-slate-600 items-start">
+                                            <div className="h-1.5 w-1.5 rounded-full bg-accent mt-2 shrink-0" />
+                                            <span>{tip}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : null}
+                              
+                              <div className="pt-4 flex gap-4">
+                                <Button className="flex-1 h-14 rounded-full font-headline text-lg border-primary text-primary hover:bg-primary/5 transition-all" variant="outline">
+                                  Improve This Outfit
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
+                        )}
+
                         {selectedItems.length > 0 && (
                           <Card className="p-8 rounded-[3rem] shadow-2xl bg-white flex flex-col md:flex-row items-end gap-6 border-none">
                             <div className="flex-1 space-y-2 w-full">
