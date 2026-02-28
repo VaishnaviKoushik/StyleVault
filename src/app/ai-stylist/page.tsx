@@ -79,9 +79,12 @@ export default function AiStylistPage() {
   const [capsuleLoading, setCapsuleLoading] = useState(false);
   const [capsule, setCapsule] = useState<CapsuleOutput | null>(null);
 
-  // Firestore Data
-  const { data: wardrobeItems = [] } = useCollection(db ? query(collection(db, 'wardrobe')) : null);
-  const { data: savedOutfits = [] } = useCollection(db ? query(collection(db, 'outfits')) : null);
+  // Firestore Data - Handling initial null states with defaults
+  const { data: wardrobeItemsRaw } = useCollection(db ? query(collection(db, 'wardrobe')) : null);
+  const { data: savedOutfitsRaw } = useCollection(db ? query(collection(db, 'outfits')) : null);
+  
+  const wardrobeItems = wardrobeItemsRaw || [];
+  const savedOutfits = savedOutfitsRaw || [];
 
   // Compare State
   const [selectedStyleA, setSelectedStyleA] = useState<any | null>(null);
