@@ -10,9 +10,9 @@
     --card-foreground: 181 100% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 181 100% 10%;
-    --primary: 181 100% 19%; /* Deep Teal */
+    --primary: 181 100% 15%; /* Deeper Teal */
     --primary-foreground: 0 0% 100%;
-    --secondary: 180 10% 94%;
+    --secondary: 180 15% 94%;
     --secondary-foreground: 181 100% 15%;
     --muted: 180 10% 94%;
     --muted-foreground: 180 10% 40%;
@@ -23,8 +23,8 @@
     --border: 180 15% 90%;
     --input: 180 15% 90%;
     --ring: 181 100% 19%;
-    --radius: 1.5rem;
-    --bg-gradient: linear-gradient(135deg, #f5fafa 0%, #eef6f6 100%);
+    --radius: 2rem;
+    --bg-gradient: linear-gradient(180deg, #ffffff 0%, #f0f7f7 100%);
   }
 
   .dark {
@@ -45,7 +45,6 @@
     --border: 180 30% 15%;
     --input: 180 30% 15%;
     --ring: 181 100% 25%;
-    --bg-gradient: linear-gradient(135deg, #050a0a 0%, #0a1414 100%);
   }
 }
 
@@ -55,62 +54,53 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased transition-colors duration-300;
-    background: var(--bg-gradient);
     min-height: 100vh;
+    font-size: 1.125rem; /* Increased base font size by ~12.5% to ~20% equivalent */
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-headline;
+    @apply font-headline tracking-tight;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/75 dark:bg-black/40 backdrop-blur-[20px] border border-white/40 dark:border-white/10 shadow-[0_10px_40px_rgba(0,96,97,0.06)];
+    @apply bg-white/80 dark:bg-black/40 backdrop-blur-[30px] border border-white/50 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.05)];
   }
   
   .gradient-primary {
-    @apply bg-gradient-to-r from-[#003d3e] to-[#006061];
+    @apply bg-gradient-to-br from-[#003d3e] to-[#002526];
   }
 
-  .gradient-accent {
-    @apply bg-gradient-to-r from-[#f0b429] to-[#d9a01b];
+  .gradient-gold {
+    @apply bg-gradient-to-br from-[#f0b429] to-[#d9a01b];
   }
 
   .gradient-pill {
-    @apply bg-gradient-to-r from-[#003d3e] to-[#f0b429];
+    @apply bg-gradient-to-r from-[#003d3e] via-[#005052] to-[#003d3e] text-white shadow-xl hover:shadow-primary/20 transition-all;
   }
 
-  .border-glow {
-    @apply shadow-[0_0_25px_rgba(0,96,97,0.15)];
+  .section-rhythm-light {
+    @apply bg-white;
   }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  .section-rhythm-accent {
+    @apply bg-[#f0fafa];
   }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+
+  .section-rhythm-dark {
+    @apply bg-[#002526] text-white;
   }
 
   .page-container {
-    @apply flex-1 max-w-7xl mx-auto w-full px-6 py-10 pb-24 md:pb-10;
+    @apply flex-1 w-full;
   }
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+@keyframes entrance {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.shimmer-bg {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer-bg::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer 2s infinite;
+.animate-entrance {
+  animation: entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

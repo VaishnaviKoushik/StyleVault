@@ -14,7 +14,9 @@ import {
   Calendar,
   Cpu,
   Layers,
-  Info
+  ChevronRight,
+  Zap,
+  CheckCircle2
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,143 +31,139 @@ export default function HomeScreen() {
   return (
     <AppLayout>
       <OnboardingTour />
-      <div className="animate-in fade-in duration-1000">
+      <div className="flex flex-col w-full">
         
-        {/* HERO SECTION */}
-        <section className="py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <h1 className="text-6xl md:text-8xl font-headline font-bold leading-none tracking-tighter">
-              <span className="text-primary italic block">Style is</span>
-              <span className="text-accent italic block ml-12 md:ml-24 underline decoration-accent/20">Algorithmic.</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed max-w-lg border-l-4 border-accent pl-6">
-              "Transforming your wardrobe into a dynamic, performance-driven asset through generative logic."
-            </p>
+        {/* FULL-BLEED HERO SECTION */}
+        <section className="relative min-h-[90vh] flex items-center overflow-hidden section-rhythm-dark">
+          <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#002526] via-[#002526]/80 to-transparent z-10" />
+            <Image 
+              src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d" 
+              alt="Luxury Fashion" 
+              fill 
+              className="object-cover object-right opacity-60"
+              priority
+              data-ai-hint="luxury clothing"
+            />
           </div>
 
-          {/* EDITORIAL IMAGE COMPOSITION */}
-          <div className="relative h-[500px] w-full group">
-            <div className="absolute inset-0 bg-accent/5 rounded-[3rem] -rotate-2 scale-105 -z-10" />
-            <div className="relative h-full w-full rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
-              <Image 
-                src="https://images.unsplash.com/photo-1589400445193-c881a4b0b38a" 
-                alt="Signature Look" 
-                fill 
-                className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                data-ai-hint="trench coat"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
-              
-              <div className="absolute -bottom-6 -left-6 w-40 h-48 rounded-2xl overflow-hidden shadow-2xl border-4 border-white rotate-6 hidden md:block">
-                 <Image 
-                  src="https://images.unsplash.com/photo-1524805444758-09912d619dce" 
-                  alt="Watch detail" 
-                  fill 
-                  className="object-cover"
-                  data-ai-hint="gold watch"
-                />
-              </div>
-
-              <div className="absolute top-12 -right-6 w-32 h-32 rounded-full overflow-hidden shadow-2xl border-4 border-white -rotate-12 hidden md:block">
-                 <Image 
-                  src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371" 
-                  alt="Glasses detail" 
-                  fill 
-                  className="object-cover"
-                  data-ai-hint="black glasses"
-                />
-              </div>
-
-              <div className="absolute bottom-10 left-10 right-10 text-white space-y-2">
-                <Badge className="bg-white/20 backdrop-blur-md text-white border-none font-headline uppercase text-[10px] tracking-widest px-3">
-                  Featured Combination
-                </Badge>
-                <h3 className="text-3xl font-headline font-bold">The Modern Professional</h3>
-                <p className="text-sm font-body italic opacity-80">"A sophisticated blend of structured outerwear and timeless accessories."</p>
+          <div className="container mx-auto px-6 lg:px-12 relative z-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-10 animate-entrance">
+              <Badge className="bg-accent text-primary font-headline uppercase px-6 py-2 tracking-[0.3em] border-none text-xs">
+                Generative Wardrobe Intelligence
+              </Badge>
+              <h1 className="text-7xl md:text-9xl font-headline font-bold leading-[0.85] tracking-tighter">
+                Style is <br/>
+                <span className="text-accent italic block mt-4 underline decoration-accent/20 underline-offset-8">Algorithmic.</span>
+              </h1>
+              <p className="text-2xl md:text-3xl text-slate-300 font-body italic leading-relaxed max-w-xl border-l-4 border-accent pl-8 py-2">
+                "Transforming your physical inventory into a dynamic, high-performance digital asset."
+              </p>
+              <div className="flex flex-wrap gap-6 pt-4">
+                <Button asChild className="h-20 px-12 rounded-full gradient-gold text-primary font-headline text-2xl shadow-2xl hover:scale-105 transition-all">
+                  <Link href="/add-item">Digitize Now <ChevronRight className="ml-2 h-8 w-8" /></Link>
+                </Button>
+                <Button variant="outline" asChild className="h-20 px-12 rounded-full border-white/20 text-white font-headline text-2xl hover:bg-white/10 transition-all backdrop-blur-md">
+                  <Link href="/ai-stylist">Consult AI Stylist</Link>
+                </Button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* QUICK ACTIONS */}
-        <section className="py-24 space-y-12">
-          <div className="space-y-4 text-center max-w-5xl mx-auto">
-            <h3 className="text-4xl md:text-7xl font-headline font-bold text-primary italic whitespace-nowrap overflow-hidden text-ellipsis">
-              Smart Style <span className="text-accent">Tools.</span>
-            </h3>
-            <p className="text-muted-foreground font-body italic border-t border-accent/20 pt-4 px-10">
-              "Access specialized AI assistants to decode trends, optimize shopping, and orchestrate your visual identity."
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {[
-              { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5", tooltip: "Upload photos to digitize your wardrobe inventory." },
-              { label: "Shopping", icon: ShoppingBag, desc: "AI Suggestions", href: "/shopping", color: "from-accent/10 to-accent/5", tooltip: "Get recommendations for missing pieces that maximize your outfit options." },
-              { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5", tooltip: "Consult our AI for occasion-specific styling and weather-ready looks." },
-              { label: "Assembler", icon: Palette, desc: "Create looks", href: "/planner", color: "from-accent/10 to-primary/5", tooltip: "Mix and match items visually to save your signature combinations." },
-              { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-primary/10 to-primary/5", tooltip: "Research global fashion trends and see how they fit your wardrobe." }
-            ].map((action) => (
-              <Tooltip key={action.label}>
-                <TooltipTrigger asChild>
-                  <Link href={action.href}>
-                    <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br h-full", action.color)}>
-                      <div className="h-14 w-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                        <action.icon className="h-7 w-7" />
-                      </div>
-                      <div className="space-y-1">
-                        <h4 className="font-headline font-bold text-xl">{action.label}</h4>
-                        <p className="text-xs text-muted-foreground font-body opacity-80">{action.desc}</p>
-                      </div>
-                    </Card>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent className="bg-primary text-white border-none rounded-xl p-3 max-w-[200px] text-center">
-                  <p className="text-xs font-body">{action.tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
+        {/* SMART STYLE TOOLS - GRID SYSTEM */}
+        <section className="py-32 section-rhythm-accent">
+          <div className="container mx-auto px-6 lg:px-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+              <div className="space-y-4 max-w-3xl">
+                <h3 className="text-5xl md:text-7xl font-headline font-bold text-primary italic leading-none">
+                  The Intelligent <span className="text-accent">Studio.</span>
+                </h3>
+                <p className="text-xl md:text-2xl text-muted-foreground font-body italic leading-relaxed">
+                  "Specialized modules designed to decode trends, optimize acquisitions, and orchestrate your visual identity."
+                </p>
+              </div>
+              <Link href="/wardrobe" className="group flex items-center gap-3 text-primary font-headline font-bold text-xl hover:text-accent transition-colors">
+                Explore Full Vault <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+              {[
+                { label: "Catalog", icon: Camera, desc: "AI Vision Inventory", href: "/add-item", color: "text-blue-600", bg: "bg-blue-50" },
+                { label: "Shopping", icon: ShoppingBag, desc: "Gap Analysis Engine", href: "/shopping", color: "text-amber-600", bg: "bg-amber-50" },
+                { label: "AI Stylist", icon: Brain, desc: "Generative Logic", href: "/ai-stylist", color: "text-teal-600", bg: "bg-teal-50" },
+                { label: "Assembler", icon: Palette, desc: "Visual Composition", href: "/planner", color: "text-rose-600", bg: "bg-rose-50" },
+                { label: "Trends", icon: Search, desc: "Global Forecaster", href: "/trends", color: "text-indigo-600", bg: "bg-indigo-50" }
+              ].map((action, idx) => (
+                <Link key={action.label} href={action.href} className="group">
+                  <Card className={cn("glass-card border-none hover:-translate-y-4 transition-all duration-500 p-10 flex flex-col items-center text-center gap-8 h-full relative overflow-hidden")}>
+                    <div className={cn("h-24 w-24 rounded-[2.5rem] shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 z-10", action.bg, action.color)}>
+                      <action.icon className="h-12 w-12" />
+                    </div>
+                    <div className="space-y-3 z-10">
+                      <h4 className="font-headline font-bold text-3xl text-primary">{action.label}</h4>
+                      <p className="text-sm text-muted-foreground font-body font-bold uppercase tracking-widest opacity-60">{action.desc}</p>
+                    </div>
+                    <div className="absolute -bottom-4 -right-4 text-primary/5 group-hover:text-primary/10 transition-colors">
+                      <action.icon className="h-32 w-32" />
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* SIGNATURE LOOKBOOK & SMART ACQUISITION */}
-        <section className="py-24">
-          <div className="p-10 md:p-20 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
-              <div className="lg:w-1/2 space-y-8">
-                <Badge className="bg-primary/10 text-primary font-headline uppercase px-6 py-1 tracking-widest border-none">
-                  Smart Acquisition Engine
+        {/* REFINE YOUR COLLECTIONS - BOLD SPLIT */}
+        <section className="py-32 section-rhythm-light overflow-hidden">
+          <div className="container mx-auto px-6 lg:px-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+              <div className="space-y-10 order-2 lg:order-1">
+                <Badge className="bg-primary/5 text-primary font-headline uppercase px-6 py-2 tracking-[0.3em] border-none text-xs">
+                  Smart Acquisition Strategy
                 </Badge>
-                <h2 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] text-primary italic">
-                  Refine your <span className="text-accent italic">collections.</span>
+                <h2 className="text-6xl md:text-8xl font-headline font-bold leading-[0.9] text-primary italic">
+                  Maximize your <span className="text-accent italic">utility.</span>
                 </h2>
-                <p className="text-xl text-muted-foreground font-body leading-relaxed max-w-2xl italic border-r-4 border-accent pr-6 text-right lg:text-left lg:border-r-0 lg:border-l-4 lg:pl-6">
-                  "Our AI has analyzed your 18 items and identified 4 key pieces that would expand your styling combinations by 40%. View your personalized shopping strategy now."
-                </p>
+                <div className="space-y-6">
+                  <p className="text-2xl text-muted-foreground font-body leading-relaxed italic border-l-4 border-accent pl-8 py-2">
+                    "Our AI has identified 4 key pieces that would expand your current 18-item collection's styling combinations by 40%."
+                  </p>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                    {['Color Harmony Matching', 'Geometric Alignment', 'Seasonal Transitions', 'Event-Ready Filters'].map(item => (
+                      <li key={item} className="flex items-center gap-3 text-primary font-headline font-bold">
+                        <CheckCircle2 className="h-6 w-6 text-accent" /> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 
-                <div className="pt-6">
-                  <Button asChild className="h-16 px-10 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 transition-all">
-                    <Link href="/shopping">View Smart Suggestions <ArrowRight className="ml-2 h-6 w-6" /></Link>
+                <div className="pt-8">
+                  <Button asChild className="h-20 px-12 rounded-full gradient-primary text-white font-headline text-2xl shadow-2xl hover:scale-105 transition-all">
+                    <Link href="/shopping">View Recommendations <ArrowRight className="ml-2 h-8 w-8" /></Link>
                   </Button>
                 </div>
               </div>
               
-              <div className="lg:w-1/2 grid grid-cols-2 gap-4">
-                <div className="space-y-4 mt-8">
-                  <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c" alt="Accessory" fill className="object-cover" />
+              <div className="relative order-1 lg:order-2">
+                <div className="absolute -inset-10 bg-accent/5 rounded-[5rem] -rotate-3 scale-105 -z-10" />
+                <div className="grid grid-cols-2 gap-6 relative z-10">
+                  <div className="space-y-6 mt-12">
+                    <div className="relative aspect-[3/4] rounded-[3.5rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border-8 border-white group">
+                      <Image src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c" alt="Pink Bag" fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                    </div>
+                    <div className="relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white group">
+                      <Image src="https://images.unsplash.com/photo-1524805444758-09912d619dce" alt="Gold Watch" fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                    </div>
                   </div>
-                  <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
-                    <Image src="https://images.unsplash.com/photo-1524805444758-09912d619dce" alt="Watch" fill className="object-cover" />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
-                    <Image src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371" alt="Glasses" fill className="object-cover" />
-                  </div>
-                  <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
-                    <Image src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7" alt="Bag" fill className="object-cover" />
+                  <div className="space-y-6">
+                    <div className="relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white group">
+                      <Image src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371" alt="Glasses" fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                    </div>
+                    <div className="relative aspect-[3/4] rounded-[3.5rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border-8 border-white group">
+                      <Image src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7" alt="Blue Bag" fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -173,66 +171,64 @@ export default function HomeScreen() {
           </div>
         </section>
 
-        {/* HOW IT WORKS SECTION */}
-        <section className="py-24 space-y-16">
-          <div className="text-center space-y-4 max-w-5xl mx-auto">
-            <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
-              The Process
-            </Badge>
-            <h3 className="text-4xl md:text-6xl font-headline font-bold text-primary italic whitespace-nowrap overflow-hidden text-ellipsis">
-              How StyleVault Works.
-            </h3>
-            <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
-              "We've simplified the journey from a cluttered closet to a curated signature wardrobe."
-            </p>
-          </div>
+        {/* HOW IT WORKS - NUMERIC RHYTHM */}
+        <section className="py-32 section-rhythm-dark">
+          <div className="container mx-auto px-6 lg:px-12">
+            <div className="text-center space-y-6 mb-24">
+              <Badge className="bg-accent/20 text-accent font-headline uppercase px-6 py-2 tracking-[0.3em] border-none text-xs">
+                The Protocol
+              </Badge>
+              <h3 className="text-6xl md:text-8xl font-headline font-bold italic leading-none">
+                Algorithmic <span className="text-accent">Success.</span>
+              </h3>
+              <p className="text-2xl text-slate-400 font-body leading-relaxed italic max-w-3xl mx-auto">
+                "We've simplified the journey from a cluttered physical closet to a perfectly curated digital signature."
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                step: "01",
-                title: "Digitize",
-                desc: "Upload photos to your secure vault. AI vision automatically tags brand, color, and fabric.",
-                icon: Camera,
-                color: "bg-primary/5 text-primary"
-              },
-              {
-                step: "02",
-                title: "Analyze",
-                desc: "StyleVault decodes your color harmony and identifies missing high-value essentials.",
-                icon: Cpu,
-                color: "bg-accent/5 text-accent"
-              },
-              {
-                step: "03",
-                title: "Curate",
-                desc: "Use the Visual Assembler or AI Stylist to generate occasion-perfect combinations.",
-                icon: Layers,
-                color: "bg-primary/5 text-primary"
-              },
-              {
-                step: "04",
-                title: "Execute",
-                desc: "Schedule your looks in the Style Journal to eliminate decision fatigue every morning.",
-                icon: Calendar,
-                color: "bg-accent/5 text-accent"
-              }
-            ].map((item, idx) => (
-              <Card key={idx} className="border-none shadow-xl bg-white rounded-[2.5rem] p-8 space-y-6 group hover:-translate-y-2 transition-all duration-500">
-                <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500", item.color)}>
-                  <item.icon className="h-8 w-8" />
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-2xl font-headline font-bold text-primary">{item.title}</h4>
-                    <span className="text-4xl font-headline font-bold opacity-10">{item.step}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+              {[
+                { step: "01", title: "Digitize", desc: "Upload photos to your vault. AI vision automatically tags brand, color, and fabric.", icon: Camera },
+                { step: "02", title: "Analyze", desc: "StyleVault decodes your color harmony and identifies missing high-value pieces.", icon: Cpu },
+                { step: "03", title: "Curate", desc: "Use the Visual Assembler or AI Stylist to generate occasion-perfect looks.", icon: Layers },
+                { step: "04", title: "Execute", desc: "Schedule looks in the Journal to eliminate decision fatigue every morning.", icon: Calendar }
+              ].map((item, idx) => (
+                <div key={idx} className="relative group p-8 rounded-[3.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-500">
+                  <div className="flex items-center justify-between mb-8">
+                    <span className="text-7xl font-headline font-bold text-accent opacity-20 group-hover:opacity-100 transition-opacity duration-500 leading-none">{item.step}</span>
+                    <div className="h-16 w-16 rounded-2xl bg-accent text-primary flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                      <item.icon className="h-8 w-8" />
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground font-body leading-relaxed border-l-2 border-slate-100 pl-4">
-                    {item.desc}
-                  </p>
+                  <div className="space-y-4">
+                    <h4 className="text-3xl font-headline font-bold text-white">{item.title}</h4>
+                    <p className="text-lg text-slate-400 font-body leading-relaxed italic">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
-              </Card>
-            ))}
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FINAL CTA */}
+        <section className="py-32 section-rhythm-accent">
+          <div className="container mx-auto px-6 lg:px-12 text-center">
+            <Card className="glass-card border-none p-20 rounded-[5rem] space-y-10 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-accent via-primary to-accent" />
+              <h2 className="text-6xl md:text-8xl font-headline font-bold text-primary italic leading-tight">
+                Ready to optimize <br/> your <span className="text-accent">visual identity?</span>
+              </h2>
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <Button asChild className="h-24 px-16 rounded-full gradient-primary text-white font-headline text-3xl shadow-2xl hover:scale-105 transition-all">
+                  <Link href="/add-item">Start Your Vault</Link>
+                </Button>
+                <Button variant="outline" asChild className="h-24 px-16 rounded-full border-primary/20 text-primary font-headline text-3xl hover:bg-primary/5 transition-all">
+                  <Link href="/shopping">Browse Analytics</Link>
+                </Button>
+              </div>
+            </Card>
           </div>
         </section>
 
