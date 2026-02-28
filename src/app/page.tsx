@@ -189,12 +189,12 @@ export default function HomeScreen() {
 
         {/* HOW IT WORKS SECTION */}
         <section className="py-24 space-y-16">
-          <div className="text-center space-y-4 max-w-3xl mx-auto">
+          <div className="text-center space-y-4 max-w-4xl mx-auto">
             <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
               The Process
             </Badge>
             <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
-              How StyleVault <span className="text-accent italic block">Works.</span>
+              How StyleVault <span className="text-accent italic">Works.</span>
             </h3>
             <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
               "We've simplified the journey from a cluttered closet to a curated signature wardrobe."
