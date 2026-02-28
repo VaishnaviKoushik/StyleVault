@@ -64,7 +64,7 @@ export default function HomeScreen() {
                 <Button asChild className="h-20 px-12 rounded-full gradient-gold text-primary font-headline text-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all">
                   <Link href="/add-item">Digitize Now <ChevronRight className="ml-2 h-8 w-8" /></Link>
                 </Button>
-                <Button variant="outline" asChild className="h-20 px-12 rounded-full border-white/20 text-white font-headline text-2xl hover:bg-white/10 active:scale-95 transition-all backdrop-blur-md">
+                <Button asChild className="h-20 px-12 rounded-full bg-white text-primary font-headline text-2xl hover:bg-white/90 active:scale-95 transition-all shadow-2xl">
                   <Link href="/ai-stylist">Consult AI Stylist</Link>
                 </Button>
                 <Button variant="ghost" asChild className="h-20 px-12 rounded-full text-accent hover:text-white hover:bg-white/5 active:scale-95 transition-all font-headline text-xl flex items-center gap-3">
@@ -194,7 +194,7 @@ export default function HomeScreen() {
               {[
                 { step: "01", title: "Digitize", desc: "Upload photos to your vault. AI vision automatically tags brand, color, and fabric.", icon: Camera },
                 { step: "02", title: "Analyze", desc: "StyleVault decodes your color harmony and identifies missing high-value pieces.", icon: Cpu },
-                { step: "03", title: "Curate", desc: "Use the Visual Assembler or AI Stylist to generate occasion-perfect looks.", icon: Layers },
+                { step: "03", title: "Curate", desc: "Use the Visual Assembler or AI Stylist to generate occasion-perfect combinations.", icon: Layers },
                 { step: "04", title: "Execute", desc: "Schedule looks in the Journal to eliminate decision fatigue every morning.", icon: Calendar }
               ].map((item, idx) => {
                 const Icon = item.icon;
