@@ -200,7 +200,6 @@ export default function MasterVaultPage() {
       createdAt: new Date().toISOString()
     };
     setOutfits([newOutfit, ...outfits]);
-    setActiveSubTab("gallery");
     setSelectedItems([]);
     setNewOutfitName("");
     toast({ title: "Outfit Assembled" });
@@ -351,9 +350,6 @@ export default function MasterVaultPage() {
                 <TabsList className="h-14 p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner">
                   <TabsTrigger value="creations" className="h-full px-8 font-headline rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">
                     <Layers className="mr-2 h-4 w-4" /> Outfit Creations
-                  </TabsTrigger>
-                  <TabsTrigger value="gallery" className="h-full px-8 font-headline rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">
-                    <LayoutGrid className="mr-2 h-4 w-4" /> Inspiration Gallery
                   </TabsTrigger>
                   <TabsTrigger value="journal" className="h-full px-8 font-headline rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">
                     <History className="mr-2 h-4 w-4" /> Style Journal
@@ -515,48 +511,7 @@ export default function MasterVaultPage() {
                     </div>
                   </TabsContent>
 
-                  {/* 2. INSPIRATION GALLERY (LOOKBOOK) */}
-                  <TabsContent value="gallery" className="mt-0">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                      {outfits.map((outfit) => (
-                        <Card key={outfit.id} className="overflow-hidden border-none shadow-xl bg-white rounded-[2.5rem] flex flex-col group hover:-translate-y-2 transition-all">
-                          <CardHeader className="p-8 border-b">
-                            <div className="flex justify-between items-start">
-                              <CardTitle className="text-2xl font-headline font-bold text-primary">{outfit.name}</CardTitle>
-                              <Badge variant="secondary" className="bg-primary/5 text-primary border-none rounded-full px-4 py-1 font-headline uppercase text-[10px]">{outfit.occasion}</Badge>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="p-8 flex-1">
-                            <div className="grid grid-cols-4 gap-3">
-                              {outfit.items.map((itemId) => {
-                                const item = MOCK_WARDROBE.find(i => i.id === itemId);
-                                return item ? (
-                                  <div key={itemId} className="relative aspect-square rounded-xl overflow-hidden shadow-sm border-2 border-white">
-                                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                                  </div>
-                                ) : null;
-                              })}
-                            </div>
-                          </CardContent>
-                          <div className="p-6 bg-slate-50 flex justify-between gap-3 border-t">
-                            <Button variant="ghost" className="flex-1 rounded-full font-headline text-primary" onClick={() => { 
-                              setDate(new Date()); 
-                              setTempSelectedOutfitId(outfit.id); 
-                              setActiveSubTab("journal");
-                              setIsSelectOutfitOpen(true); 
-                            }}>
-                              <CalendarIcon className="mr-2 h-4 w-4" /> Schedule
-                            </Button>
-                            <Button variant="ghost" className="flex-1 rounded-full font-headline text-destructive hover:bg-destructive/10" onClick={() => setOutfits(prev => prev.filter(o => o.id !== outfit.id))}>
-                              <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </Button>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </TabsContent>
-
-                  {/* 3. STYLE JOURNAL (JOURNAL) */}
+                  {/* 2. STYLE JOURNAL (JOURNAL) */}
                   <TabsContent value="journal" className="mt-0 space-y-12">
                     <div className="bg-white rounded-[2.5rem] p-4 shadow-xl border flex items-center gap-4 max-w-4xl mx-auto">
                       <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, -7))}>

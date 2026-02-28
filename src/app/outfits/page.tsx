@@ -7,8 +7,8 @@ export default function OutfitsRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to the unified Inspiration Gallery in Style Studio
-    router.replace('/wardrobe?tab=studio&sub=gallery');
+    // Redirect to the unified Outfit Creations in Style Studio
+    router.replace('/wardrobe?tab=studio&sub=creations');
   }, [router]);
 
   return (
