@@ -21,12 +21,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Shirt,
-  Bookmark
+  Bookmark,
+  Palette,
+  LayoutGrid,
+  History
 } from "lucide-react";
 import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -43,9 +46,12 @@ const categories = ["all", "top", "bottom", "dress", "shoes", "accessory", "oute
 export default function MasterVaultPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  
   const initialTab = searchParams.get('tab') || 'closet';
+  const initialSubTab = searchParams.get('sub') || 'creations';
   
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeSubTab, setActiveSubTab] = useState(initialSubTab);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
 
@@ -143,7 +149,7 @@ export default function MasterVaultPage() {
       createdAt: new Date().toISOString()
     };
     setOutfits([newOutfit, ...outfits]);
-    setActiveTab("outfits");
+    setActiveSubTab("gallery");
     setSelectedItems([]);
     setNewOutfitName("");
     toast({ title: "Outfit Assembled" });
@@ -165,31 +171,31 @@ export default function MasterVaultPage() {
         <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div className="space-y-2">
             <h2 className="text-5xl font-headline font-bold text-primary tracking-tighter italic">Master Vault</h2>
-            <p className="text-muted-foreground font-body text-sm font-bold uppercase tracking-[0.3em] opacity-60">Unified Inventory & Agenda</p>
+            <p className="text-muted-foreground font-body text-sm font-bold uppercase tracking-[0.3em] opacity-60">Unified Inventory & Style Studio</p>
           </div>
           <div className="flex gap-4">
              <Button asChild variant="outline" className="h-14 px-8 rounded-full border-primary/20 text-primary font-headline text-lg hover:bg-primary/5">
                 <Link href="/add-item"><Plus className="mr-2 h-5 w-5" /> New Garment</Link>
              </Button>
-             <Button className="h-14 px-10 rounded-full gradient-primary text-white font-headline text-lg shadow-xl shadow-primary/20" onClick={() => setActiveTab("assembler")}>
-                <Sparkles className="mr-2 h-5 w-5" /> New Assembly
+             <Button 
+              className="h-14 px-10 rounded-full gradient-primary text-white font-headline text-lg shadow-xl shadow-primary/20" 
+              onClick={() => {
+                setActiveTab("studio");
+                setActiveSubTab("creations");
+              }}
+             >
+                <Sparkles className="mr-2 h-5 w-5" /> Open Studio
              </Button>
           </div>
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto bg-white/50 backdrop-blur-md shadow-sm border p-1.5 rounded-[2.5rem] mb-12">
+          <TabsList className="grid w-full grid-cols-2 h-auto bg-white/50 backdrop-blur-md shadow-sm border p-1.5 rounded-[2.5rem] mb-12 max-w-2xl mx-auto">
             <TabsTrigger value="closet" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
               <Shirt className="mr-2 h-5 w-5" /> The Closet
             </TabsTrigger>
-            <TabsTrigger value="outfits" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
-              <Bookmark className="mr-2 h-5 w-5" /> Lookbook
-            </TabsTrigger>
-            <TabsTrigger value="journal" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
-              <CalendarIcon className="mr-2 h-5 w-5" /> Journal
-            </TabsTrigger>
-            <TabsTrigger value="assembler" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
-              <Layers className="mr-2 h-5 w-5" /> Assembler
+            <TabsTrigger value="studio" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+              <Palette className="mr-2 h-5 w-5" /> Style Studio
             </TabsTrigger>
           </TabsList>
 
@@ -287,192 +293,219 @@ export default function MasterVaultPage() {
             </div>
           </TabsContent>
 
-          {/* --- LOOKBOOK TAB --- */}
-          <TabsContent value="outfits" className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {outfits.map((outfit) => (
-                <Card key={outfit.id} className="overflow-hidden border-none shadow-xl bg-white rounded-[2.5rem] flex flex-col group hover:-translate-y-2 transition-all">
-                  <CardHeader className="p-8 border-b">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-2xl font-headline font-bold text-primary">{outfit.name}</CardTitle>
-                      <Badge variant="secondary" className="bg-primary/5 text-primary border-none rounded-full px-4 py-1 font-headline uppercase text-[10px]">{outfit.occasion}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-8 flex-1">
-                    <div className="grid grid-cols-4 gap-3">
-                      {outfit.items.map((itemId) => {
-                        const item = MOCK_WARDROBE.find(i => i.id === itemId);
-                        return item ? (
-                          <div key={itemId} className="relative aspect-square rounded-xl overflow-hidden shadow-sm border-2 border-white">
-                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                          </div>
-                        ) : null;
-                      })}
-                    </div>
-                  </CardContent>
-                  <div className="p-6 bg-slate-50 flex justify-between gap-3 border-t">
-                    <Button variant="ghost" className="flex-1 rounded-full font-headline text-primary" onClick={() => { setDate(new Date()); setTempSelectedOutfitId(outfit.id); setIsSelectOutfitOpen(true); }}>
-                      <CalendarIcon className="mr-2 h-4 w-4" /> Schedule
-                    </Button>
-                    <Button variant="ghost" className="flex-1 rounded-full font-headline text-destructive hover:bg-destructive/10" onClick={() => setOutfits(prev => prev.filter(o => o.id !== outfit.id))}>
-                      <Trash2 className="mr-2 h-4 w-4" /> Delete
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
+          {/* --- STYLE STUDIO TAB --- */}
+          <TabsContent value="studio" className="space-y-8">
+            <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
+              <div className="flex flex-col items-center gap-8">
+                <TabsList className="h-14 p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner">
+                  <TabsTrigger value="creations" className="h-full px-8 font-headline rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">
+                    <Layers className="mr-2 h-4 w-4" /> Outfit Creations
+                  </TabsTrigger>
+                  <TabsTrigger value="gallery" className="h-full px-8 font-headline rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">
+                    <LayoutGrid className="mr-2 h-4 w-4" /> Inspiration Gallery
+                  </TabsTrigger>
+                  <TabsTrigger value="journal" className="h-full px-8 font-headline rounded-xl data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md transition-all">
+                    <History className="mr-2 h-4 w-4" /> Style Journal
+                  </TabsTrigger>
+                </TabsList>
 
-          {/* --- JOURNAL TAB --- */}
-          <TabsContent value="journal" className="space-y-12">
-             <div className="bg-white rounded-[2.5rem] p-4 shadow-xl border flex items-center gap-4 max-w-4xl mx-auto">
-              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, -7))}>
-                <ChevronLeft className="h-7 w-7" />
-              </Button>
-              <div className="flex-1 flex justify-between px-2 overflow-x-auto scrollbar-hide">
-                {weekDays.map((day, i) => {
-                  const active = isSameDay(day, date);
-                  return (
-                    <button key={i} onClick={() => setDate(day)} className={cn("flex flex-col items-center justify-center p-4 min-w-[75px] rounded-[1.5rem] transition-all", active ? "bg-primary text-white shadow-xl scale-110" : "text-slate-400 hover:bg-slate-50")}>
-                      <span className="text-[10px] font-bold uppercase mb-1">{format(day, 'EEE')}</span>
-                      <span className="text-xl font-headline font-bold">{format(day, 'dd')}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, 7))}>
-                <ChevronRight className="h-7 w-7" />
-              </Button>
-            </div>
-
-            <div className="space-y-8 max-w-5xl mx-auto">
-              <div className="flex items-center justify-between border-b pb-6">
-                <h3 className="text-3xl font-headline font-bold text-primary">Agenda for {format(date, 'MMMM do')}</h3>
-                <Button className="rounded-full h-12 px-8 bg-primary text-white font-headline" onClick={() => setIsSelectOutfitOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" /> New Entry
-                </Button>
-              </div>
-
-              {activeSchedules.length > 0 ? (
-                <div className="grid gap-8">
-                  {activeSchedules.map(schedule => {
-                    const outfit = outfits.find(o => o.id === schedule.outfitId);
-                    return (
-                      <Card key={schedule.id} className="border-none shadow-2xl bg-white rounded-[3rem] overflow-hidden group">
-                        <div className="md:flex">
-                          <div className="md:w-1/3 bg-slate-50 p-8 flex items-center justify-center min-h-[180px]">
-                            {outfit ? (
-                               <div className="flex -space-x-8">
-                                {outfit.items.slice(0, 2).map((itemId, idx) => {
-                                  const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                {/* Sub-Tab Contents */}
+                <div className="w-full">
+                  {/* 1. OUTFIT CREATIONS (ASSEMBLER) */}
+                  <TabsContent value="creations" className="mt-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+                      <div className="lg:col-span-2 space-y-8">
+                        <Card className="min-h-[550px] border-4 border-dashed border-primary/5 rounded-[3.5rem] flex flex-col p-10 bg-white/40 backdrop-blur-md relative shadow-inner">
+                          <div className="flex-1 flex flex-col items-center justify-center">
+                            {selectedItems.length === 0 ? (
+                              <div className="text-center space-y-4">
+                                <Layers className="h-16 w-16 text-primary opacity-10 mx-auto" />
+                                <p className="font-headline text-2xl font-bold text-slate-400 italic">Select garments to assemble a look.</p>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-8 w-full">
+                                {selectedItems.map(id => {
+                                  const item = MOCK_WARDROBE.find(i => i.id === id);
                                   return (
-                                    <div key={itemId} className={cn("relative h-40 w-28 rounded-[1.5rem] overflow-hidden shadow-xl border-4 border-white transition-transform group-hover:scale-105", idx === 0 ? "rotate-[-4deg]" : "rotate-[4deg]")}>
-                                      {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
+                                    <div key={id} className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white group">
+                                      <Image src={item!.imageUrl} alt={item!.name} fill className="object-cover" />
+                                      <Button variant="destructive" size="icon" className="absolute top-3 right-3 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => toggleItemSelection(id)}>
+                                        <X className="h-4 w-4" />
+                                      </Button>
                                     </div>
-                                  )
+                                  );
                                 })}
                               </div>
-                            ) : <ClipboardList className="h-12 w-12 opacity-10" />}
+                            )}
                           </div>
-                          <div className="md:w-2/3 p-10 flex flex-col justify-between">
-                            <div className="flex justify-between items-start">
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-accent font-headline font-bold uppercase text-[10px] tracking-widest">
-                                  <Clock className="h-3 w-3" /> {schedule.time} <span className="text-slate-200">|</span> <MapPin className="h-3 w-3" /> {schedule.location}
-                                </div>
-                                <h4 className="text-3xl font-headline font-bold text-primary">{outfit ? outfit.name : 'Unassigned Event'}</h4>
-                              </div>
-                              <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-200 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>
-                                <Trash2 className="h-5 w-5" />
-                              </Button>
+                        </Card>
+                        {selectedItems.length > 0 && (
+                          <Card className="p-8 rounded-[3rem] shadow-2xl bg-white flex flex-col md:flex-row items-end gap-6 border-none">
+                            <div className="flex-1 space-y-2 w-full">
+                              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2">Outfit Title</label>
+                              <Input placeholder="e.g. Modern Professional" value={newOutfitName} onChange={e => setNewOutfitName(e.target.value)} className="h-14 rounded-2xl font-headline text-lg px-6 bg-slate-50 border-none" />
                             </div>
-                            <div className="flex gap-4 pt-8">
-                               <Button variant="outline" className="flex-1 rounded-full font-headline h-12">View Details</Button>
-                               <Button variant="ghost" className="flex-1 rounded-full text-slate-400 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>Remove Entry</Button>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-primary/5 flex flex-col items-center justify-center space-y-6">
-                  <CalendarIcon className="h-16 w-16 text-primary opacity-10" />
-                  <p className="text-xl font-headline font-bold text-slate-400 italic">No events planned for this date.</p>
-                  <Button className="rounded-full h-14 px-10 gradient-primary text-white" onClick={() => setIsSelectOutfitOpen(true)}>Schedule Look</Button>
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          {/* --- ASSEMBLER TAB --- */}
-          <TabsContent value="assembler" className="space-y-8">
-             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-              <div className="lg:col-span-2 space-y-8">
-                <Card className="min-h-[550px] border-4 border-dashed border-primary/5 rounded-[3.5rem] flex flex-col p-10 bg-white/40 backdrop-blur-md relative shadow-inner">
-                  <div className="flex-1 flex flex-col items-center justify-center">
-                    {selectedItems.length === 0 ? (
-                      <div className="text-center space-y-4">
-                        <Layers className="h-16 w-16 text-primary opacity-10 mx-auto" />
-                        <p className="font-headline text-2xl font-bold text-slate-400 italic">Select garments to assemble a look.</p>
+                            <Button className="h-16 px-12 rounded-full gradient-pill text-white font-headline text-xl" onClick={handleCreateOutfit}>
+                              Save Outfit <Check className="ml-2 h-6 w-6" />
+                            </Button>
+                          </Card>
+                        )}
                       </div>
-                    ) : (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 w-full">
-                        {selectedItems.map(id => {
-                          const item = MOCK_WARDROBE.find(i => i.id === id);
-                          return (
-                            <div key={id} className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white group">
-                              <Image src={item!.imageUrl} alt={item!.name} fill className="object-cover" />
-                              <Button variant="destructive" size="icon" className="absolute top-3 right-3 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => toggleItemSelection(id)}>
-                                <X className="h-4 w-4" />
-                              </Button>
+
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-center px-2">
+                          <h3 className="font-headline font-bold text-xl text-primary">Your Collection</h3>
+                          <Badge variant="outline" className="rounded-full px-4 border-primary/20 text-primary">{selectedItems.length} Selected</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 h-[650px] overflow-y-auto pr-2 scrollbar-hide">
+                          {MOCK_WARDROBE.map((item) => {
+                            const isSelected = selectedItems.includes(item.id);
+                            return (
+                              <Card 
+                                key={item.id} 
+                                className={cn("group relative overflow-hidden aspect-[3/4] cursor-pointer transition-all border-none rounded-[1.5rem] shadow-md", isSelected ? "ring-4 ring-accent" : "hover:scale-[1.02]")}
+                                onClick={() => toggleItemSelection(item.id)}
+                              >
+                                <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                                <div className={cn("absolute inset-0 bg-primary/40 flex items-center justify-center transition-opacity", isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+                                  <div className="h-12 w-12 rounded-full bg-white text-primary flex items-center justify-center shadow-lg">
+                                    {isSelected ? <Check className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
+                                  </div>
+                                </div>
+                              </Card>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* 2. INSPIRATION GALLERY (LOOKBOOK) */}
+                  <TabsContent value="gallery" className="mt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {outfits.map((outfit) => (
+                        <Card key={outfit.id} className="overflow-hidden border-none shadow-xl bg-white rounded-[2.5rem] flex flex-col group hover:-translate-y-2 transition-all">
+                          <CardHeader className="p-8 border-b">
+                            <div className="flex justify-between items-start">
+                              <CardTitle className="text-2xl font-headline font-bold text-primary">{outfit.name}</CardTitle>
+                              <Badge variant="secondary" className="bg-primary/5 text-primary border-none rounded-full px-4 py-1 font-headline uppercase text-[10px]">{outfit.occasion}</Badge>
                             </div>
+                          </CardHeader>
+                          <CardContent className="p-8 flex-1">
+                            <div className="grid grid-cols-4 gap-3">
+                              {outfit.items.map((itemId) => {
+                                const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                                return item ? (
+                                  <div key={itemId} className="relative aspect-square rounded-xl overflow-hidden shadow-sm border-2 border-white">
+                                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                                  </div>
+                                ) : null;
+                              })}
+                            </div>
+                          </CardContent>
+                          <div className="p-6 bg-slate-50 flex justify-between gap-3 border-t">
+                            <Button variant="ghost" className="flex-1 rounded-full font-headline text-primary" onClick={() => { 
+                              setDate(new Date()); 
+                              setTempSelectedOutfitId(outfit.id); 
+                              setActiveSubTab("journal");
+                              setIsSelectOutfitOpen(true); 
+                            }}>
+                              <CalendarIcon className="mr-2 h-4 w-4" /> Schedule
+                            </Button>
+                            <Button variant="ghost" className="flex-1 rounded-full font-headline text-destructive hover:bg-destructive/10" onClick={() => setOutfits(prev => prev.filter(o => o.id !== outfit.id))}>
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* 3. STYLE JOURNAL (JOURNAL) */}
+                  <TabsContent value="journal" className="mt-0 space-y-12">
+                    <div className="bg-white rounded-[2.5rem] p-4 shadow-xl border flex items-center gap-4 max-w-4xl mx-auto">
+                      <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, -7))}>
+                        <ChevronLeft className="h-7 w-7" />
+                      </Button>
+                      <div className="flex-1 flex justify-between px-2 overflow-x-auto scrollbar-hide">
+                        {weekDays.map((day, i) => {
+                          const active = isSameDay(day, date);
+                          return (
+                            <button key={i} onClick={() => setDate(day)} className={cn("flex flex-col items-center justify-center p-4 min-w-[75px] rounded-[1.5rem] transition-all", active ? "bg-primary text-white shadow-xl scale-110" : "text-slate-400 hover:bg-slate-50")}>
+                              <span className="text-[10px] font-bold uppercase mb-1">{format(day, 'EEE')}</span>
+                              <span className="text-xl font-headline font-bold">{format(day, 'dd')}</span>
+                            </button>
                           );
                         })}
                       </div>
-                    )}
-                  </div>
-                </Card>
-                {selectedItems.length > 0 && (
-                  <Card className="p-8 rounded-[3rem] shadow-2xl bg-white flex flex-col md:flex-row items-end gap-6 border-none">
-                    <div className="flex-1 space-y-2 w-full">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2">Outfit Title</label>
-                      <Input placeholder="e.g. Modern Professional" value={newOutfitName} onChange={e => setNewOutfitName(e.target.value)} className="h-14 rounded-2xl font-headline text-lg px-6 bg-slate-50 border-none" />
+                      <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, 7))}>
+                        <ChevronRight className="h-7 w-7" />
+                      </Button>
                     </div>
-                    <Button className="h-16 px-12 rounded-full gradient-pill text-white font-headline text-xl" onClick={handleCreateOutfit}>
-                      Save Outfit <Check className="ml-2 h-6 w-6" />
-                    </Button>
-                  </Card>
-                )}
-              </div>
 
-              <div className="space-y-6">
-                <div className="flex justify-between items-center px-2">
-                  <h3 className="font-headline font-bold text-xl text-primary">Your Collection</h3>
-                  <Badge variant="outline" className="rounded-full px-4 border-primary/20 text-primary">{selectedItems.length} Selected</Badge>
-                </div>
-                <div className="grid grid-cols-2 gap-4 h-[650px] overflow-y-auto pr-2 scrollbar-hide">
-                  {MOCK_WARDROBE.map((item) => {
-                    const isSelected = selectedItems.includes(item.id);
-                    return (
-                      <Card 
-                        key={item.id} 
-                        className={cn("group relative overflow-hidden aspect-[3/4] cursor-pointer transition-all border-none rounded-[1.5rem] shadow-md", isSelected ? "ring-4 ring-accent" : "hover:scale-[1.02]")}
-                        onClick={() => toggleItemSelection(item.id)}
-                      >
-                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                        <div className={cn("absolute inset-0 bg-primary/40 flex items-center justify-center transition-opacity", isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
-                          <div className="h-12 w-12 rounded-full bg-white text-primary flex items-center justify-center shadow-lg">
-                            {isSelected ? <Check className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
-                          </div>
+                    <div className="space-y-8 max-w-5xl mx-auto">
+                      <div className="flex items-center justify-between border-b pb-6">
+                        <h3 className="text-3xl font-headline font-bold text-primary">Agenda for {format(date, 'MMMM do')}</h3>
+                        <Button className="rounded-full h-12 px-8 bg-primary text-white font-headline" onClick={() => setIsSelectOutfitOpen(true)}>
+                          <Plus className="mr-2 h-4 w-4" /> New Entry
+                        </Button>
+                      </div>
+
+                      {activeSchedules.length > 0 ? (
+                        <div className="grid gap-8">
+                          {activeSchedules.map(schedule => {
+                            const outfit = outfits.find(o => o.id === schedule.outfitId);
+                            return (
+                              <Card key={schedule.id} className="border-none shadow-2xl bg-white rounded-[3rem] overflow-hidden group">
+                                <div className="md:flex">
+                                  <div className="md:w-1/3 bg-slate-50 p-8 flex items-center justify-center min-h-[180px]">
+                                    {outfit ? (
+                                       <div className="flex -space-x-8">
+                                        {outfit.items.slice(0, 2).map((itemId, idx) => {
+                                          const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                                          return (
+                                            <div key={itemId} className={cn("relative h-40 w-28 rounded-[1.5rem] overflow-hidden shadow-xl border-4 border-white transition-transform group-hover:scale-105", idx === 0 ? "rotate-[-4deg]" : "rotate-[4deg]")}>
+                                              {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
+                                            </div>
+                                          )
+                                        })}
+                                      </div>
+                                    ) : <ClipboardList className="h-12 w-12 opacity-10" />}
+                                  </div>
+                                  <div className="md:w-2/3 p-10 flex flex-col justify-between">
+                                    <div className="flex justify-between items-start">
+                                      <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-accent font-headline font-bold uppercase text-[10px] tracking-widest">
+                                          <Clock className="h-3 w-3" /> {schedule.time} <span className="text-slate-200">|</span> <MapPin className="h-3 w-3" /> {schedule.location}
+                                        </div>
+                                        <h4 className="text-3xl font-headline font-bold text-primary">{outfit ? outfit.name : 'Unassigned Event'}</h4>
+                                      </div>
+                                      <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-200 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>
+                                        <Trash2 className="h-5 w-5" />
+                                      </Button>
+                                    </div>
+                                    <div className="flex gap-4 pt-8">
+                                       <Button variant="outline" className="flex-1 rounded-full font-headline h-12">View Details</Button>
+                                       <Button variant="ghost" className="flex-1 rounded-full text-slate-400 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>Remove Entry</Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </Card>
+                            );
+                          })}
                         </div>
-                      </Card>
-                    );
-                  })}
+                      ) : (
+                        <div className="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-primary/5 flex flex-col items-center justify-center space-y-6">
+                          <CalendarIcon className="h-16 w-16 text-primary opacity-10" />
+                          <p className="text-xl font-headline font-bold text-slate-400 italic">No events planned for this date.</p>
+                          <Button className="rounded-full h-14 px-10 gradient-primary text-white" onClick={() => setIsSelectOutfitOpen(true)}>Schedule Look</Button>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
                 </div>
               </div>
-            </div>
+            </Tabs>
           </TabsContent>
         </Tabs>
       </div>
@@ -519,4 +552,3 @@ export default function MasterVaultPage() {
     </AppLayout>
   );
 }
-import { DialogFooter } from "@/components/ui/dialog";

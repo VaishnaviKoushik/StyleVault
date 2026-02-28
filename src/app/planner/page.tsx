@@ -7,8 +7,8 @@ export default function PlannerRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to the unified Master Vault
-    router.replace('/wardrobe?tab=journal');
+    // Redirect to the unified Style Journal in Style Studio
+    router.replace('/wardrobe?tab=studio&sub=journal');
   }, [router]);
 
   return (
