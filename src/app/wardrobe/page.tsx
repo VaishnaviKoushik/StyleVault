@@ -199,17 +199,40 @@ export default function MasterVaultPage() {
       toast({ title: "Incomplete configuration", variant: "destructive" });
       return;
     }
+    
+    const outfitId = Math.random().toString(36).substr(2, 9);
     const newOutfit: Outfit = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: outfitId,
       name: newOutfitName,
       items: selectedItems,
       occasion: 'casual',
       createdAt: new Date().toISOString()
     };
+    
+    // 1. Save to outfits list
     setOutfits([newOutfit, ...outfits]);
+    
+    // 2. Automatically save to styled journal for the currently selected planner date
+    const newSchedule = {
+      id: Math.random().toString(36).substr(2, 9),
+      date: date,
+      outfitId: outfitId,
+      time: 'All Day',
+      location: 'New Assembly'
+    };
+    setScheduledOutfits([...scheduledOutfits, newSchedule]);
+
+    // 3. Reset creation state
     setSelectedItems([]);
     setNewOutfitName("");
-    toast({ title: "Outfit Assembled" });
+    
+    toast({ 
+      title: "Outfit Saved & Scheduled", 
+      description: `Look added to your journal for ${format(date, 'MMMM do')}.`
+    });
+
+    // 4. Switch to Journal tab to show the entry
+    setActiveSubTab("journal");
   };
 
   const filteredItems = items.filter(item => {
