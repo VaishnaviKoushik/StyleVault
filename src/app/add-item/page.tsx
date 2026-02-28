@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, ChevronLeft, Sparkles, Upload, FolderOpen, X } from "lucide-react";
+import { Check, ChevronLeft, Sparkles, Upload, FolderOpen, X, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,7 @@ export default function AddItemPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const router = useRouter();
@@ -54,6 +55,7 @@ export default function AddItemPage() {
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      toast({ title: "Image Loaded", description: "Ready for digital analysis." });
     }
   };
 
@@ -62,11 +64,15 @@ export default function AddItemPage() {
   };
 
   const handleComplete = () => {
-    toast({ 
-      title: "Item added to closet!", 
-      description: `${itemName || 'New item'} has been tagged and saved.` 
-    });
-    router.push('/wardrobe');
+    setSaving(true);
+    // Simulate AI processing and saving
+    setTimeout(() => {
+      toast({ 
+        title: "Item added to closet!", 
+        description: `${itemName || 'New item'} has been tagged and saved.` 
+      });
+      router.push('/wardrobe');
+    }, 1500);
   };
 
   if (!mounted) return null;
@@ -77,7 +83,7 @@ export default function AddItemPage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-4 duration-500">
         <header className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => step > 0 ? setStep(step - 1) : router.back()}>
+          <Button variant="ghost" size="icon" className="rounded-full active:scale-90" onClick={() => step > 0 ? setStep(step - 1) : router.back()}>
             <ChevronLeft className="h-6 w-6" />
           </Button>
           <div className="space-y-0.5">
@@ -119,7 +125,7 @@ export default function AddItemPage() {
                   
                   <div 
                     className={cn(
-                      "relative aspect-[3/4] rounded-3xl border-4 border-dashed flex flex-col items-center justify-center cursor-pointer group transition-all overflow-hidden",
+                      "relative aspect-[3/4] rounded-3xl border-4 border-dashed flex flex-col items-center justify-center cursor-pointer group transition-all overflow-hidden active:scale-[0.98]",
                       previewUrl 
                         ? "border-primary/40 bg-white" 
                         : "border-primary/20 bg-primary/5 hover:bg-primary/10"
@@ -150,7 +156,7 @@ export default function AddItemPage() {
                   </div>
 
                   <Button 
-                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white"
+                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white active:scale-95 transition-all"
                     onClick={triggerUpload}
                   >
                     {previewUrl ? "Change File" : "Choose File"} <Upload className="ml-2 h-5 w-5" />
@@ -174,7 +180,7 @@ export default function AddItemPage() {
                     </li>
                   </ul>
                   <Button 
-                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white"
+                    className="w-full h-14 rounded-full gradient-pill font-headline text-lg text-white active:scale-95 transition-all disabled:opacity-50"
                     disabled={!previewUrl}
                     onClick={() => setStep(1)}
                   >
@@ -206,7 +212,7 @@ export default function AddItemPage() {
                         variant={selectedCategory === c.value ? "default" : "outline"}
                         onClick={() => setSelectedCategory(c.value)}
                         className={cn(
-                          "rounded-2xl h-14 font-headline transition-all shadow-sm",
+                          "rounded-2xl h-14 font-headline transition-all shadow-sm active:scale-95",
                           selectedCategory === c.value ? "bg-primary text-white" : "border-slate-100 bg-slate-50 hover:bg-primary/10"
                         )}
                       >
@@ -223,7 +229,7 @@ export default function AddItemPage() {
                       <button 
                         key={color.name} 
                         type="button"
-                        className="flex flex-col items-center gap-2 cursor-pointer group outline-none"
+                        className="flex flex-col items-center gap-2 cursor-pointer group outline-none active:scale-90 transition-transform"
                         onClick={() => setSelectedColor(color.name)}
                       >
                         <div 
@@ -247,7 +253,7 @@ export default function AddItemPage() {
                 </div>
 
                 <Button 
-                  className="w-full h-16 rounded-full gradient-pill font-headline text-xl text-white shadow-xl shadow-primary/20"
+                  className="w-full h-16 rounded-full gradient-pill font-headline text-xl text-white shadow-xl shadow-primary/20 active:scale-95 transition-all disabled:opacity-50"
                   disabled={!itemName || !selectedCategory || !selectedColor}
                   onClick={() => setStep(2)}
                 >
@@ -296,11 +302,15 @@ export default function AddItemPage() {
                     </div>
                   </div>
                   <div className="flex gap-4">
-                    <Button variant="outline" className="flex-1 h-16 rounded-full font-headline border-primary text-primary" onClick={() => setStep(1)}>
+                    <Button variant="outline" className="flex-1 h-16 rounded-full font-headline border-primary text-primary active:scale-95 transition-all" onClick={() => setStep(1)}>
                       Edit Details
                     </Button>
-                    <Button className="flex-1 h-16 rounded-full gradient-pill font-headline text-white border-glow" onClick={handleComplete}>
-                      Save to Closet
+                    <Button 
+                      className="flex-1 h-16 rounded-full gradient-pill font-headline text-white border-glow active:scale-95 transition-all disabled:opacity-50" 
+                      onClick={handleComplete}
+                      disabled={saving}
+                    >
+                      {saving ? <RefreshCw className="h-6 w-6 animate-spin" /> : "Save to Closet"}
                     </Button>
                   </div>
                 </div>

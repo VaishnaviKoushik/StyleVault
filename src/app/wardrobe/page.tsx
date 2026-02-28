@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Tag, Sparkles, Trash2, Edit3, Save, ShoppingBag, ArrowRight, Heart, Cpu, Thermometer, Wind } from "lucide-react";
+import { Search, Plus, Tag, Sparkles, Trash2, Edit3, Save, ShoppingBag, ArrowRight, Heart, Cpu, Thermometer, Wind, RefreshCw } from "lucide-react";
 import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +43,7 @@ export default function WardrobePage() {
         description: item.description
       });
       setFabricAnalysis(result);
+      toast({ title: "Analysis complete", description: "Textile intelligence updated." });
     } catch (error) {
       toast({ title: "Analysis failed", variant: "destructive" });
     } finally {
@@ -93,7 +94,7 @@ export default function WardrobePage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button asChild className="h-12 px-8 rounded-full gradient-pill font-headline text-lg shadow-xl shadow-primary/20 text-white">
+            <Button asChild className="h-12 px-8 rounded-full gradient-pill font-headline text-lg shadow-xl shadow-primary/20 text-white hover:scale-105 active:scale-95 transition-all">
               <Link href="/add-item">
                 <Plus className="mr-2 h-5 w-5" /> Add New Item
               </Link>
@@ -111,7 +112,7 @@ export default function WardrobePage() {
               onClick={() => setActiveCategory(cat)}
               className={cn(
                 "capitalize font-headline h-10 px-8 rounded-full transition-all text-sm",
-                activeCategory === cat ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                activeCategory === cat ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-primary hover:bg-primary/5 active:scale-95"
               )}
             >
               {cat}
@@ -124,7 +125,7 @@ export default function WardrobePage() {
           {filteredItems.map((item) => (
             <Dialog key={item.id} onOpenChange={(open) => !open && setFabricAnalysis(null)}>
               <DialogTrigger asChild>
-                <div className="glass-card rounded-[2.5rem] overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all duration-300 shadow-lg border-white">
+                <div className="glass-card rounded-[2.5rem] overflow-hidden group cursor-pointer hover:-translate-y-2 active:scale-[0.98] transition-all duration-300 shadow-lg border-white">
                   <div className="relative aspect-[3/4]">
                     <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                     <div className="absolute top-4 left-4">
@@ -149,10 +150,10 @@ export default function WardrobePage() {
                       <div className="flex justify-between items-start mb-2">
                         <Badge className="bg-primary/10 text-primary font-headline uppercase px-4 py-1 tracking-widest border-none">{item.category}</Badge>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-primary hover:bg-primary/5" onClick={() => setEditingItem(item)}>
+                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-primary hover:bg-primary/5 active:scale-90 transition-all" onClick={() => setEditingItem(item)}>
                             <Edit3 className="h-5 w-5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-destructive hover:bg-destructive/5" onClick={() => handleDelete(item.id)}>
+                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-destructive hover:bg-destructive/5 active:scale-90 transition-all" onClick={() => handleDelete(item.id)}>
                             <Trash2 className="h-5 w-5" />
                           </Button>
                         </div>
@@ -170,11 +171,11 @@ export default function WardrobePage() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="rounded-full font-headline text-xs border-primary/20 px-6 h-9"
+                          className="rounded-full font-headline text-xs border-primary/20 px-6 h-9 hover:bg-primary hover:text-white active:scale-95 transition-all"
                           onClick={() => handleFabricIntelligence(item)}
                           disabled={analyzingFabric}
                         >
-                          {analyzingFabric ? "Analyzing..." : "Analyze Fabric"}
+                          {analyzingFabric ? <RefreshCw className="h-4 w-4 animate-spin" /> : "Analyze Fabric"}
                         </Button>
                       </div>
 
@@ -225,7 +226,7 @@ export default function WardrobePage() {
                     </div>
 
                     <div className="pt-6">
-                      <Button className="w-full rounded-full gradient-primary font-headline h-16 text-white text-lg shadow-xl shadow-primary/20">
+                      <Button className="w-full rounded-full gradient-primary font-headline h-16 text-white text-lg shadow-xl shadow-primary/20 active:scale-[0.98] transition-all">
                         Add to Style Journal
                       </Button>
                     </div>
@@ -235,7 +236,7 @@ export default function WardrobePage() {
             </Dialog>
           ))}
           
-          <Link href="/add-item" className="aspect-[3/4] rounded-[2.5rem] bg-primary/5 border-4 border-dashed border-primary/20 flex flex-col items-center justify-center text-primary gap-6 hover:bg-primary/10 transition-all group shadow-inner">
+          <Link href="/add-item" className="aspect-[3/4] rounded-[2.5rem] bg-primary/5 border-4 border-dashed border-primary/20 flex flex-col items-center justify-center text-primary gap-6 hover:bg-primary/10 active:scale-[0.98] transition-all group shadow-inner">
             <div className="h-20 w-20 rounded-full bg-white shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 border border-slate-50">
               <Plus className="h-10 w-10 text-primary" />
             </div>
@@ -252,7 +253,7 @@ export default function WardrobePage() {
                  <h3 className="text-4xl font-headline font-bold text-primary italic leading-tight">Missing something?</h3>
                  <p className="text-lg text-muted-foreground font-body italic max-w-xl">Our AI identifies high-impact gaps in your collection to maximize your styling combinations.</p>
               </div>
-              <Button asChild className="h-16 px-12 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 transition-all group-hover:shadow-primary/30">
+              <Button asChild className="h-16 px-12 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 active:scale-95 transition-all group-hover:shadow-primary/30">
                  <Link href="/shopping">Explore Recommendations <ArrowRight className="ml-3 h-6 w-6" /></Link>
               </Button>
            </Card>

@@ -35,6 +35,7 @@ export default function ShoppingPage() {
         stylePreference: "minimalist, professional"
       });
       setSuggestions(result.suggestions);
+      toast({ title: "Analysis complete", description: "Smart suggestions updated based on closet gaps." });
     } catch (error) {
       console.error("Failed to fetch shopping suggestions:", error);
       toast({
@@ -75,7 +76,7 @@ export default function ShoppingPage() {
             onClick={fetchSuggestions} 
             disabled={loading}
             variant="outline"
-            className="rounded-full h-12 px-6 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all font-headline font-bold"
+            className="rounded-full h-12 px-6 border-primary/20 text-primary hover:bg-primary hover:text-white active:scale-95 transition-all font-headline font-bold"
           >
             {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
             Refresh Intelligence
@@ -94,7 +95,7 @@ export default function ShoppingPage() {
             ))
           ) : suggestions ? (
             suggestions.map((suggestion, idx) => (
-              <Card key={idx} className="glass-card border-none overflow-hidden group hover:shadow-2xl transition-all duration-500 bg-white/60 flex flex-col rounded-[2.5rem]">
+              <Card key={idx} className="glass-card border-none overflow-hidden group hover:shadow-2xl active:scale-[0.98] transition-all duration-500 bg-white/60 flex flex-col rounded-[2.5rem]">
                 <div className="relative h-60 bg-slate-100 overflow-hidden">
                   <Image 
                     src={suggestion.imageUrl} 
@@ -123,7 +124,7 @@ export default function ShoppingPage() {
                   </div>
                   
                   <div className="flex gap-3 pt-2">
-                    <Button asChild className="flex-1 h-12 rounded-full gradient-primary text-white font-headline text-sm shadow-lg hover:shadow-primary/20" variant="default">
+                    <Button asChild className="flex-1 h-12 rounded-full gradient-primary text-white font-headline text-sm shadow-lg hover:shadow-primary/20 active:scale-95 transition-all" variant="default">
                       <a href={suggestion.shopUrl} target="_blank" rel="noopener noreferrer">
                         Shop on {suggestion.platform} <ExternalLink className="ml-2 h-4 w-4" />
                       </a>
@@ -131,7 +132,7 @@ export default function ShoppingPage() {
                     <Button 
                       size="icon" 
                       variant="outline" 
-                      className="h-12 w-12 rounded-full border-primary/20 text-primary hover:bg-primary/5 shrink-0"
+                      className="h-12 w-12 rounded-full border-primary/20 text-primary hover:bg-primary/5 active:scale-90 transition-all shrink-0"
                       onClick={() => handleAddToWishlist(suggestion.itemName)}
                     >
                       <Heart className="h-5 w-5" />

@@ -61,13 +61,13 @@ export default function HomeScreen() {
                 "Transforming your physical inventory into a dynamic, high-performance digital asset."
               </p>
               <div className="flex flex-wrap gap-6 pt-4">
-                <Button asChild className="h-20 px-12 rounded-full gradient-gold text-primary font-headline text-2xl shadow-2xl hover:scale-105 transition-all">
+                <Button asChild className="h-20 px-12 rounded-full gradient-gold text-primary font-headline text-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all">
                   <Link href="/add-item">Digitize Now <ChevronRight className="ml-2 h-8 w-8" /></Link>
                 </Button>
-                <Button variant="outline" asChild className="h-20 px-12 rounded-full border-white/20 text-white font-headline text-2xl hover:bg-white/10 transition-all backdrop-blur-md">
+                <Button variant="outline" asChild className="h-20 px-12 rounded-full border-white/20 text-white font-headline text-2xl hover:bg-white/10 active:scale-95 transition-all backdrop-blur-md">
                   <Link href="/ai-stylist">Consult AI Stylist</Link>
                 </Button>
-                <Button variant="ghost" asChild className="h-20 px-12 rounded-full text-accent hover:text-white hover:bg-white/5 transition-all font-headline text-xl flex items-center gap-3">
+                <Button variant="ghost" asChild className="h-20 px-12 rounded-full text-accent hover:text-white hover:bg-white/5 active:scale-95 transition-all font-headline text-xl flex items-center gap-3">
                   <Link href="/proposal"><Presentation className="h-6 w-6" /> View Project Presentation</Link>
                 </Button>
               </div>
@@ -101,7 +101,7 @@ export default function HomeScreen() {
                 { label: "Trends", icon: Search, desc: "Global Forecaster", href: "/trends", color: "text-indigo-600", bg: "bg-indigo-50" }
               ].map((action, idx) => (
                 <Link key={action.label} href={action.href} className="group">
-                  <Card className={cn("glass-card border-none hover:-translate-y-4 transition-all duration-500 p-10 flex flex-col items-center text-center gap-8 h-full relative overflow-hidden")}>
+                  <Card className={cn("glass-card border-none hover:-translate-y-4 active:scale-95 transition-all duration-500 p-10 flex flex-col items-center text-center gap-8 h-full relative overflow-hidden")}>
                     <div className={cn("h-24 w-24 rounded-[2.5rem] shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 z-10", action.bg, action.color)}>
                       <action.icon className="h-12 w-12" />
                     </div>
@@ -144,7 +144,7 @@ export default function HomeScreen() {
                 </div>
                 
                 <div className="pt-8">
-                  <Button asChild className="h-20 px-12 rounded-full gradient-primary text-white font-headline text-2xl shadow-2xl hover:scale-105 transition-all">
+                  <Button asChild className="h-20 px-12 rounded-full gradient-primary text-white font-headline text-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all">
                     <Link href="/shopping">View Recommendations <ArrowRight className="ml-2 h-8 w-8" /></Link>
                   </Button>
                 </div>
@@ -196,22 +196,25 @@ export default function HomeScreen() {
                 { step: "02", title: "Analyze", desc: "StyleVault decodes your color harmony and identifies missing high-value pieces.", icon: Cpu },
                 { step: "03", title: "Curate", desc: "Use the Visual Assembler or AI Stylist to generate occasion-perfect looks.", icon: Layers },
                 { step: "04", title: "Execute", desc: "Schedule looks in the Journal to eliminate decision fatigue every morning.", icon: Calendar }
-              ].map((item, idx) => (
-                <div key={idx} className="relative group p-8 rounded-[3.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-500">
-                  <div className="flex items-center justify-between mb-8">
-                    <span className="text-7xl font-headline font-bold text-accent opacity-20 group-hover:opacity-100 transition-opacity duration-500 leading-none">{item.step}</span>
-                    <div className="h-16 w-16 rounded-2xl bg-accent text-primary flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500">
-                      <item.icon className="h-8 w-8" />
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div key={idx} className="relative group p-8 rounded-[3.5rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-500">
+                    <div className="flex items-center justify-between mb-8">
+                      <span className="text-7xl font-headline font-bold text-accent opacity-20 group-hover:opacity-100 transition-opacity duration-500 leading-none">{item.step}</span>
+                      <div className="h-16 w-16 rounded-2xl bg-accent text-primary flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                        <Icon className="h-8 w-8" />
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h4 className="text-3xl font-headline font-bold text-white">{item.title}</h4>
+                      <p className="text-lg text-slate-400 font-body leading-relaxed italic">
+                        {item.desc}
+                      </p>
                     </div>
                   </div>
-                  <div className="space-y-4">
-                    <h4 className="text-3xl font-headline font-bold text-white">{item.title}</h4>
-                    <p className="text-lg text-slate-400 font-body leading-relaxed italic">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -225,10 +228,10 @@ export default function HomeScreen() {
                 Ready to optimize <br/> your <span className="text-accent">visual identity?</span>
               </h2>
               <div className="flex flex-col sm:flex-row justify-center gap-6">
-                <Button asChild className="h-24 px-16 rounded-full gradient-primary text-white font-headline text-3xl shadow-2xl hover:scale-105 transition-all">
+                <Button asChild className="h-24 px-16 rounded-full gradient-primary text-white font-headline text-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all">
                   <Link href="/add-item">Start Your Vault</Link>
                 </Button>
-                <Button variant="outline" asChild className="h-24 px-16 rounded-full border-primary/20 text-primary font-headline text-3xl hover:bg-primary/5 transition-all">
+                <Button variant="outline" asChild className="h-24 px-16 rounded-full border-primary/20 text-primary font-headline text-3xl hover:bg-primary/5 active:scale-95 transition-all">
                   <Link href="/shopping">Browse Analytics</Link>
                 </Button>
               </div>

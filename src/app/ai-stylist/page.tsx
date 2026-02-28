@@ -28,7 +28,8 @@ import {
   TrendingUp,
   Palette,
   ChevronRight,
-  Info
+  Info,
+  RefreshCw
 } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
 import { MOCK_WARDROBE, MOCK_OUTFITS, Outfit } from "@/lib/mock-data";
@@ -111,6 +112,7 @@ export default function AiStylistPage() {
         reasoning: result.stylistNote,
         shoppingAdvised: result.shoppingAdvised
       });
+      toast({ title: "Outfit ready!", description: "Stylist analysis complete." });
     } catch (err) {
       toast({ title: "Failed to generate suggestion", variant: "destructive" });
     } finally {
@@ -153,7 +155,7 @@ export default function AiStylistPage() {
           </div>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300">
+              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300 hover:text-primary transition-colors">
                 <Info className="h-6 w-6" />
               </Button>
             </TooltipTrigger>
@@ -167,10 +169,10 @@ export default function AiStylistPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 h-auto bg-white shadow-sm border p-1.5 rounded-2xl mb-8 max-w-md mx-auto">
-            <TabsTrigger value="stylist" className="py-3 font-headline text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white">
+            <TabsTrigger value="stylist" className="py-3 font-headline text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
               AI Stylist
             </TabsTrigger>
-            <TabsTrigger value="compare" className="py-3 font-headline text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white">
+            <TabsTrigger value="compare" className="py-3 font-headline text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
               Style Compare
             </TabsTrigger>
           </TabsList>
@@ -191,7 +193,7 @@ export default function AiStylistPage() {
                           key={occ.value}
                           variant={selectedOccasion === occ.value ? "default" : "outline"}
                           className={cn(
-                            "h-24 flex flex-col gap-2 font-headline rounded-2xl border-slate-100",
+                            "h-24 flex flex-col gap-2 font-headline rounded-2xl border-slate-100 transition-all active:scale-95",
                             selectedOccasion === occ.value ? "bg-accent border-accent text-primary" : "bg-white text-slate-400 hover:text-primary hover:bg-slate-50"
                           )}
                           onClick={() => setSelectedOccasion(occ.value)}
@@ -205,12 +207,12 @@ export default function AiStylistPage() {
                 </Card>
 
                 <Button 
-                  className="w-full h-16 text-xl font-headline bg-primary hover:bg-primary/90 shadow-xl rounded-full"
+                  className="w-full h-16 text-xl font-headline bg-primary hover:bg-primary/90 shadow-xl rounded-full active:scale-[0.98] transition-all"
                   onClick={handleGenerate}
                   disabled={loading}
                 >
                   {loading ? (
-                    <><Zap className="mr-2 h-6 w-6 animate-pulse" /> Consulting Stylist...</>
+                    <><RefreshCw className="mr-2 h-6 w-6 animate-spin" /> Consulting Stylist...</>
                   ) : (
                     <><Sparkles className="mr-2 h-6 w-6" /> Generate My Outfit</>
                   )}
@@ -245,7 +247,7 @@ export default function AiStylistPage() {
                           <div className="flex-1 space-y-2">
                             <h4 className="font-headline font-bold text-primary text-xl">Wardrobe Gap Detected</h4>
                             <p className="text-base font-body text-slate-600 italic">"Our analysis shows a high-value piece is missing to truly perfect this formal look."</p>
-                            <Button variant="link" asChild className="p-0 h-auto text-primary font-bold hover:no-underline">
+                            <Button variant="link" asChild className="p-0 h-auto text-primary font-bold hover:no-underline active:translate-x-1 transition-transform">
                               <Link href="/shopping" className="flex items-center gap-2">Consult Shopping Engine <ArrowRight className="h-4 w-4" /></Link>
                             </Button>
                           </div>
@@ -255,7 +257,7 @@ export default function AiStylistPage() {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                         {suggestion.items.map((item: any) => (
                           <div key={item.id} className="space-y-3 group">
-                            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border-4 border-white transition-transform group-hover:scale-105">
+                            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border-4 border-white transition-transform group-hover:scale-105 active:scale-95">
                               <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
                             </div>
                             <p className="text-xs font-headline font-bold text-center truncate px-2 text-primary opacity-60 uppercase tracking-widest">{item.name}</p>
@@ -270,10 +272,10 @@ export default function AiStylistPage() {
                       </div>
 
                       <div className="flex gap-4 pt-4">
-                        <Button className="flex-1 h-14 rounded-full font-headline text-lg bg-primary shadow-xl shadow-primary/20" asChild>
+                        <Button className="flex-1 h-14 rounded-full font-headline text-lg bg-primary shadow-xl shadow-primary/20 active:scale-95 transition-all" asChild>
                           <Link href="/planner">Schedule this Look</Link>
                         </Button>
-                        <Button variant="outline" className="flex-1 h-14 rounded-full font-headline text-lg border-accent text-primary hover:bg-accent hover:text-white transition-all shadow-md" onClick={() => setActiveTab('compare')}>
+                        <Button variant="outline" className="flex-1 h-14 rounded-full font-headline text-lg border-accent text-primary hover:bg-accent hover:text-white transition-all shadow-md active:scale-95" onClick={() => setActiveTab('compare')}>
                           <ArrowLeftRight className="mr-2 h-5 w-5" /> Global Comparison
                         </Button>
                       </div>
@@ -283,7 +285,7 @@ export default function AiStylistPage() {
                   <div className="h-full flex flex-col items-center justify-center p-10 bg-white rounded-[3rem] shadow-inner space-y-6">
                     <div className="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                     <div className="text-center space-y-2">
-                      <h3 className="text-2xl font-headline font-bold text-primary italic">Styling your collection...</h3>
+                      <h3 className="text-2xl font-headline font-bold text-primary italic">Stylist your collection...</h3>
                       <p className="text-muted-foreground font-body italic">Aggregating visual harmony data</p>
                     </div>
                   </div>
@@ -313,23 +315,23 @@ export default function AiStylistPage() {
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-16 rounded-full bg-accent text-primary flex items-center justify-center font-headline font-bold z-10 border-4 border-white shadow-2xl italic text-xl">VS</div>
                         
                         <div className="space-y-6">
-                          <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02]">
+                          <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer" onClick={() => handleVote(battle.id, 'A')}>
                             <Image src={MOCK_WARDROBE.find(i => i.id === battle.styleA.items[0])?.imageUrl || ''} alt="" fill className="object-cover" />
                             <div className="absolute bottom-6 left-6 right-6 flex justify-center text-white">
                               <span className="text-3xl font-headline font-bold italic drop-shadow-lg">{battle.votesA}%</span>
                             </div>
                           </div>
-                          <Button className="w-full h-14 rounded-full font-headline text-lg shadow-lg" onClick={() => handleVote(battle.id, 'A')}>Option A</Button>
+                          <Button className="w-full h-14 rounded-full font-headline text-lg shadow-lg active:scale-95 transition-all" onClick={() => handleVote(battle.id, 'A')}>Option A</Button>
                         </div>
 
                         <div className="space-y-6">
-                          <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02]">
+                          <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer" onClick={() => handleVote(battle.id, 'B')}>
                             <Image src={MOCK_WARDROBE.find(i => i.id === battle.styleB.items[0])?.imageUrl || ''} alt="" fill className="object-cover" />
                             <div className="absolute bottom-6 left-6 right-6 flex justify-center text-white">
                               <span className="text-3xl font-headline font-bold italic drop-shadow-lg">{battle.votesB}%</span>
                             </div>
                           </div>
-                          <Button className="w-full h-14 rounded-full font-headline text-lg shadow-lg" onClick={() => handleVote(battle.id, 'B')}>Option B</Button>
+                          <Button className="w-full h-14 rounded-full font-headline text-lg shadow-lg active:scale-95 transition-all" onClick={() => handleVote(battle.id, 'B')}>Option B</Button>
                         </div>
                       </div>
                     </CardContent>
@@ -346,7 +348,7 @@ export default function AiStylistPage() {
                   <div className="grid grid-cols-2 gap-6">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50", selectedStyleA ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleA(null)}>
+                        <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50 active:scale-95", selectedStyleA ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleA(null)}>
                           {selectedStyleA ? <span className="text-xs font-bold text-primary text-center px-4 font-headline uppercase leading-relaxed">{selectedStyleA.name}</span> : <Plus className="h-8 w-8 text-slate-200" />}
                         </div>
                       </TooltipTrigger>
@@ -355,11 +357,11 @@ export default function AiStylistPage() {
                       </TooltipContent>
                     </Tooltip>
                     
-                    <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50", selectedStyleB ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleB(null)}>
+                    <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50 active:scale-95", selectedStyleB ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleB(null)}>
                       {selectedStyleB ? <span className="text-xs font-bold text-primary text-center px-4 font-headline uppercase leading-relaxed">{selectedStyleB.name}</span> : <Plus className="h-8 w-8 text-slate-200" />}
                     </div>
                   </div>
-                  <Button className="w-full h-16 rounded-full font-headline text-xl gradient-primary text-white shadow-xl shadow-primary/20" disabled={!selectedStyleA || !selectedStyleB} onClick={handleCreateBattle}>Initiate Style Battle</Button>
+                  <Button className="w-full h-16 rounded-full font-headline text-xl gradient-primary text-white shadow-xl shadow-primary/20 active:scale-[0.98] transition-all" disabled={!selectedStyleA || !selectedStyleB} onClick={handleCreateBattle}>Initiate Style Battle</Button>
                 </Card>
 
                 <div className="space-y-6">
@@ -368,7 +370,7 @@ export default function AiStylistPage() {
                     {MOCK_OUTFITS.map(outfit => (
                       <button 
                         key={outfit.id} 
-                        className="p-4 bg-white rounded-[2rem] border-2 border-slate-50 shadow-sm flex items-center gap-4 cursor-pointer hover:border-accent hover:shadow-md transition-all text-left group"
+                        className="p-4 bg-white rounded-[2rem] border-2 border-slate-50 shadow-sm flex items-center gap-4 cursor-pointer hover:border-accent hover:shadow-md active:scale-[0.98] transition-all text-left group"
                         onClick={() => {
                           if (!selectedStyleA) setSelectedStyleA(outfit);
                           else if (!selectedStyleB) setSelectedStyleB(outfit);
