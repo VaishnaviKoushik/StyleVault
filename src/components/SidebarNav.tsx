@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Sparkles, Home, LogOut, Settings, Camera, Presentation, ShoppingBag, TrendingUp, Zap, Palette, Layers } from "lucide-react";
+import { Shirt, Sparkles, Home, Settings, Camera, Presentation, ShoppingBag, TrendingUp, Palette, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -64,14 +64,6 @@ export function SidebarNav() {
               <Settings className="h-6 w-6 group-hover:rotate-90 transition-transform" />
            </Link>
         </div>
-        <button 
-          className="flex items-center gap-4 px-8 py-4 rounded-full font-headline font-bold text-lg text-white gradient-pill shadow-[0_15px_30px_-5px_rgba(0,61,62,0.3)] hover:scale-105 transition-all active:scale-95 group"
-        >
-          <Zap className="h-5 w-5 text-accent animate-pulse" />
-          <span>Optimize</span>
-          <div className="h-6 w-px bg-white/20 mx-1" />
-          <LogOut className="h-5 w-5 opacity-60 group-hover:opacity-100" />
-        </button>
       </div>
     </div>
   );
