@@ -18,7 +18,8 @@ import {
   Zap,
   CheckCircle2,
   Presentation,
-  Droplets
+  Droplets,
+  Radio
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -93,26 +94,28 @@ export default function HomeScreen() {
               </Link>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
-                { label: "Catalog", icon: Camera, desc: "AI Vision Inventory", href: "/add-item", color: "text-blue-600", bg: "bg-blue-50" },
-                { label: "Shopping", icon: ShoppingBag, desc: "Gap Analysis Engine", href: "/shopping", color: "text-amber-600", bg: "bg-amber-50" },
+                { label: "Capsule", icon: Layers, desc: "Minimalist Core", href: "/capsule", color: "text-purple-600", bg: "bg-purple-50" },
+                { label: "Trend Radar", icon: Radio, desc: "Alignment Engine", href: "/trend-radar", color: "text-rose-600", bg: "bg-rose-50" },
                 { label: "AI Stylist", icon: Brain, desc: "Generative Logic", href: "/ai-stylist", color: "text-teal-600", bg: "bg-teal-50" },
-                { label: "Color Lab", icon: Droplets, desc: "Harmony Analysis", href: "/try-on", color: "text-rose-600", bg: "bg-rose-50" },
-                { label: "Assembler", icon: Layers, desc: "Visual Composition", href: "/wardrobe?tab=assembler", color: "text-indigo-600", bg: "bg-indigo-50" },
-                { label: "Trends", icon: Search, desc: "Global Forecaster", href: "/trends", color: "text-slate-600", bg: "bg-slate-50" }
+                { label: "Shopping", icon: ShoppingBag, desc: "Gap Analysis", href: "/shopping", color: "text-amber-600", bg: "bg-amber-50" },
+                { label: "Catalog", icon: Camera, desc: "AI Vision Vault", href: "/add-item", color: "text-blue-600", bg: "bg-blue-50" },
+                { label: "Color Lab", icon: Droplets, desc: "Harmony Analysis", href: "/try-on", color: "text-indigo-600", bg: "bg-indigo-50" },
+                { label: "Trends", icon: Search, desc: "Global Forecaster", href: "/trends", color: "text-slate-600", bg: "bg-slate-50" },
+                { label: "Journal", icon: Calendar, desc: "Styling Agenda", href: "/wardrobe?tab=journal", color: "text-emerald-600", bg: "bg-emerald-50" }
               ].map((action, idx) => (
                 <Link key={action.label} href={action.href} className="group">
-                  <Card className={cn("glass-card border-none hover:-translate-y-4 active:scale-95 transition-all duration-500 p-10 flex flex-col items-center text-center gap-8 h-full relative overflow-hidden")}>
-                    <div className={cn("h-24 w-24 rounded-[2.5rem] shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 z-10", action.bg, action.color)}>
-                      <action.icon className="h-12 w-12" />
+                  <Card className={cn("glass-card border-none hover:-translate-y-4 active:scale-95 transition-all duration-500 p-8 flex flex-col items-center text-center gap-6 h-full relative overflow-hidden")}>
+                    <div className={cn("h-20 w-20 rounded-[2rem] shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 z-10", action.bg, action.color)}>
+                      <action.icon className="h-10 w-10" />
                     </div>
-                    <div className="space-y-3 z-10">
-                      <h4 className="font-headline font-bold text-3xl text-primary">{action.label}</h4>
-                      <p className="text-sm text-muted-foreground font-body font-bold uppercase tracking-widest opacity-60">{action.desc}</p>
+                    <div className="space-y-2 z-10">
+                      <h4 className="font-headline font-bold text-2xl text-primary">{action.label}</h4>
+                      <p className="text-[10px] text-muted-foreground font-body font-bold uppercase tracking-widest opacity-60">{action.desc}</p>
                     </div>
                     <div className="absolute -bottom-4 -right-4 text-primary/5 group-hover:text-primary/10 transition-colors">
-                      <action.icon className="h-32 w-32" />
+                      <action.icon className="h-24 w-24" />
                     </div>
                   </Card>
                 </Link>

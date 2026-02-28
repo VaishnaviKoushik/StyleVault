@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Sparkles, Home, LogOut, Settings, Camera, Presentation, ShoppingBag, TrendingUp, Zap, Palette } from "lucide-react";
+import { Shirt, Sparkles, Home, LogOut, Settings, Camera, Presentation, ShoppingBag, TrendingUp, Zap, Palette, Layers, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard", icon: Home, href: "/" },
   { label: "Master Vault", icon: Shirt, href: "/wardrobe" },
   { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
+  { label: "Capsule", icon: Layers, href: "/capsule" },
+  { label: "Trend Radar", icon: Radio, href: "/trend-radar" },
   { label: "Color Lab", icon: Palette, href: "/try-on" },
   { label: "Shopping", icon: ShoppingBag, href: "/shopping" },
   { label: "Trends", icon: TrendingUp, href: "/trends" },
