@@ -6,27 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
   Sparkles, 
-  CloudRain, 
-  Zap, 
-  Sun, 
-  Thermometer, 
   Briefcase, 
   Users, 
-  CalendarCheck,
+  Heart,
   Music,
   Dumbbell,
   Plane,
   Umbrella,
-  Heart,
-  Trophy,
   AlertTriangle,
   ShoppingBag,
   ArrowRight,
   ArrowLeftRight,
   Plus,
-  Check,
-  TrendingUp,
-  Palette,
   ChevronRight,
   Info,
   RefreshCw
@@ -40,7 +31,6 @@ import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const occasions = [
@@ -242,14 +232,26 @@ export default function AiStylistPage() {
                     </CardHeader>
                     <CardContent className="p-10 space-y-10">
                       {suggestion.shoppingAdvised && (
-                        <div className="bg-accent/5 border border-accent/20 p-6 rounded-[2rem] flex items-start gap-6">
-                          <AlertTriangle className="h-6 w-6 text-primary shrink-0 mt-1" />
-                          <div className="flex-1 space-y-2">
-                            <h4 className="font-headline font-bold text-primary text-xl">Wardrobe Gap Detected</h4>
-                            <p className="text-base font-body text-slate-600 italic">"Our analysis shows a high-value piece is missing to truly perfect this formal look."</p>
-                            <Button variant="link" asChild className="p-0 h-auto text-primary font-bold hover:no-underline active:translate-x-1 transition-transform">
-                              <Link href="/shopping" className="flex items-center gap-2">Consult Shopping Engine <ArrowRight className="h-4 w-4" /></Link>
-                            </Button>
+                        <div className="bg-accent/5 border border-accent/20 p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 shadow-inner">
+                          <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <ShoppingBag className="h-10 w-10 text-primary" />
+                          </div>
+                          <div className="flex-1 space-y-3 text-center md:text-left">
+                            <div className="flex items-center justify-center md:justify-start gap-2">
+                              <AlertTriangle className="h-5 w-5 text-primary" />
+                              <h4 className="font-headline font-bold text-primary text-2xl italic">Wardrobe Gap Detected</h4>
+                            </div>
+                            <p className="text-lg font-body text-slate-600 leading-relaxed italic">
+                              "Our analysis indicates a high-value piece is missing to perfectly coordinate this look. Explore optimized additions."
+                            </p>
+                            <div className="flex flex-wrap gap-3 justify-center md:justify-start pt-2">
+                              <Button className="rounded-full h-12 px-8 gradient-primary text-white font-headline" asChild>
+                                <Link href="/shopping">Consult Shopping Engine <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                              </Button>
+                              <div className="flex gap-2 items-center text-xs font-bold text-slate-400 uppercase tracking-widest px-4 border-l">
+                                Direct to: <Badge variant="outline" className="border-slate-200">Amazon</Badge> <Badge variant="outline" className="border-slate-200">Myntra</Badge>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       )}
