@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -34,7 +34,9 @@ import {
   Send,
   MessageCircle,
   Share2,
-  Clock
+  Clock,
+  X,
+  Upload
 } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
 import { generateCapsule, type CapsuleOutput } from "@/ai/flows/capsule-generator";
@@ -94,7 +96,9 @@ export default function AiStylistPage() {
   // Feed State
   const [postCaption, setPostCaption] = useState("");
   const [selectedOutfitForPost, setSelectedOutfitForPost] = useState<any | null>(null);
+  const [customUploadedImage, setCustomUploadedImage] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [mockFeed, setMockFeed] = useState([
     {
@@ -188,22 +192,42 @@ export default function AiStylistPage() {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomUploadedImage(reader.result as string);
+        setSelectedOutfitForPost(null);
+        toast({ title: "Image Loaded", description: "Ready to share with the vault community." });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCreatePost = () => {
-    if (!selectedOutfitForPost) {
-      toast({ title: "Select an Outfit", description: "Choose a signature look to share with the community." });
+    if (!selectedOutfitForPost && !customUploadedImage) {
+      toast({ title: "Select Content", description: "Choose a signature look or upload a photo to share." });
       return;
     }
 
     setIsPosting(true);
     // Simulate API delay
     setTimeout(() => {
-      const firstItem = wardrobeItems.find(i => i.id === selectedOutfitForPost.items[0]);
+      let imageUrl = "https://picsum.photos/seed/post/800";
+      if (customUploadedImage) {
+        imageUrl = customUploadedImage;
+      } else if (selectedOutfitForPost) {
+        const firstItem = wardrobeItems.find(i => i.id === selectedOutfitForPost.items[0]);
+        imageUrl = firstItem?.imageUrl || imageUrl;
+      }
+
       const newPost = {
         id: Math.random().toString(36).substr(2, 9),
         userName: "You",
         userAvatar: "https://picsum.photos/seed/you/100",
-        caption: postCaption || `Featured Look: ${selectedOutfitForPost.name}`,
-        image: firstItem?.imageUrl || "https://picsum.photos/seed/post/800",
+        caption: postCaption || (selectedOutfitForPost ? `Featured Look: ${selectedOutfitForPost.name}` : "My latest style assembly."),
+        image: imageUrl,
         likes: 0,
         comments: 0,
         time: 'Just now'
@@ -211,6 +235,7 @@ export default function AiStylistPage() {
 
       setMockFeed([newPost, ...mockFeed]);
       setSelectedOutfitForPost(null);
+      setCustomUploadedImage(null);
       setPostCaption("");
       setIsPosting(false);
       toast({ title: "Post Published!", description: "Your style is now live in the global feed." });
@@ -567,20 +592,42 @@ export default function AiStylistPage() {
                 <Card className="border-none shadow-xl bg-white p-10 space-y-8 rounded-[3rem] sticky top-32">
                   <div className="space-y-2">
                     <h3 className="font-headline font-bold text-2xl text-primary italic leading-none">Share Your Look</h3>
-                    <p className="text-sm text-muted-foreground font-body italic">Post your favorite signatures to the global feed.</p>
+                    <p className="text-sm text-muted-foreground font-body italic">Post your favorite signatures or upload a new vibe.</p>
                   </div>
                   
                   <div className="space-y-6">
                     <div className="space-y-3">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Select Outfit</label>
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Content Preview</label>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={handleFileChange} 
+                      />
                       <div 
                         className={cn(
-                          "aspect-video rounded-[2rem] border-4 border-dashed transition-all flex flex-col items-center justify-center cursor-pointer bg-slate-50 active:scale-95 overflow-hidden group",
-                          selectedOutfitForPost ? "border-accent bg-accent/5" : "border-slate-100 hover:border-primary/20"
+                          "aspect-video rounded-[2rem] border-4 border-dashed transition-all flex flex-col items-center justify-center cursor-pointer bg-slate-50 active:scale-95 overflow-hidden group relative",
+                          (selectedOutfitForPost || customUploadedImage) ? "border-accent bg-accent/5" : "border-slate-100 hover:border-primary/20"
                         )}
-                        onClick={() => setSelectedOutfitForPost(null)}
+                        onClick={() => fileInputRef.current?.click()}
                       >
-                        {selectedOutfitForPost ? (
+                        {customUploadedImage ? (
+                          <div className="relative w-full h-full">
+                            <Image src={customUploadedImage} alt="Custom upload" fill className="object-cover" />
+                            <div className="absolute inset-0 bg-black/20 group-hover:opacity-100 opacity-0 transition-opacity flex items-center justify-center">
+                              <RefreshCw className="h-10 w-10 text-white" />
+                            </div>
+                            <Button 
+                              size="icon" 
+                              variant="destructive" 
+                              className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
+                              onClick={(e) => { e.stopPropagation(); setCustomUploadedImage(null); }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : selectedOutfitForPost ? (
                           <div className="relative w-full h-full">
                             <Image 
                               src={wardrobeItems.find(i => i.id === selectedOutfitForPost.items[0])?.imageUrl || "https://picsum.photos/seed/post/400"} 
@@ -589,12 +636,20 @@ export default function AiStylistPage() {
                             <div className="absolute inset-0 bg-black/20 group-hover:opacity-100 opacity-0 transition-opacity flex items-center justify-center">
                               <RefreshCw className="h-10 w-10 text-white" />
                             </div>
+                            <Button 
+                              size="icon" 
+                              variant="destructive" 
+                              className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
+                              onClick={(e) => { e.stopPropagation(); setSelectedOutfitForPost(null); }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
                           </div>
                         ) : (
-                          <>
-                            <Plus className="h-8 w-8 text-slate-200 mb-2" />
-                            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Choose Outfit</span>
-                          </>
+                          <div className="flex flex-col items-center justify-center p-4 text-center">
+                            <Upload className="h-8 w-8 text-slate-200 mb-2" />
+                            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Choose Outfit or Upload</span>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -611,7 +666,7 @@ export default function AiStylistPage() {
 
                     <Button 
                       className="w-full h-16 rounded-full font-headline text-xl gradient-primary text-white shadow-xl shadow-primary/20 active:scale-[0.98] transition-all"
-                      disabled={!selectedOutfitForPost || isPosting}
+                      disabled={(!selectedOutfitForPost && !customUploadedImage) || isPosting}
                       onClick={handleCreatePost}
                     >
                       {isPosting ? <RefreshCw className="h-6 w-6 animate-spin mr-2" /> : <Send className="h-5 w-5 mr-2" />}
@@ -632,7 +687,10 @@ export default function AiStylistPage() {
                               "p-4 bg-white rounded-[2rem] border-2 shadow-sm flex items-center gap-4 cursor-pointer hover:border-accent hover:shadow-md active:scale-[0.98] transition-all text-left group",
                               selectedOutfitForPost?.id === outfit.id ? "border-accent ring-4 ring-accent/10" : "border-slate-50"
                             )}
-                            onClick={() => setSelectedOutfitForPost(outfit)}
+                            onClick={() => {
+                              setSelectedOutfitForPost(outfit);
+                              setCustomUploadedImage(null);
+                            }}
                           >
                             <div className="h-14 w-14 rounded-2xl overflow-hidden relative shadow-md">
                               <Image src={wardrobeItems.find(i => i.id === outfit.items[0])?.imageUrl || 'https://picsum.photos/seed/1/400'} alt="" fill className="object-cover" />
