@@ -16,7 +16,8 @@ import {
   Layers,
   ChevronRight,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  Presentation
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -65,6 +66,9 @@ export default function HomeScreen() {
                 </Button>
                 <Button variant="outline" asChild className="h-20 px-12 rounded-full border-white/20 text-white font-headline text-2xl hover:bg-white/10 transition-all backdrop-blur-md">
                   <Link href="/ai-stylist">Consult AI Stylist</Link>
+                </Button>
+                <Button variant="ghost" asChild className="h-20 px-12 rounded-full text-accent hover:text-white hover:bg-white/5 transition-all font-headline text-xl flex items-center gap-3">
+                  <Link href="/proposal"><Presentation className="h-6 w-6" /> View Project Presentation</Link>
                 </Button>
               </div>
             </div>

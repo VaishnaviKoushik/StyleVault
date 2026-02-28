@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Calendar, Sparkles, Home, PlusCircle, ShoppingBag } from "lucide-react";
+import { Shirt, Calendar, Home, PlusCircle, ShoppingBag, Presentation } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -10,7 +10,7 @@ const navItems = [
   { label: "Closet", icon: Shirt, href: "/wardrobe" },
   { label: "Add", icon: PlusCircle, href: "/add-item", primary: true },
   { label: "Planner", icon: Calendar, href: "/planner" },
-  { label: "Shopping", icon: ShoppingBag, href: "/shopping" },
+  { label: "Proposal", icon: Presentation, href: "/proposal" },
 ];
 
 export function BottomNav() {

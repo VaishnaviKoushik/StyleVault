@@ -12,7 +12,7 @@ const navItems = [
   { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
   { label: "Shopping", icon: ShoppingBag, href: "/shopping" },
   { label: "Trends", icon: TrendingUp, href: "/trends" },
-  { label: "Try-On", icon: Smartphone, href: "/try-on" },
+  { label: "Presentation", icon: Presentation, href: "/proposal" },
 ];
 
 export function SidebarNav() {
@@ -56,6 +56,9 @@ export function SidebarNav() {
 
       <div className="flex items-center gap-8">
         <div className="hidden xl:flex items-center gap-4">
+           <Link href="/proposal" className="p-4 rounded-2xl glass-card hover:bg-accent hover:text-white transition-all text-primary group shadow-lg" title="View Project Proposal">
+              <Presentation className="h-6 w-6 group-hover:scale-110 transition-transform" />
+           </Link>
            <Link href="/add-item" className="p-4 rounded-2xl glass-card hover:bg-accent hover:text-white transition-all text-primary group shadow-lg">
               <Camera className="h-6 w-6 group-hover:scale-110 transition-transform" />
            </Link>
