@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { 
   Sparkles, 
   Briefcase, 
@@ -24,7 +25,8 @@ import {
   Trophy,
   Trees,
   Sun,
-  Presentation
+  Presentation,
+  Type
 } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
 import { MOCK_WARDROBE, MOCK_OUTFITS, Outfit } from "@/lib/mock-data";
@@ -59,6 +61,7 @@ export default function AiStylistPage() {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [loading, setLoading] = useState(false);
   const [selectedOccasion, setSelectedOccasion] = useState("");
+  const [customOccasion, setCustomOccasion] = useState("");
   const [suggestion, setSuggestion] = useState<{
     items: any[];
     reasoning: string;
@@ -85,15 +88,17 @@ export default function AiStylistPage() {
   const router = useRouter();
 
   const handleGenerate = async () => {
-    if (!selectedOccasion) {
-      toast({ title: "Please select an occasion" });
+    const finalOccasion = customOccasion.trim() || selectedOccasion;
+    
+    if (!finalOccasion) {
+      toast({ title: "Selection Required", description: "Please select an occasion or enter a custom one." });
       return;
     }
 
     setLoading(true);
     try {
       const result = await aiOutfitSuggester({
-        occasion: selectedOccasion,
+        occasion: finalOccasion,
         wardrobeItems: MOCK_WARDROBE.map(i => ({
           id: i.id,
           name: i.name,
@@ -110,7 +115,7 @@ export default function AiStylistPage() {
         reasoning: result.stylistNote,
         shoppingAdvised: result.shoppingAdvised
       });
-      toast({ title: "Outfit ready!", description: "Stylist analysis complete." });
+      toast({ title: "Outfit ready!", description: `Styling for "${finalOccasion}" complete.` });
     } catch (err) {
       toast({ title: "Failed to generate suggestion", variant: "destructive" });
     } finally {
@@ -181,26 +186,47 @@ export default function AiStylistPage() {
                 <Card className="border-none shadow-lg bg-white rounded-[2rem]">
                   <CardHeader>
                     <CardTitle className="font-headline text-xl">The Occasion</CardTitle>
-                    <CardDescription className="font-body italic">Where are you heading today?</CardDescription>
+                    <CardDescription className="font-body italic">Select or describe where you're heading.</CardDescription>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-2 gap-3">
-                    {occasions.map((occ) => {
-                      const Icon = occ.icon;
-                      return (
-                        <Button
-                          key={occ.value}
-                          variant={selectedOccasion === occ.value ? "default" : "outline"}
-                          className={cn(
-                            "h-24 flex flex-col gap-2 font-headline rounded-2xl border-slate-100 transition-all active:scale-95",
-                            selectedOccasion === occ.value ? "bg-accent border-accent text-primary" : "bg-white text-slate-400 hover:text-primary hover:bg-slate-50"
-                          )}
-                          onClick={() => setSelectedOccasion(occ.value)}
-                        >
-                          <Icon className="h-6 w-6" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest leading-none text-center px-1">{occ.label}</span>
-                        </Button>
-                      );
-                    })}
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-2 gap-3">
+                      {occasions.map((occ) => {
+                        const Icon = occ.icon;
+                        return (
+                          <Button
+                            key={occ.value}
+                            variant={selectedOccasion === occ.value && !customOccasion ? "default" : "outline"}
+                            className={cn(
+                              "h-24 flex flex-col gap-2 font-headline rounded-2xl border-slate-100 transition-all active:scale-95",
+                              selectedOccasion === occ.value && !customOccasion ? "bg-accent border-accent text-primary" : "bg-white text-slate-400 hover:text-primary hover:bg-slate-50"
+                            )}
+                            onClick={() => {
+                              setSelectedOccasion(occ.value);
+                              setCustomOccasion("");
+                            }}
+                          >
+                            <Icon className="h-6 w-6" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest leading-none text-center px-1">{occ.label}</span>
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pt-4 border-t space-y-3">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Describe Your Own</label>
+                      <div className="relative">
+                        <Type className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
+                        <Input 
+                          placeholder="e.g. 1920s Speakeasy Night" 
+                          value={customOccasion}
+                          onChange={(e) => {
+                            setCustomOccasion(e.target.value);
+                            if (e.target.value) setSelectedOccasion("");
+                          }}
+                          className="h-12 rounded-xl pl-11 bg-slate-50 border-none shadow-inner font-body"
+                        />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -225,7 +251,7 @@ export default function AiStylistPage() {
                     </div>
                     <div className="space-y-2">
                       <h3 className="text-2xl font-headline font-bold text-slate-800">Ready for a new look?</h3>
-                      <p className="text-muted-foreground font-body max-w-sm mx-auto">Select an occasion on the left and let our AI browse your digital wardrobe to find the perfect mix.</p>
+                      <p className="text-muted-foreground font-body max-w-sm mx-auto">Select an occasion on the left or describe a custom event and let our AI browse your digital wardrobe.</p>
                     </div>
                   </div>
                 ) : suggestion ? (
@@ -234,7 +260,7 @@ export default function AiStylistPage() {
                       <div className="flex justify-between items-center">
                         <CardTitle className="font-headline text-3xl font-bold italic text-primary">Curated Assembly</CardTitle>
                         <Badge variant="outline" className="border-accent text-primary font-headline uppercase px-6 py-1 tracking-widest bg-white/50 backdrop-blur-sm">
-                          {selectedOccasion}
+                          {customOccasion || selectedOccasion}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -283,7 +309,7 @@ export default function AiStylistPage() {
 
                       <div className="flex gap-4 pt-4">
                         <Button className="flex-1 h-14 rounded-full font-headline text-lg bg-primary shadow-xl shadow-primary/20 active:scale-95 transition-all" asChild>
-                          <Link href="/planner">Schedule this Look</Link>
+                          <Link href="/wardrobe?tab=journal">Schedule this Look</Link>
                         </Button>
                         <Button variant="outline" className="flex-1 h-14 rounded-full font-headline text-lg border-accent text-primary hover:bg-accent hover:text-white transition-all shadow-md active:scale-95" onClick={() => setActiveTab('compare')}>
                           <ArrowLeftRight className="mr-2 h-5 w-5" /> Global Comparison
