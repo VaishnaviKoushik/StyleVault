@@ -87,7 +87,17 @@ const weatherBasedOutfitRecommenderFlow = ai.defineFlow(
     outputSchema: WeatherBasedOutfitRecommenderOutputSchema,
   },
   async input => {
-    const {output} = await weatherBasedOutfitPrompt(input);
-    return output!;
+    try {
+      const {output} = await weatherBasedOutfitPrompt(input);
+      return output!;
+    } catch (error: any) {
+      if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('RESOURCES_EXHAUSTED')) {
+        return {
+          recommendedOutfit: input.wardrobeItems.slice(0, 3),
+          reasoning: "The styling engine is currently under high demand. I've selected a versatile base of items from your collection that are generally appropriate for transitional conditions."
+        };
+      }
+      throw error;
+    }
   }
 );

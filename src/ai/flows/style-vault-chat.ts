@@ -68,7 +68,16 @@ const styleVaultChatFlow = ai.defineFlow(
     outputSchema: StyleVaultChatOutputSchema,
   },
   async (input) => {
-    const { output } = await chatPrompt(input);
-    return output!;
+    try {
+      const { output } = await chatPrompt(input);
+      return output!;
+    } catch (error: any) {
+      if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('RESOURCES_EXHAUSTED')) {
+        return {
+          reply: "I'm currently assisting many clients with their seasonal transitions! While my advanced engine recalibrates, I recommend focusing on high-quality neutrals and classic tailoring to maintain a sophisticated silhouette. Please try asking me again in a moment."
+        };
+      }
+      throw error;
+    }
   }
 );
