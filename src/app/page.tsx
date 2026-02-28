@@ -13,7 +13,8 @@ import {
   Search,
   Calendar,
   Cpu,
-  Layers
+  Layers,
+  Info
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,10 +22,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
+import { OnboardingTour } from "@/components/OnboardingTour";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function HomeScreen() {
   return (
     <AppLayout>
+      <OnboardingTour />
       <div className="animate-in fade-in duration-1000">
         
         {/* HERO SECTION */}
@@ -87,32 +91,39 @@ export default function HomeScreen() {
         <section className="py-24 space-y-12">
           <div className="space-y-4 text-center max-w-5xl mx-auto">
             <h3 className="text-4xl md:text-7xl font-headline font-bold text-primary italic whitespace-nowrap overflow-hidden text-ellipsis">
-              Style Intelligence <span className="text-accent">Modules.</span>
+              Smart Style <span className="text-accent">Tools.</span>
             </h3>
             <p className="text-muted-foreground font-body italic border-t border-accent/20 pt-4 px-10">
-              "Access specialized AI engines to decode trends, optimize acquisition, and orchestrate your signature visual identity."
+              "Access specialized AI assistants to decode trends, optimize shopping, and orchestrate your visual identity."
             </p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {[
-              { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5" },
-              { label: "Shopping", icon: ShoppingBag, desc: "AI Suggestions", href: "/shopping", color: "from-accent/10 to-accent/5" },
-              { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5" },
-              { label: "Assembler", icon: Palette, desc: "Create looks", href: "/planner", color: "from-accent/10 to-primary/5" },
-              { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-primary/10 to-primary/5" }
+              { label: "Catalog", icon: Camera, desc: "Add new items", href: "/add-item", color: "from-primary/10 to-primary/5", tooltip: "Upload photos to digitize your wardrobe inventory." },
+              { label: "Shopping", icon: ShoppingBag, desc: "AI Suggestions", href: "/shopping", color: "from-accent/10 to-accent/5", tooltip: "Get recommendations for missing pieces that maximize your outfit options." },
+              { label: "AI Stylist", icon: Brain, desc: "GenAI Advice", href: "/ai-stylist", color: "from-primary/10 to-accent/5", tooltip: "Consult our AI for occasion-specific styling and weather-ready looks." },
+              { label: "Assembler", icon: Palette, desc: "Create looks", href: "/planner", color: "from-accent/10 to-primary/5", tooltip: "Mix and match items visually to save your signature combinations." },
+              { label: "Trends", icon: Search, desc: "AI Researcher", href: "/trends", color: "from-primary/10 to-primary/5", tooltip: "Research global fashion trends and see how they fit your wardrobe." }
             ].map((action) => (
-              <Link key={action.label} href={action.href}>
-                <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br", action.color)}>
-                  <div className="h-14 w-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <action.icon className="h-7 w-7" />
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-headline font-bold text-xl">{action.label}</h4>
-                    <p className="text-xs text-muted-foreground font-body opacity-80">{action.desc}</p>
-                  </div>
-                </Card>
-              </Link>
+              <Tooltip key={action.label}>
+                <TooltipTrigger asChild>
+                  <Link href={action.href}>
+                    <Card className={cn("glass-card border-none hover:-translate-y-2 transition-all duration-300 p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br h-full", action.color)}>
+                      <div className="h-14 w-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <action.icon className="h-7 w-7" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="font-headline font-bold text-xl">{action.label}</h4>
+                        <p className="text-xs text-muted-foreground font-body opacity-80">{action.desc}</p>
+                      </div>
+                    </Card>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent className="bg-primary text-white border-none rounded-xl p-3 max-w-[200px] text-center">
+                  <p className="text-xs font-body">{action.tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
             ))}
           </div>
         </section>

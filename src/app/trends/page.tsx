@@ -5,13 +5,14 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Search, Sparkles, TrendingUp, Zap, ArrowRight, Layers, Palette, AlertTriangle, ArrowUpFromLine, ArrowDownToLine } from "lucide-react";
+import { Search, Sparkles, TrendingUp, Zap, ArrowRight, Layers, Palette, AlertTriangle, ArrowUpFromLine, ArrowDownToLine, Info } from "lucide-react";
 import { trendResearcher, type TrendResearcherOutput } from "@/ai/flows/trend-researcher";
 import { seasonalTransitionAlert, type SeasonalTransitionOutput } from "@/ai/flows/seasonal-transition-alert";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const suggestedTopics = [
   "Quiet Luxury",
@@ -80,6 +81,19 @@ export default function TrendResearcherPage() {
                 "Decode the future of fashion using real-time generative intelligence."
               </p>
             </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-2 cursor-help text-primary/40 hover:text-primary transition-colors">
+                  <Info className="h-5 w-5" />
+                  <span className="text-xs font-headline font-bold uppercase tracking-widest">How this works</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="bg-primary text-white border-none rounded-xl p-4 max-w-[250px]">
+                <p className="text-xs font-body leading-relaxed">
+                  Our Trend Researcher scans global runway data and social sentiment to predict upcoming style shifts. Enter any aesthetic to get a detailed report on its longevity and key essentials.
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </header>
 
@@ -145,7 +159,7 @@ export default function TrendResearcherPage() {
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-[2rem] blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
             <div className="relative flex gap-3 p-2 bg-white rounded-[2rem] border shadow-xl">
               <Input 
-                placeholder="What trend are we decoding today?" 
+                placeholder="What trend aesthetic are we decoding today?" 
                 className="flex-1 h-14 border-none bg-transparent font-headline text-xl px-6 focus-visible:ring-0"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
@@ -162,7 +176,7 @@ export default function TrendResearcherPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 px-4">
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Hot Topics:</span>
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Hot Aesthetics:</span>
             {suggestedTopics.map(t => (
               <button 
                 key={t}
@@ -235,9 +249,21 @@ export default function TrendResearcherPage() {
             {/* Sidebar Metrics */}
             <div className="space-y-6">
               <Card className="border-none shadow-xl rounded-[2.5rem] bg-primary text-white overflow-hidden">
-                <CardHeader className="pb-2">
-                  <CardTitle className="font-headline text-xl">Forecast Score</CardTitle>
-                  <CardDescription className="text-white/60 font-body">Projected dominance for 2025</CardDescription>
+                <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="font-headline text-xl">Forecast Score</CardTitle>
+                    <CardDescription className="text-white/60 font-body">Projected dominance for 2025</CardDescription>
+                  </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="text-white/40 hover:text-white transition-colors">
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left" className="bg-white text-primary border-none rounded-xl p-3 max-w-[200px]">
+                      <p className="text-[10px] font-body">The Forecast Score indicates how likely this trend is to dominate the retail market over the next 12 months. High scores suggest low-risk wardrobe investments.</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-end gap-2">
@@ -246,7 +272,7 @@ export default function TrendResearcherPage() {
                   </div>
                   <Progress value={report.forecastScore} className="h-3 bg-white/20" />
                   <p className="text-xs font-body italic opacity-80">
-                    High forecast scores indicate low-risk, high-impact wardrobe investment.
+                    High forecast scores indicate high-impact wardrobe investment.
                   </p>
                 </CardContent>
               </Card>
