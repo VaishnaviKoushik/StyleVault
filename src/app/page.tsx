@@ -16,7 +16,10 @@ import {
   Quote,
   Globe,
   ZapOff,
-  UserCheck
+  UserCheck,
+  Layers,
+  Calendar,
+  Cpu
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -76,7 +79,6 @@ export default function HomeScreen() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
               
-              {/* Overlapping Accents */}
               <div className="absolute -bottom-6 -left-6 w-40 h-48 rounded-2xl overflow-hidden shadow-2xl border-4 border-white rotate-6 hidden md:block">
                  <Image 
                   src="https://images.unsplash.com/photo-1524805444758-09912d619dce" 
@@ -183,6 +185,69 @@ export default function HomeScreen() {
           </div>
         </section>
 
+        {/* HOW IT WORKS SECTION */}
+        <section className="py-24 space-y-16">
+          <div className="text-center space-y-4 max-w-3xl mx-auto">
+            <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
+              The Process
+            </Badge>
+            <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
+              How StyleVault <span className="text-accent italic block">Works.</span>
+            </h3>
+            <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
+              "We've simplified the journey from a cluttered closet to a curated signature wardrobe."
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                step: "01",
+                title: "Digitize",
+                desc: "Upload photos to your secure vault. AI vision automatically tags brand, color, and fabric.",
+                icon: Camera,
+                color: "bg-primary/5 text-primary"
+              },
+              {
+                step: "02",
+                title: "Analyze",
+                desc: "StyleVault decodes your color harmony and identifies missing high-value essentials.",
+                icon: Cpu,
+                color: "bg-accent/5 text-accent"
+              },
+              {
+                step: "03",
+                title: "Curate",
+                desc: "Use the Visual Assembler or AI Stylist to generate occasion-perfect combinations.",
+                icon: Layers,
+                color: "bg-primary/5 text-primary"
+              },
+              {
+                step: "04",
+                title: "Execute",
+                desc: "Schedule your looks in the Style Journal to eliminate decision fatigue every morning.",
+                icon: Calendar,
+                color: "bg-accent/5 text-accent"
+              }
+            ].map((item, idx) => (
+              <Card key={idx} className="border-none shadow-xl bg-white rounded-[2.5rem] p-8 space-y-6 group hover:-translate-y-2 transition-all duration-500">
+                <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500", item.color)}>
+                  <item.icon className="h-8 w-8" />
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-2xl font-headline font-bold text-primary">{item.title}</h4>
+                    <span className="text-4xl font-headline font-bold opacity-10">{item.step}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground font-body leading-relaxed border-l-2 border-slate-100 pl-4">
+                    {item.desc}
+                  </p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+
         {/* TESTIMONIALS SECTION */}
         <section className="py-24 space-y-16">
           <div className="text-center space-y-4 max-w-3xl mx-auto">
@@ -192,9 +257,6 @@ export default function HomeScreen() {
             <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
               Style with Purpose. <span className="text-accent italic block">Proven Results.</span>
             </h3>
-            <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
-              "We believe that a well-curated wardrobe is the foundation for both personal peak performance and professional confidence."
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -218,41 +280,6 @@ export default function HomeScreen() {
                   </div>
                 </div>
               </Card>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pt-16 border-t border-slate-100">
-            {[
-              {
-                title: "Sustainable Curation",
-                desc: "StyleVault reduces the environmental footprint of fashion by maximizing the utility of items you already own, actively discouraging the 'fast fashion' cycle.",
-                icon: Globe,
-                accent: "text-primary"
-              },
-              {
-                title: "Cognitive Clarity",
-                desc: "By offloading the daily 'what to wear' choice to our AI engine, users save an average of 15-20 minutes every morning, eliminating decision fatigue.",
-                icon: ZapOff,
-                accent: "text-accent"
-              },
-              {
-                title: "Professional Evolution",
-                desc: "Our color theory and fabric intelligence tools ensure your visual identity is consistently aligned with your professional goals, building authority.",
-                icon: UserCheck,
-                accent: "text-primary"
-              }
-            ].map((impact, idx) => (
-              <div key={idx} className="space-y-6 group">
-                <div className={cn("h-16 w-16 rounded-2xl bg-white shadow-xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500", impact.accent)}>
-                  <impact.icon className="h-8 w-8" />
-                </div>
-                <div className="space-y-4">
-                  <h4 className="text-2xl font-headline font-bold text-primary">{impact.title}</h4>
-                  <p className="text-sm text-muted-foreground font-body leading-relaxed border-l-2 border-slate-100 pl-4">
-                    {impact.desc}
-                  </p>
-                </div>
-              </div>
             ))}
           </div>
         </section>

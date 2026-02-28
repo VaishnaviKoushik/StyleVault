@@ -21,7 +21,8 @@ import {
   Share2,
   ArrowLeftRight,
   LayoutGrid,
-  MapPin
+  MapPin,
+  ClipboardList
 } from "lucide-react";
 import { MOCK_OUTFITS, MOCK_WARDROBE, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
@@ -78,8 +79,8 @@ export default function UnifiedPlannerPage() {
   };
 
   const handleScheduleConfirm = () => {
-    if (!tempSelectedOutfitId) {
-      toast({ title: "Please select an outfit", variant: "destructive" });
+    if (!eventTitle && !tempSelectedOutfitId) {
+      toast({ title: "Please enter an event name or select an outfit", variant: "destructive" });
       return;
     }
     
@@ -88,7 +89,7 @@ export default function UnifiedPlannerPage() {
       date: date,
       outfitId: tempSelectedOutfitId,
       time: eventTime || 'All Day',
-      location: eventTitle || 'New Event'
+      location: eventTitle || (tempSelectedOutfitId ? outfits.find(o => o.id === tempSelectedOutfitId)?.name : 'New Event')
     };
 
     setScheduledOutfits([...scheduledOutfits, newSchedule]);
@@ -111,6 +112,13 @@ export default function UnifiedPlannerPage() {
       setCurrentViewingOutfit(outfit);
       setIsViewItemsOpen(true);
     }
+  };
+
+  const handleOpenManualEvent = () => {
+    setTempSelectedOutfitId(null);
+    setEventTitle("");
+    setEventTime("12:00 PM");
+    setIsSelectOutfitOpen(true);
   };
 
   // Assembler Handlers
@@ -226,27 +234,33 @@ export default function UnifiedPlannerPage() {
                 <div className="grid gap-6">
                   {activeSchedules.map(schedule => {
                     const outfit = outfits.find(o => o.id === schedule.outfitId);
-                    if (!outfit) return null;
                     return (
                       <Card key={schedule.id} className="border-none shadow-sm bg-white rounded-[2.5rem] overflow-hidden group">
                         <div className="md:flex">
-                          <div className="md:w-1/3 bg-slate-50/50 p-6 flex items-center justify-center">
-                             <div className="flex -space-x-6">
-                              {outfit.items.slice(0, 2).map((itemId, idx) => {
-                                const item = MOCK_WARDROBE.find(i => i.id === itemId);
-                                return (
-                                  <div key={itemId} className={cn("relative h-32 w-24 rounded-2xl overflow-hidden shadow-lg border-4 border-white", idx === 0 ? "rotate-[-5deg]" : "rotate-[5deg]")}>
-                                    {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
-                                  </div>
-                                )
-                              })}
-                            </div>
+                          <div className="md:w-1/3 bg-slate-50/50 p-6 flex items-center justify-center min-h-[160px]">
+                            {outfit ? (
+                               <div className="flex -space-x-6">
+                                {outfit.items.slice(0, 2).map((itemId, idx) => {
+                                  const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                                  return (
+                                    <div key={itemId} className={cn("relative h-32 w-24 rounded-2xl overflow-hidden shadow-lg border-4 border-white", idx === 0 ? "rotate-[-5deg]" : "rotate-[5deg]")}>
+                                      {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            ) : (
+                              <div className="flex flex-col items-center gap-2 text-slate-300 opacity-50">
+                                <ClipboardList className="h-12 w-12" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest">No Outfit Linked</span>
+                              </div>
+                            )}
                           </div>
                           <div className="md:w-2/3 p-8 flex flex-col justify-between">
                             <div className="flex justify-between items-start">
                               <div className="space-y-1">
                                 <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{schedule.time} • {schedule.location}</p>
-                                <h4 className="text-3xl font-headline font-bold text-primary">{outfit.name}</h4>
+                                <h4 className="text-3xl font-headline font-bold text-primary">{outfit ? outfit.name : 'Personal Event'}</h4>
                               </div>
                               <div className="flex gap-2">
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>
@@ -255,7 +269,7 @@ export default function UnifiedPlannerPage() {
                               </div>
                             </div>
                             <div className="flex gap-3 pt-6">
-                              <Button variant="outline" className="flex-1 rounded-full font-headline h-12" onClick={() => handleViewItems(outfit.id)}>View Items</Button>
+                              {outfit && <Button variant="outline" className="flex-1 rounded-full font-headline h-12" onClick={() => handleViewItems(outfit.id)}>View Items</Button>}
                               <Button className="flex-1 rounded-full bg-slate-100 text-slate-400 hover:bg-destructive hover:text-white font-headline h-12" onClick={() => handleUnschedule(schedule.id)}>Unschedule</Button>
                             </div>
                           </div>
@@ -278,6 +292,12 @@ export default function UnifiedPlannerPage() {
 
           {/* LOOKBOOK TAB */}
           <TabsContent value="lookbook" className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+              <h3 className="text-2xl font-headline font-bold text-primary italic">Signature Collection</h3>
+              <Button variant="outline" className="rounded-full font-headline border-accent text-primary" onClick={handleOpenManualEvent}>
+                <ClipboardList className="mr-2 h-4 w-4" /> Manual Event Entry
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {outfits.map((outfit) => (
                 <Card key={outfit.id} className="overflow-hidden border-none shadow-lg bg-white rounded-[2rem] flex flex-col">
@@ -391,7 +411,7 @@ export default function UnifiedPlannerPage() {
         <DialogContent className="sm:max-w-xl bg-white rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
           <DialogHeader className="p-8 bg-slate-50 border-b">
             <DialogTitle className="font-headline text-2xl font-bold text-primary">Schedule Event</DialogTitle>
-            <p className="text-sm text-muted-foreground font-body">Detail your event and select a look from your lookbook.</p>
+            <p className="text-sm text-muted-foreground font-body">Detail your event and select a look from your lookbook (optional).</p>
           </DialogHeader>
           
           <div className="p-8 space-y-6">
@@ -423,7 +443,7 @@ export default function UnifiedPlannerPage() {
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Select Lookbook Signature</label>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Linked Look (Optional)</label>
               <ScrollArea className="h-[280px] pr-4">
                 <div className="grid gap-3">
                   {outfits.map(outfit => {
@@ -435,7 +455,7 @@ export default function UnifiedPlannerPage() {
                           "flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group",
                           isSelected ? "bg-primary border-primary text-white" : "bg-white border-slate-100 hover:border-primary/20"
                         )} 
-                        onClick={() => setTempSelectedOutfitId(outfit.id)}
+                        onClick={() => setTempSelectedOutfitId(isSelected ? null : outfit.id)}
                       >
                         <div className="flex -space-x-4">
                           {outfit.items.slice(0, 3).map((itemId, idx) => (
@@ -466,7 +486,7 @@ export default function UnifiedPlannerPage() {
             <Button 
               className="rounded-full gradient-primary text-white font-headline h-12 px-8 flex-1" 
               onClick={handleScheduleConfirm}
-              disabled={!tempSelectedOutfitId}
+              disabled={!eventTitle && !tempSelectedOutfitId}
             >
               Confirm Journal Entry <Check className="ml-2 h-4 w-4" />
             </Button>
