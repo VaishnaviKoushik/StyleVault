@@ -8,23 +8,17 @@ import {
   Brain, 
   Palette,
   TrendingUp,
-  Star,
-  Shield,
   ShoppingBag,
   ArrowRight,
   Search,
-  Quote,
-  Globe,
-  ZapOff,
-  UserCheck,
-  Layers,
   Calendar,
-  Cpu
+  Cpu,
+  Layers
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StyleVaultChat } from "@/components/StyleVaultChat";
 
@@ -91,8 +85,10 @@ export default function HomeScreen() {
 
         {/* QUICK ACTIONS */}
         <section className="py-24 space-y-12">
-          <div className="space-y-4 text-center max-w-4xl mx-auto">
-            <h3 className="text-5xl md:text-7xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
+          <div className="space-y-4 text-center max-w-5xl mx-auto">
+            <h3 className="text-4xl md:text-7xl font-headline font-bold text-primary italic whitespace-nowrap overflow-hidden text-ellipsis">
+              Style Intelligence <span className="text-accent">Modules.</span>
+            </h3>
             <p className="text-muted-foreground font-body italic border-t border-accent/20 pt-4 px-10">
               "Access specialized AI engines to decode trends, optimize acquisition, and orchestrate your signature visual identity."
             </p>
@@ -168,11 +164,11 @@ export default function HomeScreen() {
 
         {/* HOW IT WORKS SECTION */}
         <section className="py-24 space-y-16">
-          <div className="text-center space-y-4 max-w-4xl mx-auto">
+          <div className="text-center space-y-4 max-w-5xl mx-auto">
             <Badge className="bg-accent/10 text-accent font-headline uppercase px-6 py-1 tracking-widest border-none">
               The Process
             </Badge>
-            <h3 className="text-5xl md:text-6xl font-headline font-bold text-primary italic">
+            <h3 className="text-4xl md:text-6xl font-headline font-bold text-primary italic whitespace-nowrap overflow-hidden text-ellipsis">
               How StyleVault Works.
             </h3>
             <p className="text-lg text-muted-foreground font-body leading-relaxed italic">
