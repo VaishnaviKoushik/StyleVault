@@ -52,11 +52,11 @@ const testimonials = [
 export default function HomeScreen() {
   return (
     <AppLayout>
-      <div className="space-y-12 animate-in fade-in duration-1000 pt-8">
+      <div className="animate-in fade-in duration-1000">
         
         {/* HERO SECTION */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
+        <section className="py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-8">
             <h1 className="text-6xl md:text-8xl font-headline font-bold leading-none tracking-tighter">
               <span className="text-primary italic block">Style is</span>
               <span className="text-accent italic block ml-12 md:ml-24 underline decoration-accent/20">Algorithmic.</span>
@@ -111,7 +111,7 @@ export default function HomeScreen() {
         </section>
 
         {/* QUICK ACTIONS */}
-        <section className="space-y-8">
+        <section className="py-24 space-y-12">
           <div className="space-y-4 text-center max-w-3xl mx-auto">
             <h3 className="text-4xl font-headline font-bold text-primary italic">Style Intelligence <span className="text-accent">Modules.</span></h3>
             <p className="text-muted-foreground font-body italic border-t border-accent/20 pt-4 px-10">
@@ -143,42 +143,44 @@ export default function HomeScreen() {
         </section>
 
         {/* SIGNATURE LOOKBOOK & SMART ACQUISITION */}
-        <section className="py-20 px-10 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
-            <div className="lg:w-1/2 space-y-8">
-              <Badge className="bg-primary/10 text-primary font-headline uppercase px-6 py-1 tracking-widest border-none">
-                Smart Acquisition Engine
-              </Badge>
-              <h3 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] text-primary italic">
-                Refine your <span className="text-accent italic">collections.</span>
-              </h3>
-              <p className="text-xl text-muted-foreground font-body leading-relaxed max-w-2xl italic border-r-4 border-accent pr-6 text-right lg:text-left lg:border-r-0 lg:border-l-4 lg:pl-6">
-                "Our AI has analyzed your 18 items and identified 4 key pieces that would expand your styling combinations by 40%. View your personalized shopping strategy now."
-              </p>
+        <section className="py-24">
+          <div className="p-10 md:p-20 rounded-[4rem] bg-white/40 border border-white/20 relative overflow-hidden backdrop-blur-sm">
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-accent/10 to-transparent pointer-events-none" />
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
+              <div className="lg:w-1/2 space-y-8">
+                <Badge className="bg-primary/10 text-primary font-headline uppercase px-6 py-1 tracking-widest border-none">
+                  Smart Acquisition Engine
+                </Badge>
+                <h2 className="text-5xl md:text-7xl font-headline font-bold leading-[0.9] text-primary italic">
+                  Refine your <span className="text-accent italic">collections.</span>
+                </h2>
+                <p className="text-xl text-muted-foreground font-body leading-relaxed max-w-2xl italic border-r-4 border-accent pr-6 text-right lg:text-left lg:border-r-0 lg:border-l-4 lg:pl-6">
+                  "Our AI has analyzed your 18 items and identified 4 key pieces that would expand your styling combinations by 40%. View your personalized shopping strategy now."
+                </p>
+                
+                <div className="pt-6">
+                  <Button asChild className="h-16 px-10 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 transition-all">
+                    <Link href="/shopping">View Smart Suggestions <ArrowRight className="ml-2 h-6 w-6" /></Link>
+                  </Button>
+                </div>
+              </div>
               
-              <div className="pt-6">
-                <Button asChild className="h-16 px-10 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 transition-all">
-                  <Link href="/shopping">View Smart Suggestions <ArrowRight className="ml-2 h-6 w-6" /></Link>
-                </Button>
-              </div>
-            </div>
-            
-            <div className="lg:w-1/2 grid grid-cols-2 gap-4">
-              <div className="space-y-4 mt-8">
-                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
-                  <Image src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c" alt="Accessory" fill className="object-cover" />
+              <div className="lg:w-1/2 grid grid-cols-2 gap-4">
+                <div className="space-y-4 mt-8">
+                  <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
+                    <Image src="https://images.unsplash.com/photo-1594223274512-ad4803739b7c" alt="Accessory" fill className="object-cover" />
+                  </div>
+                  <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
+                    <Image src="https://images.unsplash.com/photo-1524805444758-09912d619dce" alt="Watch" fill className="object-cover" />
+                  </div>
                 </div>
-                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
-                  <Image src="https://images.unsplash.com/photo-1524805444758-09912d619dce" alt="Watch" fill className="object-cover" />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
-                  <Image src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371" alt="Glasses" fill className="object-cover" />
-                </div>
-                <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
-                  <Image src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7" alt="Bag" fill className="object-cover" />
+                <div className="space-y-4">
+                  <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
+                    <Image src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371" alt="Glasses" fill className="object-cover" />
+                  </div>
+                  <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
+                    <Image src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7" alt="Bag" fill className="object-cover" />
+                  </div>
                 </div>
               </div>
             </div>
