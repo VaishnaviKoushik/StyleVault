@@ -73,6 +73,8 @@ export default function MasterVaultPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [scheduledOutfits, setScheduledOutfits] = useState<any[]>([]);
   const [isSelectOutfitOpen, setIsSelectOutfitOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [activeDetailEntry, setActiveDetailEntry] = useState<any>(null);
   const [eventTitle, setEventTitle] = useState("");
   const [eventTime, setEventTime] = useState("12:00 PM");
   const [tempSelectedOutfitId, setTempSelectedOutfitId] = useState<string | null>(null);
@@ -160,6 +162,11 @@ export default function MasterVaultPage() {
   const handleUnschedule = (id: string) => {
     setScheduledOutfits(prev => prev.filter(s => s.id !== id));
     toast({ title: "Entry Removed", variant: "destructive" });
+  };
+
+  const handleViewDetails = (schedule: any) => {
+    setActiveDetailEntry(schedule);
+    setIsDetailDialogOpen(true);
   };
 
   const handleScheduleConfirm = () => {
@@ -575,7 +582,7 @@ export default function MasterVaultPage() {
                                       </Button>
                                     </div>
                                     <div className="flex gap-4 pt-8">
-                                       <Button variant="outline" className="flex-1 rounded-full font-headline h-12">View Details</Button>
+                                       <Button variant="outline" className="flex-1 rounded-full font-headline h-12" onClick={() => handleViewDetails(schedule)}>View Details</Button>
                                        <Button variant="ghost" className="flex-1 rounded-full text-slate-400 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>Remove Entry</Button>
                                     </div>
                                   </div>
@@ -637,6 +644,72 @@ export default function MasterVaultPage() {
             <Button variant="ghost" className="rounded-full px-6" onClick={() => setIsSelectOutfitOpen(false)}>Cancel</Button>
             <Button className="rounded-full gradient-primary text-white px-10 flex-1" onClick={handleScheduleConfirm}>Save Entry</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <DialogContent className="sm:max-w-xl bg-white rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          {activeDetailEntry && (
+            <>
+              <DialogHeader className="p-10 bg-primary text-white">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
+                    <CalendarIcon className="h-7 w-7 text-accent" />
+                  </div>
+                  <div className="space-y-1">
+                    <DialogTitle className="font-headline text-3xl font-bold italic">Agenda Detail</DialogTitle>
+                    <DialogDescription className="text-white/60 font-body">Scheduled for {format(new Date(activeDetailEntry.date), 'MMMM do')}</DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+              <div className="p-10 space-y-8">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Time</span>
+                    <p className="font-headline font-bold text-xl text-primary">{activeDetailEntry.time}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Location</span>
+                    <p className="font-headline font-bold text-xl text-primary">{activeDetailEntry.location}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h5 className="font-headline font-bold text-lg text-primary">Selected Outfit</h5>
+                  {(() => {
+                    const outfit = outfits.find(o => o.id === activeDetailEntry.outfitId);
+                    if (!outfit) return <p className="text-muted-foreground italic">No outfit assigned.</p>;
+                    return (
+                      <div className="p-6 rounded-[2rem] bg-slate-50 border border-slate-100 space-y-6">
+                        <div className="flex items-center justify-between">
+                          <h6 className="font-headline font-bold text-2xl text-primary italic">{outfit.name}</h6>
+                          <Badge className="bg-accent text-primary font-headline uppercase px-4 border-none">Active</Badge>
+                        </div>
+                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                          {outfit.items.map(itemId => {
+                            const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                            return item ? (
+                              <div key={itemId} className="relative h-24 w-20 rounded-xl overflow-hidden shadow-md shrink-0 border-2 border-white">
+                                <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                              </div>
+                            ) : null;
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                <div className="flex gap-4">
+                  <Button className="flex-1 h-14 rounded-full gradient-primary text-white font-headline" onClick={() => setIsDetailDialogOpen(false)}>Close Detail</Button>
+                  <Button variant="outline" className="flex-1 h-14 rounded-full font-headline border-primary text-primary" onClick={() => {
+                    setIsDetailDialogOpen(false);
+                    handleUnschedule(activeDetailEntry.id);
+                  }}>Cancel Event</Button>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
