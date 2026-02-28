@@ -26,10 +26,15 @@ import {
   Trees,
   Sun,
   Presentation,
-  Type
+  Type,
+  Layers,
+  Bookmark,
+  CheckCircle2
 } from "lucide-react";
 import { aiOutfitSuggester } from "@/ai/flows/ai-outfit-suggester";
-import { MOCK_WARDROBE, MOCK_OUTFITS, Outfit } from "@/lib/mock-data";
+import { generateCapsule, type CapsuleOutput } from "@/ai/flows/capsule-generator";
+import { useCollection, useFirestore } from "@/firebase";
+import { collection, query } from "firebase/firestore";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -38,6 +43,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const occasions = [
   { label: "Work", icon: Briefcase, value: "work" },
@@ -56,6 +62,7 @@ const occasions = [
 
 export default function AiStylistPage() {
   const searchParams = useSearchParams();
+  const db = useFirestore();
   const initialTab = searchParams.get('tab') || 'stylist';
   
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -68,19 +75,27 @@ export default function AiStylistPage() {
     shoppingAdvised: boolean;
   } | null>(null);
   
+  // Capsule State
+  const [capsuleLoading, setCapsuleLoading] = useState(false);
+  const [capsule, setCapsule] = useState<CapsuleOutput | null>(null);
+
+  // Firestore Data
+  const { data: wardrobeItems = [] } = useCollection(db ? query(collection(db, 'wardrobe')) : null);
+  const { data: savedOutfits = [] } = useCollection(db ? query(collection(db, 'outfits')) : null);
+
   // Compare State
-  const [selectedStyleA, setSelectedStyleA] = useState<Outfit | null>(null);
-  const [selectedStyleB, setSelectedStyleB] = useState<Outfit | null>(null);
+  const [selectedStyleA, setSelectedStyleA] = useState<any | null>(null);
+  const [selectedStyleB, setSelectedStyleB] = useState<any | null>(null);
   const [activeBattles, setActiveBattles] = useState([
     {
       id: 'b1',
-      styleA: MOCK_OUTFITS[0],
-      styleB: MOCK_OUTFITS[1],
+      styleAName: "Modern Work",
+      styleBName: "Weekend Casual",
+      styleAImg: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1080",
+      styleBImg: "https://images.unsplash.com/photo-1714143136372-ddaf8b606da7?q=80&w=1080",
       votesA: 64,
       votesB: 36,
       timeLeft: '14h 22m',
-      tags: ["Classic", "More Bold"],
-      engagement: 92
     }
   ]);
 
@@ -95,11 +110,16 @@ export default function AiStylistPage() {
       return;
     }
 
+    if (wardrobeItems.length === 0) {
+      toast({ title: "Empty Vault", description: "Please add some items to your closet first." });
+      return;
+    }
+
     setLoading(true);
     try {
       const result = await aiOutfitSuggester({
         occasion: finalOccasion,
-        wardrobeItems: MOCK_WARDROBE.map(i => ({
+        wardrobeItems: wardrobeItems.map(i => ({
           id: i.id,
           name: i.name,
           category: i.category,
@@ -108,7 +128,7 @@ export default function AiStylistPage() {
         }))
       });
 
-      const suggestedItems = result.suggestedOutfit.map(id => MOCK_WARDROBE.find(i => i.id === id)).filter(Boolean);
+      const suggestedItems = result.suggestedOutfit.map(id => wardrobeItems.find(i => i.id === id)).filter(Boolean);
       
       setSuggestion({
         items: suggestedItems,
@@ -123,29 +143,36 @@ export default function AiStylistPage() {
     }
   };
 
+  const handleGenerateCapsule = async () => {
+    if (wardrobeItems.length < 10) {
+      toast({ title: "Insufficient Items", description: "You need at least 10 items in your vault to generate a capsule." });
+      return;
+    }
+
+    setCapsuleLoading(true);
+    try {
+      const result = await generateCapsule({
+        wardrobeItems: wardrobeItems.map(i => ({
+          id: i.id,
+          name: i.name,
+          category: i.category,
+          color: i.color
+        }))
+      });
+      setCapsule(result);
+      toast({ title: "Capsule Generated", description: "10 core pieces and 20 outfits identified." });
+    } catch (err) {
+      toast({ title: "Generation failed", variant: "destructive" });
+    } finally {
+      setCapsuleLoading(false);
+    }
+  };
+
   const handleVote = (battleId: string, option: 'A' | 'B') => {
     toast({
       title: "Vote Recorded!",
       description: `You chose Style ${option}.`,
     });
-  };
-
-  const handleCreateBattle = () => {
-    if (!selectedStyleA || !selectedStyleB) return;
-    const newBattle = {
-      id: Math.random().toString(36).substr(2, 9),
-      styleA: selectedStyleA,
-      styleB: selectedStyleB,
-      votesA: 0,
-      votesB: 0,
-      timeLeft: '24h 00m',
-      tags: [],
-      engagement: 0
-    };
-    setActiveBattles([newBattle, ...activeBattles]);
-    setSelectedStyleA(null);
-    setSelectedStyleB(null);
-    toast({ title: "Battle Initiated!" });
   };
 
   return (
@@ -164,22 +191,26 @@ export default function AiStylistPage() {
             </TooltipTrigger>
             <TooltipContent className="bg-primary text-white border-none rounded-xl p-4 max-w-[250px]">
               <p className="text-xs font-body leading-relaxed">
-                The Style Lab is where our AI designs outfits based on your actual wardrobe. Use <strong>AI Stylist</strong> for quick looks or <strong>Style Compare</strong> to get community feedback.
+                The Style Lab is where our AI designs outfits based on your actual wardrobe. Use <strong>AI Stylist</strong> for quick looks, <strong>Capsule</strong> for a minimalist core, or <strong>Style Compare</strong> for feedback.
               </p>
             </TooltipContent>
           </Tooltip>
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-auto bg-white shadow-sm border p-1.5 rounded-2xl mb-8 max-w-md mx-auto">
-            <TabsTrigger value="stylist" className="py-3 font-headline text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+          <TabsList className="grid w-full grid-cols-3 h-auto bg-white shadow-sm border p-1.5 rounded-2xl mb-8 max-w-2xl mx-auto">
+            <TabsTrigger value="stylist" className="py-3 font-headline text-sm md:text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
               AI Stylist
             </TabsTrigger>
-            <TabsTrigger value="compare" className="py-3 font-headline text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+            <TabsTrigger value="capsule" className="py-3 font-headline text-sm md:text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+              Capsule
+            </TabsTrigger>
+            <TabsTrigger value="compare" className="py-3 font-headline text-sm md:text-lg rounded-xl data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
               Style Compare
             </TabsTrigger>
           </TabsList>
 
+          {/* AI STYLIST CONTENT */}
           <TabsContent value="stylist" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="space-y-6">
@@ -278,14 +309,9 @@ export default function AiStylistPage() {
                             <p className="text-lg font-body text-slate-600 leading-relaxed italic">
                               "Our analysis indicates a high-value piece is missing to perfectly coordinate this look. Explore optimized additions."
                             </p>
-                            <div className="flex flex-wrap gap-3 justify-center md:justify-start pt-2">
-                              <Button className="rounded-full h-12 px-8 gradient-primary text-white font-headline" asChild>
-                                <Link href="/shopping">Consult Shopping Engine <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                              </Button>
-                              <div className="flex gap-2 items-center text-xs font-bold text-slate-400 uppercase tracking-widest px-4 border-l">
-                                Direct to: <Badge variant="outline" className="border-slate-200">Amazon</Badge> <Badge variant="outline" className="border-slate-200">Myntra</Badge>
-                              </div>
-                            </div>
+                            <Button className="rounded-full h-12 px-8 gradient-primary text-white font-headline" asChild>
+                              <Link href="/shopping">Consult Shopping Engine <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                            </Button>
                           </div>
                         </div>
                       )}
@@ -309,10 +335,7 @@ export default function AiStylistPage() {
 
                       <div className="flex gap-4 pt-4">
                         <Button className="flex-1 h-14 rounded-full font-headline text-lg bg-primary shadow-xl shadow-primary/20 active:scale-95 transition-all" asChild>
-                          <Link href="/wardrobe?tab=journal">Schedule this Look</Link>
-                        </Button>
-                        <Button variant="outline" className="flex-1 h-14 rounded-full font-headline text-lg border-accent text-primary hover:bg-accent hover:text-white transition-all shadow-md active:scale-95" onClick={() => setActiveTab('compare')}>
-                          <ArrowLeftRight className="mr-2 h-5 w-5" /> Global Comparison
+                          <Link href="/wardrobe?tab=studio&sub=journal">Schedule this Look</Link>
                         </Button>
                       </div>
                     </CardContent>
@@ -330,6 +353,117 @@ export default function AiStylistPage() {
             </div>
           </TabsContent>
 
+          {/* CAPSULE CONTENT */}
+          <TabsContent value="capsule" className="space-y-12">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="space-y-4">
+                <Badge className="bg-primary/10 text-primary font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">
+                  Minimalist Logic
+                </Badge>
+                <h1 className="text-5xl md:text-7xl font-headline font-bold text-primary italic leading-none">
+                  Capsule <span className="text-accent">Generator.</span>
+                </h1>
+                <p className="text-xl text-muted-foreground font-body italic max-w-xl border-l-4 border-accent pl-6">
+                  "Condensing your collection into its most potent 10-piece core for maximum utility."
+                </p>
+              </div>
+              <Button 
+                className="h-16 px-10 rounded-full gradient-primary text-white font-headline text-xl shadow-xl active:scale-95 transition-all"
+                onClick={handleGenerateCapsule}
+                disabled={capsuleLoading}
+              >
+                {capsuleLoading ? <RefreshCw className="mr-2 h-6 w-6 animate-spin" /> : <Sparkles className="mr-2 h-6 w-6" />}
+                {capsule ? "Regenerate Capsule" : "Generate Capsule"}
+              </Button>
+            </header>
+
+            {!capsule && !capsuleLoading ? (
+              <div className="py-24 text-center bg-white/40 rounded-[3rem] border-2 border-dashed border-primary/10">
+                <Layers className="h-16 w-16 text-primary/20 mx-auto mb-6" />
+                <h3 className="text-2xl font-headline font-bold text-slate-400 italic">Ready to distill your style?</h3>
+                <p className="text-muted-foreground font-body mt-2">Generate a minimalist core to eliminate daily decision fatigue.</p>
+              </div>
+            ) : capsule ? (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div className="lg:col-span-2 space-y-8">
+                  <Card className="border-none shadow-2xl bg-white rounded-[3rem] overflow-hidden">
+                    <CardHeader className="p-10 border-b bg-slate-50/50">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="font-headline text-3xl font-bold text-primary italic">The Core 10</CardTitle>
+                          <CardDescription className="font-body italic mt-1">Versatile essentials selected for multi-season harmony.</CardDescription>
+                        </div>
+                        <Badge className="bg-accent text-primary font-headline px-6 py-2 uppercase tracking-widest border-none">Optimal Selection</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-10">
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-6">
+                        {capsule.selectedIds.map(id => {
+                          const item = wardrobeItems.find(i => i.id === id);
+                          return item ? (
+                            <div key={id} className="space-y-2 group">
+                              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg border-2 border-white group-hover:scale-105 transition-transform">
+                                <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                              </div>
+                              <p className="text-[10px] font-headline font-bold text-center text-primary/60 uppercase truncate">{item.name}</p>
+                            </div>
+                          ) : null;
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-none shadow-xl bg-primary text-white rounded-[3rem] p-10">
+                    <div className="flex gap-6 items-start">
+                      <Sparkles className="h-10 w-10 text-accent shrink-0" />
+                      <div className="space-y-4">
+                        <h4 className="font-headline font-bold text-2xl italic">Stylist's Logic</h4>
+                        <p className="text-xl font-body italic leading-relaxed opacity-90">"{capsule.stylistNote}"</p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                <div className="space-y-6">
+                  <h3 className="font-headline font-bold text-xl text-primary px-4 flex items-center gap-2">
+                    <Bookmark className="h-5 w-5 text-accent" /> Generated Assemblies (20)
+                  </h3>
+                  <ScrollArea className="h-[700px] pr-4">
+                    <div className="grid gap-4">
+                      {capsule.outfits.map((outfit, idx) => (
+                        <Card key={idx} className="border-none shadow-md bg-white rounded-[2rem] p-6 hover:shadow-lg transition-all group">
+                          <div className="flex items-center gap-4">
+                            <div className="flex -space-x-4">
+                              {outfit.itemIds.slice(0, 3).map(id => (
+                                <div key={id} className="h-12 w-12 rounded-full border-2 border-white overflow-hidden shadow-sm relative">
+                                  <Image 
+                                    src={wardrobeItems.find(i => i.id === id)?.imageUrl || "https://picsum.photos/seed/1/400"} 
+                                    alt="" fill className="object-cover rounded-full" 
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-headline font-bold text-primary group-hover:text-accent transition-colors truncate">{outfit.name}</h4>
+                              <p className="text-[10px] font-body uppercase tracking-widest text-slate-400">{outfit.itemIds.length} Pieces</p>
+                            </div>
+                            <CheckCircle2 className="h-5 w-5 text-slate-100 group-hover:text-accent transition-colors" />
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
+            ) : (
+              <div className="py-24 flex flex-col items-center justify-center space-y-6">
+                <div className="h-20 w-20 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                <h3 className="text-2xl font-headline font-bold text-primary italic">Distilling your wardrobe...</h3>
+              </div>
+            )}
+          </TabsContent>
+
+          {/* STYLE COMPARE CONTENT */}
           <TabsContent value="compare" className="space-y-12">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2 space-y-8">
@@ -352,7 +486,7 @@ export default function AiStylistPage() {
                         
                         <div className="space-y-6">
                           <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer" onClick={() => handleVote(battle.id, 'A')}>
-                            <Image src={MOCK_WARDROBE.find(i => i.id === battle.styleA.items[0])?.imageUrl || ''} alt="" fill className="object-cover" />
+                            <Image src={battle.styleAImg} alt="" fill className="object-cover" />
                             <div className="absolute bottom-6 left-6 right-6 flex justify-center text-white">
                               <span className="text-3xl font-headline font-bold italic drop-shadow-lg">{battle.votesA}%</span>
                             </div>
@@ -362,7 +496,7 @@ export default function AiStylistPage() {
 
                         <div className="space-y-6">
                           <div className="relative aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group transition-transform hover:scale-[1.02] active:scale-95 cursor-pointer" onClick={() => handleVote(battle.id, 'B')}>
-                            <Image src={MOCK_WARDROBE.find(i => i.id === battle.styleB.items[0])?.imageUrl || ''} alt="" fill className="object-cover" />
+                            <Image src={battle.styleBImg} alt="" fill className="object-cover" />
                             <div className="absolute bottom-6 left-6 right-6 flex justify-center text-white">
                               <span className="text-3xl font-headline font-bold italic drop-shadow-lg">{battle.votesB}%</span>
                             </div>
@@ -382,28 +516,21 @@ export default function AiStylistPage() {
                     <p className="text-sm text-muted-foreground font-body italic">Get feedback on two different assembly ideas.</p>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50 active:scale-95", selectedStyleA ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleA(null)}>
-                          {selectedStyleA ? <span className="text-xs font-bold text-primary text-center px-4 font-headline uppercase leading-relaxed">{selectedStyleA.name}</span> : <Plus className="h-8 w-8 text-slate-200" />}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="top">
-                        <p className="text-xs">Click an outfit from your list below to assign it to slot A.</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50 active:scale-95", selectedStyleA ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleA(null)}>
+                      {selectedStyleA ? <span className="text-xs font-bold text-primary text-center px-4 font-headline uppercase leading-relaxed">{selectedStyleA.name}</span> : <Plus className="h-8 w-8 text-slate-200" />}
+                    </div>
                     
                     <div className={cn("aspect-[3/4] rounded-[2rem] border-4 border-dashed transition-all flex items-center justify-center cursor-pointer bg-slate-50 active:scale-95", selectedStyleB ? "border-accent bg-accent/5 ring-4 ring-accent/10" : "border-slate-100 hover:border-primary/20")} onClick={() => setSelectedStyleB(null)}>
                       {selectedStyleB ? <span className="text-xs font-bold text-primary text-center px-4 font-headline uppercase leading-relaxed">{selectedStyleB.name}</span> : <Plus className="h-8 w-8 text-slate-200" />}
                     </div>
                   </div>
-                  <Button className="w-full h-16 rounded-full font-headline text-xl gradient-primary text-white shadow-xl shadow-primary/20 active:scale-[0.98] transition-all" disabled={!selectedStyleA || !selectedStyleB} onClick={handleCreateBattle}>Initiate Style Battle</Button>
+                  <Button className="w-full h-16 rounded-full font-headline text-xl gradient-primary text-white shadow-xl shadow-primary/20 active:scale-[0.98] transition-all" disabled={!selectedStyleA || !selectedStyleB}>Initiate Style Battle</Button>
                 </Card>
 
                 <div className="space-y-6">
                   <h4 className="font-headline font-bold text-xs text-slate-400 uppercase tracking-[0.3em] px-4">Your Signature Outfits</h4>
                   <div className="grid gap-3 max-h-[500px] overflow-y-auto pr-4 scrollbar-hide">
-                    {MOCK_OUTFITS.map(outfit => (
+                    {savedOutfits.map(outfit => (
                       <button 
                         key={outfit.id} 
                         className="p-4 bg-white rounded-[2rem] border-2 border-slate-50 shadow-sm flex items-center gap-4 cursor-pointer hover:border-accent hover:shadow-md active:scale-[0.98] transition-all text-left group"
@@ -413,7 +540,7 @@ export default function AiStylistPage() {
                         }}
                       >
                         <div className="h-14 w-14 rounded-2xl overflow-hidden relative shadow-md">
-                          <Image src={MOCK_WARDROBE.find(i => i.id === outfit.items[0])?.imageUrl || ''} alt="" fill className="object-cover" />
+                          <Image src={wardrobeItems.find(i => i.id === outfit.items[0])?.imageUrl || 'https://picsum.photos/seed/1/400'} alt="" fill className="object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <span className="text-sm font-bold font-headline block truncate text-primary group-hover:text-accent transition-colors">{outfit.name}</span>

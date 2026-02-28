@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Sparkles, Home, Settings, Camera, Presentation, ShoppingBag, TrendingUp, Palette, Layers } from "lucide-react";
+import { Shirt, Sparkles, Home, Settings, Camera, Presentation, ShoppingBag, TrendingUp, Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard", icon: Home, href: "/" },
   { label: "Master Vault", icon: Shirt, href: "/wardrobe" },
   { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
-  { label: "Capsule", icon: Layers, href: "/capsule" },
   { label: "Color Lab", icon: Palette, href: "/try-on" },
   { label: "Shopping", icon: ShoppingBag, href: "/shopping" },
   { label: "Trends", icon: TrendingUp, href: "/trends" },
@@ -34,7 +33,7 @@ export function SidebarNav() {
         
         <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (pathname.startsWith('/wardrobe') && item.href === '/wardrobe');
+            const isActive = pathname === item.href || (pathname.startsWith('/wardrobe') && item.href === '/wardrobe') || (pathname === '/capsule' && item.href === '/ai-stylist');
             const Icon = item.icon;
             return (
               <Link
