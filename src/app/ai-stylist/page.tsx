@@ -426,6 +426,15 @@ function AiStylistContent() {
                       </div>
 
                       <div className="flex gap-4 pt-4">
+                        <Button 
+                          variant="outline"
+                          className="flex-1 h-14 rounded-full font-headline text-lg border-primary text-primary hover:bg-primary/5 active:scale-95 transition-all"
+                          onClick={handleGenerate}
+                          disabled={loading}
+                        >
+                          <RefreshCw className={cn("mr-2 h-5 w-5", loading && "animate-spin")} />
+                          Regenerate
+                        </Button>
                         <Button className="flex-1 h-14 rounded-full font-headline text-lg bg-primary shadow-xl shadow-primary/20 active:scale-95 transition-all" asChild>
                           <Link href="/wardrobe?tab=studio&sub=journal">Schedule this Look</Link>
                         </Button>
