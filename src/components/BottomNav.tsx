@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Calendar, Home, PlusCircle, ShoppingBag, Presentation } from "lucide-react";
+import { Shirt, Calendar, Home, PlusCircle, Presentation } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Home", icon: Home, href: "/" },
-  { label: "Closet", icon: Shirt, href: "/wardrobe" },
+  { label: "Vault", icon: Shirt, href: "/wardrobe?tab=closet" },
   { label: "Add", icon: PlusCircle, href: "/add-item", primary: true },
-  { label: "Planner", icon: Calendar, href: "/planner" },
+  { label: "Journal", icon: Calendar, href: "/wardrobe?tab=journal" },
   { label: "Proposal", icon: Presentation, href: "/proposal" },
 ];
 
@@ -19,7 +19,7 @@ export function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-slate-100 flex items-center justify-around h-20 px-4 pb-4">
       {navItems.map((item) => {
-        const isActive = pathname === item.href;
+        const isActive = pathname === item.href || (pathname === '/wardrobe' && item.href.startsWith('/wardrobe'));
         const Icon = item.icon;
         
         if (item.primary) {

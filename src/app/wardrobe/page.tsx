@@ -1,38 +1,91 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Tag, Sparkles, Trash2, Edit3, Save, ShoppingBag, ArrowRight, Heart, Cpu, Thermometer, Wind, RefreshCw } from "lucide-react";
-import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem } from "@/lib/mock-data";
+import { 
+  Search, 
+  Plus, 
+  Sparkles, 
+  Trash2, 
+  Edit3, 
+  Cpu, 
+  Wind, 
+  RefreshCw, 
+  Calendar as CalendarIcon, 
+  Clock, 
+  Layers, 
+  Check, 
+  X, 
+  MapPin, 
+  ClipboardList,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  Shirt,
+  Bookmark
+} from "lucide-react";
+import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { Textarea } from "@/components/ui/textarea";
 import { analyzeFabric, type FabricIntelligenceOutput } from "@/ai/flows/fabric-intelligence";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { addDays, format, startOfWeek, isSameDay } from "date-fns";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const categories = ["all", "top", "bottom", "dress", "shoes", "accessory", "outerwear"];
 
-export default function WardrobePage() {
+export default function MasterVaultPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialTab = searchParams.get('tab') || 'closet';
+  
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [mounted, setMounted] = useState(false);
+  const { toast } = useToast();
+
+  // --- CLOSET STATE ---
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [items, setItems] = useState<WardrobeItem[]>(MOCK_WARDROBE);
-  const [editingItem, setEditingItem] = useState<WardrobeItem | null>(null);
-  const [mounted, setMounted] = useState(false);
   const [fabricAnalysis, setFabricAnalysis] = useState<FabricIntelligenceOutput | null>(null);
   const [analyzingFabric, setAnalyzingFabric] = useState(false);
-  const { toast } = useToast();
+
+  // --- PLANNER/JOURNAL STATE ---
+  const [date, setDate] = useState<Date>(new Date());
+  const [scheduledOutfits, setScheduledOutfits] = useState<any[]>([]);
+  const [isSelectOutfitOpen, setIsSelectOutfitOpen] = useState(false);
+  const [isViewItemsOpen, setIsViewItemsOpen] = useState(false);
+  const [currentViewingOutfit, setCurrentViewingOutfit] = useState<any>(null);
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventTime, setEventTime] = useState("12:00 PM");
+  const [tempSelectedOutfitId, setTempSelectedOutfitId] = useState<string | null>(null);
+
+  // --- LOOKBOOK & ASSEMBLER STATE ---
+  const [outfits, setOutfits] = useState<Outfit[]>(MOCK_OUTFITS);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [newOutfitName, setNewOutfitName] = useState("");
 
   useEffect(() => {
     setMounted(true);
+    setScheduledOutfits([
+      { id: 's1', date: new Date(), outfitId: 'o1', time: '09:00 AM', location: 'Office' }
+    ]);
   }, []);
 
+  const weekDays = useMemo(() => {
+    const start = startOfWeek(date, { weekStartsOn: 1 });
+    return Array.from({ length: 7 }).map((_, i) => addDays(start, i));
+  }, [date]);
+
+  // --- HANDLERS ---
   const handleFabricIntelligence = async (item: WardrobeItem) => {
     setAnalyzingFabric(true);
     setFabricAnalysis(null);
@@ -43,12 +96,61 @@ export default function WardrobePage() {
         description: item.description
       });
       setFabricAnalysis(result);
-      toast({ title: "Analysis complete", description: "Textile intelligence updated." });
+      toast({ title: "Analysis complete" });
     } catch (error) {
       toast({ title: "Analysis failed", variant: "destructive" });
     } finally {
       setAnalyzingFabric(false);
     }
+  };
+
+  const handleUnschedule = (id: string) => {
+    setScheduledOutfits(prev => prev.filter(s => s.id !== id));
+    toast({ title: "Entry Removed", variant: "destructive" });
+  };
+
+  const handleScheduleConfirm = () => {
+    if (!eventTitle && !tempSelectedOutfitId) {
+      toast({ title: "Please detail your entry", variant: "destructive" });
+      return;
+    }
+    const newSchedule = {
+      id: Math.random().toString(36).substr(2, 9),
+      date: date,
+      outfitId: tempSelectedOutfitId,
+      time: eventTime || 'All Day',
+      location: eventTitle || 'Private Event'
+    };
+    setScheduledOutfits([...scheduledOutfits, newSchedule]);
+    setIsSelectOutfitOpen(false);
+    setEventTitle("");
+    setTempSelectedOutfitId(null);
+    toast({ title: "Journal Entry Saved" });
+  };
+
+  const toggleItemSelection = (id: string) => {
+    setSelectedItems(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleCreateOutfit = () => {
+    if (!newOutfitName || selectedItems.length === 0) {
+      toast({ title: "Incomplete configuration", variant: "destructive" });
+      return;
+    }
+    const newOutfit: Outfit = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: newOutfitName,
+      items: selectedItems,
+      occasion: 'casual',
+      createdAt: new Date().toISOString()
+    };
+    setOutfits([newOutfit, ...outfits]);
+    setActiveTab("outfits");
+    setSelectedItems([]);
+    setNewOutfitName("");
+    toast({ title: "Outfit Assembled" });
   };
 
   const filteredItems = items.filter(item => {
@@ -57,208 +159,369 @@ export default function WardrobePage() {
     return matchesCategory && matchesSearch;
   });
 
-  const handleDelete = (id: string) => {
-    setItems(prev => prev.filter(i => i.id !== id));
-    toast({
-      title: "Item Deleted",
-      description: "Removed from your digital closet.",
-      variant: "destructive"
-    });
-  };
-
-  const handleSaveEdit = () => {
-    if (editingItem) {
-      setItems(prev => prev.map(i => i.id === editingItem.id ? editingItem : i));
-      setEditingItem(null);
-      toast({ title: "Item Updated" });
-    }
-  };
+  const activeSchedules = scheduledOutfits.filter(s => isSameDay(new Date(s.date), date));
 
   if (!mounted) return null;
 
   return (
     <AppLayout>
-      <div className="space-y-12 animate-in fade-in duration-500">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h2 className="text-4xl font-headline font-bold text-foreground tracking-tight">Digital Closet</h2>
-            <p className="text-muted-foreground font-body italic">Browse your collection of {items.length} items.</p>
+      <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-700">
+        <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <h2 className="text-5xl font-headline font-bold text-primary tracking-tighter italic">Master Vault</h2>
+            <p className="text-muted-foreground font-body text-sm font-bold uppercase tracking-[0.3em] opacity-60">Unified Inventory & Agenda</p>
           </div>
-          <div className="flex gap-3">
-            <div className="relative max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search collection..." 
-                className="pl-10 h-12 rounded-full border-none bg-white shadow-sm w-full md:w-64 font-body"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button asChild className="h-12 px-8 rounded-full gradient-pill font-headline text-lg shadow-xl shadow-primary/20 text-white hover:scale-105 active:scale-95 transition-all">
-              <Link href="/add-item">
-                <Plus className="mr-2 h-5 w-5" /> Add New Item
-              </Link>
-            </Button>
+          <div className="flex gap-4">
+             <Button asChild variant="outline" className="h-14 px-8 rounded-full border-primary/20 text-primary font-headline text-lg hover:bg-primary/5">
+                <Plus className="mr-2 h-5 w-5" /> <Link href="/add-item">New Garment</Link>
+             </Button>
+             <Button className="h-14 px-10 rounded-full gradient-primary text-white font-headline text-lg shadow-xl shadow-primary/20" onClick={() => { setActiveTab("assembler"); }}>
+                <Sparkles className="mr-2 h-5 w-5" /> New Assembly
+             </Button>
           </div>
         </header>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 p-1.5 bg-white/50 backdrop-blur-sm rounded-full border shadow-sm w-fit">
-          {categories.map((cat) => (
-            <Button
-              key={cat}
-              variant={activeCategory === cat ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setActiveCategory(cat)}
-              className={cn(
-                "capitalize font-headline h-10 px-8 rounded-full transition-all text-sm",
-                activeCategory === cat ? "bg-primary text-white shadow-lg" : "text-muted-foreground hover:text-primary hover:bg-primary/5 active:scale-95"
-              )}
-            >
-              {cat}
-            </Button>
-          ))}
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto bg-white/50 backdrop-blur-md shadow-sm border p-1.5 rounded-[2.5rem] mb-12">
+            <TabsTrigger value="closet" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+              <Shirt className="mr-2 h-5 w-5" /> The Closet
+            </TabsTrigger>
+            <TabsTrigger value="outfits" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+              <Bookmark className="mr-2 h-5 w-5" /> Lookbook
+            </TabsTrigger>
+            <TabsTrigger value="journal" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+              <CalendarIcon className="mr-2 h-5 w-5" /> Journal
+            </TabsTrigger>
+            <TabsTrigger value="assembler" className="py-4 font-headline text-lg rounded-[2rem] data-[state=active]:bg-primary data-[state=active]:text-white transition-all">
+              <Layers className="mr-2 h-5 w-5" /> Assembler
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Catalog Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
-          {filteredItems.map((item) => (
-            <Dialog key={item.id} onOpenChange={(open) => !open && setFabricAnalysis(null)}>
-              <DialogTrigger asChild>
-                <div className="glass-card rounded-[2.5rem] overflow-hidden group cursor-pointer hover:-translate-y-2 active:scale-[0.98] transition-all duration-300 shadow-lg border-white">
-                  <div className="relative aspect-[3/4]">
-                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-white/90 backdrop-blur-md text-primary border-none text-[10px] font-headline uppercase px-4 h-7 flex items-center shadow-sm">
-                        {item.category}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="p-6 space-y-1 bg-white">
-                    <h4 className="text-lg font-headline font-bold truncate group-hover:text-primary transition-colors">{item.name}</h4>
-                    <p className="text-xs text-muted-foreground font-body italic uppercase tracking-widest">{item.brand}</p>
-                  </div>
-                </div>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl rounded-[3rem] p-0 overflow-hidden border-none bg-white shadow-2xl">
-                <div className="md:flex h-full">
-                  <div className="md:w-1/2 relative aspect-[3/4] md:aspect-auto">
-                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                  </div>
-                  <div className="md:w-1/2 p-10 space-y-8 overflow-y-auto max-h-[90vh]">
-                    <DialogHeader>
-                      <div className="flex justify-between items-start mb-2">
-                        <Badge className="bg-primary/10 text-primary font-headline uppercase px-4 py-1 tracking-widest border-none">{item.category}</Badge>
-                        <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-primary hover:bg-primary/5 active:scale-90 transition-all" onClick={() => setEditingItem(item)}>
-                            <Edit3 className="h-5 w-5" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-destructive hover:bg-destructive/5 active:scale-90 transition-all" onClick={() => handleDelete(item.id)}>
-                            <Trash2 className="h-5 w-5" />
-                          </Button>
-                        </div>
-                      </div>
-                      <DialogTitle className="font-headline text-4xl font-bold text-primary leading-tight">{item.name}</DialogTitle>
-                    </DialogHeader>
-
-                    {/* Fabric Intelligence Section */}
-                    <div className="space-y-6 pt-6 border-t border-slate-100">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Cpu className="h-6 w-6 text-primary" />
-                          <h5 className="font-headline font-bold text-xl">Fabric Intelligence</h5>
-                        </div>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="rounded-full font-headline text-xs border-primary/20 px-6 h-9 hover:bg-primary hover:text-white active:scale-95 transition-all"
-                          onClick={() => handleFabricIntelligence(item)}
-                          disabled={analyzingFabric}
-                        >
-                          {analyzingFabric ? <RefreshCw className="h-4 w-4 animate-spin" /> : "Analyze Fabric"}
-                        </Button>
-                      </div>
-
-                      {fabricAnalysis ? (
-                        <div className="bg-primary/5 p-8 rounded-[2rem] space-y-6 animate-in slide-in-from-top-4 duration-500 border border-primary/10">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Wind className="h-5 w-5 text-primary opacity-60" />
-                              <span className="text-[10px] font-bold font-headline uppercase tracking-widest text-primary/60">Breathability Score</span>
-                            </div>
-                            <span className="font-headline font-bold text-2xl text-primary">{fabricAnalysis.breathabilityScore}<span className="text-sm opacity-40">/10</span></span>
-                          </div>
-                          <Progress value={fabricAnalysis.breathabilityScore * 10} className="h-2 bg-primary/10" />
-                          
-                          <div className="space-y-3">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Seasonal Wisdom</p>
-                            <p className="text-sm font-body leading-relaxed text-slate-700 italic">"{fabricAnalysis.explanation}"</p>
-                          </div>
-                          <div className="p-4 bg-white/80 rounded-2xl border border-primary/10 italic text-xs font-body text-primary shadow-sm">
-                            <span className="font-bold uppercase tracking-widest mr-2 opacity-60">Pro Tip:</span>
-                            {fabricAnalysis.careTip}
-                          </div>
-                        </div>
-                      ) : analyzingFabric && (
-                        <div className="space-y-4 py-12 text-center">
-                          <div className="w-14 h-14 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                          <p className="text-lg font-headline italic text-primary animate-pulse">Scanning textile structure...</p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-8">
-                      <div className="space-y-2">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Manufacturer</p>
-                        <p className="text-xl font-headline font-bold text-primary">{item.brand}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Signature Color</p>
-                        <p className="text-xl font-headline font-bold text-primary">{item.color}</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-4 border-t border-slate-100">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Stylist Intelligence</p>
-                      <p className="text-base text-slate-600 font-body leading-relaxed italic border-l-4 border-accent pl-6">
-                        "{item.description}"
-                      </p>
-                    </div>
-
-                    <div className="pt-6">
-                      <Button className="w-full rounded-full gradient-primary font-headline h-16 text-white text-lg shadow-xl shadow-primary/20 active:scale-[0.98] transition-all">
-                        Add to Style Journal
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          ))}
-          
-          <Link href="/add-item" className="aspect-[3/4] rounded-[2.5rem] bg-primary/5 border-4 border-dashed border-primary/20 flex flex-col items-center justify-center text-primary gap-6 hover:bg-primary/10 active:scale-[0.98] transition-all group shadow-inner">
-            <div className="h-20 w-20 rounded-full bg-white shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 border border-slate-50">
-              <Plus className="h-10 w-10 text-primary" />
-            </div>
-            <span className="text-xs font-bold font-headline uppercase tracking-[0.2em] opacity-60">Digitize New Item</span>
-          </Link>
-        </div>
-
-        {/* Smart Acquisition CTA */}
-        <section className="pt-20 border-t border-slate-100">
-           <Card className="border-none shadow-2xl bg-white rounded-[4rem] p-12 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden relative group">
-              <div className="absolute top-0 right-0 w-1/4 h-full bg-gradient-to-l from-accent/5 to-transparent pointer-events-none" />
-              <div className="space-y-4 relative z-10 flex-1">
-                 <Badge className="bg-accent/10 text-accent font-headline uppercase px-4 py-1 border-none tracking-[0.2em]">Strategy</Badge>
-                 <h3 className="text-4xl font-headline font-bold text-primary italic leading-tight">Missing something?</h3>
-                 <p className="text-lg text-muted-foreground font-body italic max-w-xl">Our AI identifies high-impact gaps in your collection to maximize your styling combinations.</p>
+          {/* --- CLOSET TAB --- */}
+          <TabsContent value="closet" className="space-y-8 animate-in slide-in-from-bottom-4">
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+              <div className="flex flex-wrap gap-2 p-1 bg-white/50 rounded-full border">
+                {categories.map((cat) => (
+                  <Button
+                    key={cat}
+                    variant={activeCategory === cat ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setActiveCategory(cat)}
+                    className={cn(
+                      "capitalize font-headline h-10 px-6 rounded-full",
+                      activeCategory === cat ? "bg-primary text-white shadow-md" : "text-muted-foreground hover:bg-primary/5"
+                    )}
+                  >
+                    {cat}
+                  </Button>
+                ))}
               </div>
-              <Button asChild className="h-16 px-12 rounded-full gradient-primary text-white font-headline text-xl shadow-xl hover:scale-105 active:scale-95 transition-all group-hover:shadow-primary/30">
-                 <Link href="/shopping">Explore Recommendations <ArrowRight className="ml-3 h-6 w-6" /></Link>
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search garments..." 
+                  className="pl-12 h-12 rounded-full border-none bg-white shadow-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {filteredItems.map((item) => (
+                <Dialog key={item.id} onOpenChange={(open) => !open && setFabricAnalysis(null)}>
+                  <DialogTrigger asChild>
+                    <div className="glass-card rounded-[2rem] overflow-hidden group cursor-pointer hover:-translate-y-2 transition-all shadow-lg">
+                      <div className="relative aspect-[3/4]">
+                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <div className="absolute top-3 left-3">
+                          <Badge className="bg-white/90 text-primary border-none text-[10px] font-headline uppercase px-3 h-6 shadow-sm">
+                            {item.category}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-white">
+                        <h4 className="font-headline font-bold truncate text-primary">{item.name}</h4>
+                        <p className="text-[10px] text-muted-foreground font-body uppercase tracking-widest">{item.brand}</p>
+                      </div>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl rounded-[3rem] p-0 overflow-hidden border-none bg-white shadow-2xl">
+                    <div className="md:flex">
+                      <div className="md:w-1/2 relative aspect-[3/4] md:aspect-auto">
+                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                      </div>
+                      <div className="md:w-1/2 p-10 space-y-8 overflow-y-auto max-h-[90vh]">
+                        <div className="space-y-2">
+                          <Badge className="bg-primary/5 text-primary font-headline uppercase px-4 py-1 tracking-widest border-none">{item.category}</Badge>
+                          <h3 className="font-headline text-4xl font-bold text-primary leading-tight">{item.name}</h3>
+                        </div>
+                        
+                        <div className="space-y-6 pt-6 border-t">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Cpu className="h-6 w-6 text-primary" />
+                              <h5 className="font-headline font-bold text-xl">Fabric Intelligence</h5>
+                            </div>
+                            <Button variant="outline" size="sm" className="rounded-full font-headline px-6" onClick={() => handleFabricIntelligence(item)} disabled={analyzingFabric}>
+                              {analyzingFabric ? <RefreshCw className="h-4 w-4 animate-spin" /> : "Analyze"}
+                            </Button>
+                          </div>
+                          {fabricAnalysis && (
+                            <div className="bg-primary/5 p-6 rounded-[1.5rem] space-y-4">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold font-headline uppercase text-primary/60">Breathability</span>
+                                <span className="font-headline font-bold text-xl text-primary">{fabricAnalysis.breathabilityScore}/10</span>
+                              </div>
+                              <Progress value={fabricAnalysis.breathabilityScore * 10} className="h-1.5" />
+                              <p className="text-sm font-body italic text-slate-600">"{fabricAnalysis.explanation}"</p>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-3 pt-4 border-t">
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Stylist Note</p>
+                          <p className="text-base text-slate-600 font-body leading-relaxed italic border-l-4 border-accent pl-6">"{item.description}"</p>
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* --- LOOKBOOK TAB --- */}
+          <TabsContent value="outfits" className="space-y-8 animate-in slide-in-from-bottom-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {outfits.map((outfit) => (
+                <Card key={outfit.id} className="overflow-hidden border-none shadow-xl bg-white rounded-[2.5rem] flex flex-col group hover:-translate-y-2 transition-all">
+                  <CardHeader className="p-8 border-b">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-2xl font-headline font-bold text-primary">{outfit.name}</CardTitle>
+                      <Badge variant="secondary" className="bg-primary/5 text-primary border-none rounded-full px-4 py-1 font-headline uppercase text-[10px]">{outfit.occasion}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-8 flex-1">
+                    <div className="grid grid-cols-4 gap-3">
+                      {outfit.items.map((itemId) => {
+                        const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                        return item ? (
+                          <div key={itemId} className="relative aspect-square rounded-xl overflow-hidden shadow-sm border-2 border-white">
+                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                          </div>
+                        ) : null;
+                      })}
+                    </div>
+                  </CardContent>
+                  <div className="p-6 bg-slate-50 flex justify-between gap-3 border-t">
+                    <Button variant="ghost" className="flex-1 rounded-full font-headline text-primary" onClick={() => { setDate(new Date()); setTempSelectedOutfitId(outfit.id); setIsSelectOutfitOpen(true); }}>
+                      <CalendarIcon className="mr-2 h-4 w-4" /> Schedule
+                    </Button>
+                    <Button variant="ghost" className="flex-1 rounded-full font-headline text-destructive hover:bg-destructive/10" onClick={() => setOutfits(prev => prev.filter(o => o.id !== outfit.id))}>
+                      <Trash2 className="mr-2 h-4 w-4" /> Delete
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* --- JOURNAL TAB --- */}
+          <TabsContent value="journal" className="space-y-12 animate-in slide-in-from-bottom-4">
+            <div className="bg-white rounded-[2.5rem] p-4 shadow-xl border flex items-center gap-4 max-w-4xl mx-auto">
+              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, -7))}>
+                <ChevronLeft className="h-7 w-7" />
               </Button>
-           </Card>
-        </section>
+              <div className="flex-1 flex justify-between px-2 overflow-x-auto scrollbar-hide">
+                {weekDays.map((day, i) => {
+                  const active = isSameDay(day, date);
+                  return (
+                    <button key={i} onClick={() => setDate(day)} className={cn("flex flex-col items-center justify-center p-4 min-w-[75px] rounded-[1.5rem] transition-all", active ? "bg-primary text-white shadow-xl scale-110" : "text-slate-400 hover:bg-slate-50")}>
+                      <span className="text-[10px] font-bold uppercase mb-1">{format(day, 'EEE')}</span>
+                      <span className="text-xl font-headline font-bold">{format(day, 'dd')}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, 7))}>
+                <ChevronRight className="h-7 w-7" />
+              </Button>
+            </div>
+
+            <div className="space-y-8 max-w-5xl mx-auto">
+              <div className="flex items-center justify-between border-b pb-6">
+                <h3 className="text-3xl font-headline font-bold text-primary">Agenda for {format(date, 'MMMM do')}</h3>
+                <Button className="rounded-full h-12 px-8 bg-primary text-white font-headline" onClick={() => setIsSelectOutfitOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" /> New Entry
+                </Button>
+              </div>
+
+              {activeSchedules.length > 0 ? (
+                <div className="grid gap-8">
+                  {activeSchedules.map(schedule => {
+                    const outfit = outfits.find(o => o.id === schedule.outfitId);
+                    return (
+                      <Card key={schedule.id} className="border-none shadow-2xl bg-white rounded-[3rem] overflow-hidden group">
+                        <div className="md:flex">
+                          <div className="md:w-1/3 bg-slate-50 p-8 flex items-center justify-center min-h-[180px]">
+                            {outfit ? (
+                               <div className="flex -space-x-8">
+                                {outfit.items.slice(0, 2).map((itemId, idx) => {
+                                  const item = MOCK_WARDROBE.find(i => i.id === itemId);
+                                  return (
+                                    <div key={itemId} className={cn("relative h-40 w-28 rounded-[1.5rem] overflow-hidden shadow-xl border-4 border-white transition-transform group-hover:scale-105", idx === 0 ? "rotate-[-4deg]" : "rotate-[4deg]")}>
+                                      {item && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            ) : <ClipboardList className="h-12 w-12 opacity-10" />}
+                          </div>
+                          <div className="md:w-2/3 p-10 flex flex-col justify-between">
+                            <div className="flex justify-between items-start">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-accent font-headline font-bold uppercase text-[10px] tracking-widest">
+                                  <Clock className="h-3 w-3" /> {schedule.time} <span className="text-slate-200">|</span> <MapPin className="h-3 w-3" /> {schedule.location}
+                                </div>
+                                <h4 className="text-3xl font-headline font-bold text-primary">{outfit ? outfit.name : 'Unassigned Event'}</h4>
+                              </div>
+                              <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-200 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>
+                                <Trash2 className="h-5 w-5" />
+                              </Button>
+                            </div>
+                            <div className="flex gap-4 pt-8">
+                               <Button variant="outline" className="flex-1 rounded-full font-headline h-12" onClick={() => { setCurrentViewingOutfit(outfit); setIsViewItemsOpen(true); }}>View Details</Button>
+                               <Button variant="ghost" className="flex-1 rounded-full text-slate-400 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>Remove Entry</Button>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-24 bg-white rounded-[3rem] border-4 border-dashed border-primary/5 flex flex-col items-center justify-center space-y-6">
+                  <CalendarIcon className="h-16 w-16 text-primary opacity-10" />
+                  <p className="text-xl font-headline font-bold text-slate-400 italic">No events planned for this date.</p>
+                  <Button className="rounded-full h-14 px-10 gradient-primary text-white" onClick={() => setIsSelectOutfitOpen(true)}>Schedule Look</Button>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* --- ASSEMBLER TAB --- */}
+          <TabsContent value="assembler" className="animate-in slide-in-from-bottom-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+              <div className="lg:col-span-2 space-y-8">
+                <Card className="min-h-[550px] border-4 border-dashed border-primary/5 rounded-[3.5rem] flex flex-col p-10 bg-white/40 backdrop-blur-md relative shadow-inner">
+                  <div className="flex-1 flex flex-col items-center justify-center">
+                    {selectedItems.length === 0 ? (
+                      <div className="text-center space-y-4">
+                        <Layers className="h-16 w-16 text-primary opacity-10 mx-auto" />
+                        <p className="font-headline text-2xl font-bold text-slate-400 italic">Select garments to assemble a look.</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 w-full">
+                        {selectedItems.map(id => {
+                          const item = MOCK_WARDROBE.find(i => i.id === id);
+                          return (
+                            <div key={id} className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white group">
+                              <Image src={item!.imageUrl} alt={item!.name} fill className="object-cover" />
+                              <Button variant="destructive" size="icon" className="absolute top-3 right-3 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => toggleItemSelection(id)}>
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+                {selectedItems.length > 0 && (
+                  <Card className="p-8 rounded-[3rem] shadow-2xl bg-white flex flex-col md:flex-row items-end gap-6 border-none">
+                    <div className="flex-1 space-y-2 w-full">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2">Outfit Title</label>
+                      <Input placeholder="e.g. Modern Professional" value={newOutfitName} onChange={e => setNewOutfitName(e.target.value)} className="h-14 rounded-2xl font-headline text-lg px-6 bg-slate-50 border-none" />
+                    </div>
+                    <Button className="h-16 px-12 rounded-full gradient-pill text-white font-headline text-xl" onClick={handleCreateOutfit}>
+                      Save Outfit <Check className="ml-2 h-6 w-6" />
+                    </Button>
+                  </Card>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex justify-between items-center px-2">
+                  <h3 className="font-headline font-bold text-xl text-primary">Your Collection</h3>
+                  <Badge variant="outline" className="rounded-full px-4 border-primary/20 text-primary">{selectedItems.length} Selected</Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-4 h-[650px] overflow-y-auto pr-2 scrollbar-hide">
+                  {MOCK_WARDROBE.map((item) => {
+                    const isSelected = selectedItems.includes(item.id);
+                    return (
+                      <Card 
+                        key={item.id} 
+                        className={cn("group relative overflow-hidden aspect-[3/4] cursor-pointer transition-all border-none rounded-[1.5rem] shadow-md", isSelected ? "ring-4 ring-accent" : "hover:scale-[1.02]")}
+                        onClick={() => toggleItemSelection(item.id)}
+                      >
+                        <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                        <div className={cn("absolute inset-0 bg-primary/40 flex items-center justify-center transition-opacity", isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+                          <div className="h-12 w-12 rounded-full bg-white text-primary flex items-center justify-center shadow-lg">
+                            {isSelected ? <Check className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
+
+      {/* --- SHARED DIALOGS --- */}
+      <Dialog open={isSelectOutfitOpen} onOpenChange={setIsSelectOutfitOpen}>
+        <DialogContent className="sm:max-w-xl bg-white rounded-[2.5rem] p-0 overflow-hidden">
+          <DialogHeader className="p-8 bg-slate-50 border-b">
+            <DialogTitle className="font-headline text-2xl font-bold text-primary italic">Journal Entry Details</DialogTitle>
+          </DialogHeader>
+          <div className="p-8 space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Location / Event</label>
+                <Input placeholder="Where to?" value={eventTitle} onChange={e => setEventTitle(e.target.value)} className="h-12 rounded-xl bg-slate-50 border-none" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Time</label>
+                <Input placeholder="e.g. 8:00 PM" value={eventTime} onChange={e => setEventTime(e.target.value)} className="h-12 rounded-xl bg-slate-50 border-none" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Select Outfit</label>
+              <ScrollArea className="h-64 pr-4 border rounded-2xl p-2 bg-slate-50/30">
+                <div className="grid gap-2">
+                  {outfits.map(outfit => (
+                    <button key={outfit.id} className={cn("flex items-center gap-4 p-4 rounded-xl border transition-all text-left", tempSelectedOutfitId === outfit.id ? "bg-primary text-white border-primary" : "bg-white border-slate-100")} onClick={() => setTempSelectedOutfitId(tempSelectedOutfitId === outfit.id ? null : outfit.id)}>
+                      <div className="h-10 w-10 rounded-full overflow-hidden relative border shadow-sm shrink-0">
+                        <Image src={MOCK_WARDROBE.find(i => i.id === outfit.items[0])?.imageUrl || ''} alt="" fill className="object-cover" />
+                      </div>
+                      <span className="font-headline font-bold truncate flex-1">{outfit.name}</span>
+                      {tempSelectedOutfitId === outfit.id && <Check className="h-5 w-5 text-accent" />}
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
+          <DialogFooter className="p-8 bg-slate-50 border-t flex gap-3">
+            <Button variant="ghost" className="rounded-full px-6" onClick={() => setIsSelectOutfitOpen(false)}>Cancel</Button>
+            <Button className="rounded-full gradient-primary text-white px-10 flex-1" onClick={handleScheduleConfirm}>Save Entry</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
+import Link from "next/link";

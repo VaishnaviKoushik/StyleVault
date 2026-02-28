@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shirt, Calendar, Sparkles, Home, LogOut, Settings, Camera, Presentation, Smartphone, TrendingUp, ShoppingBag, Zap } from "lucide-react";
+import { Shirt, Calendar, Sparkles, Home, LogOut, Settings, Camera, Presentation, ShoppingBag, TrendingUp, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard", icon: Home, href: "/" },
-  { label: "Closet", icon: Shirt, href: "/wardrobe" },
-  { label: "Planner", icon: Calendar, href: "/planner" },
+  { label: "Closet", icon: Shirt, href: "/wardrobe?tab=closet" },
+  { label: "Planner", icon: Calendar, href: "/wardrobe?tab=journal" },
   { label: "AI Stylist", icon: Sparkles, href: "/ai-stylist" },
   { label: "Shopping", icon: ShoppingBag, href: "/shopping" },
   { label: "Trends", icon: TrendingUp, href: "/trends" },
@@ -33,7 +33,7 @@ export function SidebarNav() {
         
         <nav className="hidden lg:flex items-center gap-2">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || (pathname === '/wardrobe' && item.href.startsWith('/wardrobe'));
             const Icon = item.icon;
             return (
               <Link
