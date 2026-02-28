@@ -9,9 +9,7 @@ import {
   Plus, 
   Sparkles, 
   Trash2, 
-  Edit3, 
   Cpu, 
-  Wind, 
   RefreshCw, 
   Calendar as CalendarIcon, 
   Clock, 
@@ -22,14 +20,13 @@ import {
   ClipboardList,
   ChevronLeft,
   ChevronRight,
-  LayoutGrid,
   Shirt,
   Bookmark
 } from "lucide-react";
 import { MOCK_WARDROBE, MOCK_OUTFITS, WardrobeItem, Outfit } from "@/lib/mock-data";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { addDays, format, startOfWeek, isSameDay } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const categories = ["all", "top", "bottom", "dress", "shoes", "accessory", "outerwear"];
 
@@ -62,8 +60,6 @@ export default function MasterVaultPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [scheduledOutfits, setScheduledOutfits] = useState<any[]>([]);
   const [isSelectOutfitOpen, setIsSelectOutfitOpen] = useState(false);
-  const [isViewItemsOpen, setIsViewItemsOpen] = useState(false);
-  const [currentViewingOutfit, setCurrentViewingOutfit] = useState<any>(null);
   const [eventTitle, setEventTitle] = useState("");
   const [eventTime, setEventTime] = useState("12:00 PM");
   const [tempSelectedOutfitId, setTempSelectedOutfitId] = useState<string | null>(null);
@@ -173,9 +169,9 @@ export default function MasterVaultPage() {
           </div>
           <div className="flex gap-4">
              <Button asChild variant="outline" className="h-14 px-8 rounded-full border-primary/20 text-primary font-headline text-lg hover:bg-primary/5">
-                <Plus className="mr-2 h-5 w-5" /> <Link href="/add-item">New Garment</Link>
+                <Link href="/add-item"><Plus className="mr-2 h-5 w-5" /> New Garment</Link>
              </Button>
-             <Button className="h-14 px-10 rounded-full gradient-primary text-white font-headline text-lg shadow-xl shadow-primary/20" onClick={() => { setActiveTab("assembler"); }}>
+             <Button className="h-14 px-10 rounded-full gradient-primary text-white font-headline text-lg shadow-xl shadow-primary/20" onClick={() => setActiveTab("assembler")}>
                 <Sparkles className="mr-2 h-5 w-5" /> New Assembly
              </Button>
           </div>
@@ -198,7 +194,7 @@ export default function MasterVaultPage() {
           </TabsList>
 
           {/* --- CLOSET TAB --- */}
-          <TabsContent value="closet" className="space-y-8 animate-in slide-in-from-bottom-4">
+          <TabsContent value="closet" className="space-y-8">
             <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
               <div className="flex flex-wrap gap-2 p-1 bg-white/50 rounded-full border">
                 {categories.map((cat) => (
@@ -292,7 +288,7 @@ export default function MasterVaultPage() {
           </TabsContent>
 
           {/* --- LOOKBOOK TAB --- */}
-          <TabsContent value="outfits" className="space-y-8 animate-in slide-in-from-bottom-4">
+          <TabsContent value="outfits" className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {outfits.map((outfit) => (
                 <Card key={outfit.id} className="overflow-hidden border-none shadow-xl bg-white rounded-[2.5rem] flex flex-col group hover:-translate-y-2 transition-all">
@@ -328,8 +324,8 @@ export default function MasterVaultPage() {
           </TabsContent>
 
           {/* --- JOURNAL TAB --- */}
-          <TabsContent value="journal" className="space-y-12 animate-in slide-in-from-bottom-4">
-            <div className="bg-white rounded-[2.5rem] p-4 shadow-xl border flex items-center gap-4 max-w-4xl mx-auto">
+          <TabsContent value="journal" className="space-y-12">
+             <div className="bg-white rounded-[2.5rem] p-4 shadow-xl border flex items-center gap-4 max-w-4xl mx-auto">
               <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-300" onClick={() => setDate(addDays(date, -7))}>
                 <ChevronLeft className="h-7 w-7" />
               </Button>
@@ -391,7 +387,7 @@ export default function MasterVaultPage() {
                               </Button>
                             </div>
                             <div className="flex gap-4 pt-8">
-                               <Button variant="outline" className="flex-1 rounded-full font-headline h-12" onClick={() => { setCurrentViewingOutfit(outfit); setIsViewItemsOpen(true); }}>View Details</Button>
+                               <Button variant="outline" className="flex-1 rounded-full font-headline h-12">View Details</Button>
                                <Button variant="ghost" className="flex-1 rounded-full text-slate-400 hover:text-destructive" onClick={() => handleUnschedule(schedule.id)}>Remove Entry</Button>
                             </div>
                           </div>
@@ -411,8 +407,8 @@ export default function MasterVaultPage() {
           </TabsContent>
 
           {/* --- ASSEMBLER TAB --- */}
-          <TabsContent value="assembler" className="animate-in slide-in-from-bottom-4">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+          <TabsContent value="assembler" className="space-y-8">
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
               <div className="lg:col-span-2 space-y-8">
                 <Card className="min-h-[550px] border-4 border-dashed border-primary/5 rounded-[3.5rem] flex flex-col p-10 bg-white/40 backdrop-blur-md relative shadow-inner">
                   <div className="flex-1 flex flex-col items-center justify-center">
@@ -481,7 +477,6 @@ export default function MasterVaultPage() {
         </Tabs>
       </div>
 
-      {/* --- SHARED DIALOGS --- */}
       <Dialog open={isSelectOutfitOpen} onOpenChange={setIsSelectOutfitOpen}>
         <DialogContent className="sm:max-w-xl bg-white rounded-[2.5rem] p-0 overflow-hidden">
           <DialogHeader className="p-8 bg-slate-50 border-b">
@@ -495,7 +490,7 @@ export default function MasterVaultPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Time</label>
-                <Input placeholder="e.g. 8:00 PM" value={eventTime} onChange={e => setEventTime(e.target.value)} className="h-12 rounded-xl bg-slate-50 border-none" />
+                <Input placeholder="8:00 PM" value={eventTime} onChange={e => setEventTime(e.target.value)} className="h-12 rounded-xl bg-slate-50 border-none" />
               </div>
             </div>
             <div className="space-y-3">
@@ -524,4 +519,4 @@ export default function MasterVaultPage() {
     </AppLayout>
   );
 }
-import Link from "next/link";
+import { DialogFooter } from "@/components/ui/dialog";

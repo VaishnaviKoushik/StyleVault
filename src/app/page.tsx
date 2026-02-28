@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Zap,
   CheckCircle2,
-  Presentation
+  Presentation,
+  Droplets
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -53,7 +54,7 @@ export default function HomeScreen() {
               <Badge className="bg-accent text-primary font-headline uppercase px-6 py-2 tracking-[0.3em] border-none text-xs">
                 Generative Wardrobe Intelligence
               </Badge>
-              <h1 className="text-7xl md:text-9xl font-headline font-bold leading-[0.85] tracking-tighter">
+              <h1 className="text-7xl md:text-9xl font-headline font-bold leading-[0.85] tracking-tighter text-white">
                 Style is <br/>
                 <span className="text-accent italic block mt-4 underline decoration-accent/20 underline-offset-8">Algorithmic.</span>
               </h1>
@@ -68,7 +69,7 @@ export default function HomeScreen() {
                   <Link href="/ai-stylist">Consult AI Stylist</Link>
                 </Button>
                 <Button variant="ghost" asChild className="h-20 px-12 rounded-full text-accent hover:text-white hover:bg-white/5 active:scale-95 transition-all font-headline text-xl flex items-center gap-3">
-                  <Link href="/proposal"><Presentation className="h-6 w-6" /> View Project Presentation</Link>
+                  <Link href="/proposal"><Presentation className="h-6 w-6" /> View Presentation</Link>
                 </Button>
               </div>
             </div>
@@ -88,17 +89,18 @@ export default function HomeScreen() {
                 </p>
               </div>
               <Link href="/wardrobe" className="group flex items-center gap-3 text-primary font-headline font-bold text-xl hover:text-accent transition-colors">
-                Explore Full Vault <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                Explore Master Vault <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 { label: "Catalog", icon: Camera, desc: "AI Vision Inventory", href: "/add-item", color: "text-blue-600", bg: "bg-blue-50" },
                 { label: "Shopping", icon: ShoppingBag, desc: "Gap Analysis Engine", href: "/shopping", color: "text-amber-600", bg: "bg-amber-50" },
                 { label: "AI Stylist", icon: Brain, desc: "Generative Logic", href: "/ai-stylist", color: "text-teal-600", bg: "bg-teal-50" },
-                { label: "Assembler", icon: Palette, desc: "Visual Composition", href: "/planner", color: "text-rose-600", bg: "bg-rose-50" },
-                { label: "Trends", icon: Search, desc: "Global Forecaster", href: "/trends", color: "text-indigo-600", bg: "bg-indigo-50" }
+                { label: "Color Lab", icon: Droplets, desc: "Harmony Analysis", href: "/try-on", color: "text-rose-600", bg: "bg-rose-50" },
+                { label: "Assembler", icon: Layers, desc: "Visual Composition", href: "/wardrobe?tab=assembler", color: "text-indigo-600", bg: "bg-indigo-50" },
+                { label: "Trends", icon: Search, desc: "Global Forecaster", href: "/trends", color: "text-slate-600", bg: "bg-slate-50" }
               ].map((action, idx) => (
                 <Link key={action.label} href={action.href} className="group">
                   <Card className={cn("glass-card border-none hover:-translate-y-4 active:scale-95 transition-all duration-500 p-10 flex flex-col items-center text-center gap-8 h-full relative overflow-hidden")}>
@@ -132,7 +134,7 @@ export default function HomeScreen() {
                 </h2>
                 <div className="space-y-6">
                   <p className="text-2xl text-muted-foreground font-body leading-relaxed italic border-l-4 border-accent pl-8 py-2">
-                    "Our AI has identified 4 key pieces that would expand your current 18-item collection's styling combinations by 40%."
+                    "Our AI identifies key pieces that expand your current collection's styling combinations by 40%."
                   </p>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                     {['Color Harmony Matching', 'Geometric Alignment', 'Seasonal Transitions', 'Event-Ready Filters'].map(item => (
@@ -182,7 +184,7 @@ export default function HomeScreen() {
               <Badge className="bg-accent/20 text-accent font-headline uppercase px-6 py-2 tracking-[0.3em] border-none text-xs">
                 The Protocol
               </Badge>
-              <h3 className="text-6xl md:text-8xl font-headline font-bold italic leading-none">
+              <h3 className="text-6xl md:text-8xl font-headline font-bold italic leading-none text-white">
                 Algorithmic <span className="text-accent">Success.</span>
               </h3>
               <p className="text-2xl text-slate-400 font-body leading-relaxed italic max-w-3xl mx-auto text-center">
